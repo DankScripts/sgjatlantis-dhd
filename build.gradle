@@ -1,0 +1,152 @@
+plugins {
+    id 'java'
+    id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+}
+
+version = mod_version
+group = mod_group_id
+
+base {
+    archivesName = 'sgjatlantis-dhd-1.20.1'
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+minecraft {
+    mappings channel: mapping_channel, version: mapping_version
+
+    runs {
+        configureEach {
+            workingDirectory project.file('run')
+            property 'forge.logging.console.level', 'info'
+            mods {
+                sgjadditions_capacity_patch {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        client {}
+
+        server {
+            args '--nogui'
+        }
+    }
+}
+
+repositories {
+    maven { url = 'https://www.cursemaven.com' }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    compileOnly files('baseline/2.0.2-beta.1/sgjatlantis-dhd-1.20.1-2.0.2-beta.1.jar')
+
+    def configuredSgJourneyJar = System.getenv('SGJOURNEY_JAR')
+    if (configuredSgJourneyJar != null && !configuredSgJourneyJar.isBlank()) {
+        compileOnly files(configuredSgJourneyJar)
+    } else {
+        def workspaceSgJourneyJar = file('../atlantis-city-shield/run/mods/Stargate.Journey-1.20.1-0.6.48-hotfix1.jar')
+        if (workspaceSgJourneyJar.exists()) {
+            compileOnly files(workspaceSgJourneyJar)
+        }
+    }
+}
+
+tasks.named('processResources', ProcessResources).configure {
+    inputs.property 'mod_version', mod_version
+    filesMatching('META-INF/mods.toml') {
+        expand mod_version: mod_version
+    }
+}
+
+tasks.named('jar', Jar).configure {
+    from(layout.projectDirectory.dir('blockbench')) {
+        into 'blockbench'
+        include 'atlantis_dhd_table_original.bbmodel'
+        include 'atlantis_dhd_table_shield_style.bbmodel'
+    }
+    manifest {
+        attributes([
+                'Specification-Title'      : 'sgjadditions_capacity_patch',
+                'Specification-Vendor'     : 'DankScripts',
+                'Specification-Version'    : '2',
+                'Implementation-Title'     : 'Atlantis DHD Upgrade',
+                'Implementation-Version'   : mod_version,
+                'Implementation-Vendor'    : 'DankScripts',
+                'MixinConfigs'             : 'sgjadditions_capacity_patch.mixins.json'
+        ])
+    }
+    finalizedBy 'reobfJar'
+}
+
+tasks.register('releaseJar', Jar) {
+    dependsOn 'reobfJar'
+    archiveFileName = "sgjatlantis-dhd-1.20.1-${mod_version}.jar"
+    destinationDirectory = layout.projectDirectory.dir('dist')
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    manifest {
+        attributes([
+                'Specification-Title'      : 'sgjadditions_capacity_patch',
+                'Specification-Vendor'     : 'DankScripts',
+                'Specification-Version'    : '2',
+                'Implementation-Title'     : 'Atlantis DHD Upgrade',
+                'Implementation-Version'   : mod_version,
+                'Implementation-Vendor'    : 'DankScripts',
+                'MixinConfigs'             : 'sgjadditions_capacity_patch.mixins.json'
+        ])
+    }
+
+    from(zipTree(layout.projectDirectory.file('baseline/confirmed-working-r17b/sgjatlantis-dhd-1.20.1-2.0.3-beta.2-direct-resource-constellations-r17b.jar'))) {
+        exclude 'META-INF/MANIFEST.MF'
+        exclude 'META-INF/mods.toml'
+        exclude 'pack.mcmeta'
+        exclude 'sgjadditions_capacity_patch.mixins.json'
+        exclude 'com/mustangdoc/sgjpatch/network/SGJPatchNetwork.class'
+        exclude 'assets/sgjadditions/models/custom/atlantisdhd.json'
+        exclude 'assets/sgjadditions/models/block/atlantisdhd.json'
+        exclude 'assets/sgjadditions/models/block/atlantisdhd.json.textures'
+        exclude 'assets/sgjadditions_capacity_patch/models/custom/atlantisdhd.json'
+        exclude 'assets/sgjadditions_capacity_patch/models/block/atlantisdhd.json'
+        exclude 'assets/sgjadditions_capacity_patch/models/block/atlantisdhd.json.textures'
+        exclude 'resourcepacks/sgjatlantis_sgjadditions_override/assets/sgjadditions/models/custom/atlantisdhd.json'
+    }
+    from(zipTree(tasks.named('jar', Jar).flatMap { it.archiveFile }))
+}
+
+tasks.register('sourceArchive', Zip) {
+    archiveFileName = "sgjatlantis-dhd-1.20.1-${mod_version}-source.zip"
+    destinationDirectory = layout.projectDirectory.dir('dist')
+    from(layout.projectDirectory) {
+        include 'src/**'
+        include 'blockbench/**'
+        include 'tools/**'
+        include 'gradle/**'
+        include 'gradlew'
+        include 'gradlew.bat'
+        include 'build.gradle'
+        include 'settings.gradle'
+        include 'gradle.properties'
+        include 'README.md'
+        include 'CHANGELOG.md'
+        include 'LICENSE.txt'
+        include 'baseline/README.txt'
+        include 'baseline/sgjatlantis-dhd-1.20.1-2.0.0-beta.1.jar'
+        include 'baseline/2.0.2-beta.1/**'
+        include 'baseline/accepted-gui-r13/**'
+        include 'baseline/confirmed-working-r17b/**'
+        exclude '.gradle/**'
+        exclude 'build/**'
+        exclude 'dist/**'
+        exclude 'run/**'
+    }
+}
+
+tasks.register('release') {
+    dependsOn 'releaseJar', 'sourceArchive'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}

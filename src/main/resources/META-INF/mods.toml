@@ -1,0 +1,59 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="All Rights Reserved"
+
+[[mods]]
+modId="sgjadditions_capacity_patch"
+version="${mod_version}"
+displayTest="MATCH_VERSION"
+displayName="Atlantis DHD Upgrade / SGJ Additions Compatibility"
+description='''
+Standalone Atlantis DHD upgrade for SGJourney, including the accepted triangle dialer GUI, crystal interface, Pegasus shield support, and arbitrary-angle Blockbench model rendering.
+
+Version 2.0.2-beta.2-hotfix2 makes the approved extended Atlantis DHD model load consistently in minimal Forge clients and large modpacks without relying on another rendering mod. It preserves the accepted model geometry, GUI, dialing behavior, synchronized Pegasus constellation markings, gold illumination, and corrected crafting recipes from hotfix1.
+
+The mod also includes an optional compatibility bridge for the exact More Gates 4.3.2 Forge 1.20.1 JAR (CurseForge file 5783142). It translates that legacy add-on's symbol, point-of-origin, wormhole, and disconnect resources to the current SGJourney formats at startup. The bridge is enabled by default and does nothing unless that exact More Gates JAR is installed.
+
+Config file: config/sgjatlantis-dhd.toml
+Defaults:
+useOriginalSGJAdditionsDHD = false
+enableMoreGates432CompatibilityPatch = true
+Restart Minecraft after changing either setting.
+'''
+
+mixinConfigs="sgjadditions_capacity_patch.mixins.json"
+
+[[dependencies.sgjadditions_capacity_patch]]
+modId="forge"
+mandatory=true
+versionRange="[47.4.0,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.sgjadditions_capacity_patch]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.20.1]"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.sgjadditions_capacity_patch]]
+modId="sgjourney"
+mandatory=true
+versionRange="[0.6.44,)"
+ordering="AFTER"
+side="BOTH"
+
+[[dependencies.sgjadditions_capacity_patch]]
+modId="sgjadditions"
+mandatory=false
+versionRange="[1.1.0,)"
+ordering="AFTER"
+side="BOTH"
+
+[[dependencies.sgjadditions_capacity_patch]]
+modId="moregates"
+mandatory=false
+versionRange="[0,)"
+ordering="AFTER"
+side="BOTH"

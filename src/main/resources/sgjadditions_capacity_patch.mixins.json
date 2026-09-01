@@ -1,0 +1,39 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.mustangdoc.sgjpatch.mixin",
+  "plugin": "com.mustangdoc.sgjpatch.mixin.SGJPatchMixinPlugin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "sgjadditions_capacity_patch.refmap.json",
+  "mixins": [
+    "AbstractDHDEntityAccessor",
+    "AbstractDHDEntityCenterFeedbackClearMixin",
+    "AbstractDHDEntityResetOnLoadMixin",
+    "AbstractDHDMenuAccessor",
+    "EnergyBlockEntityAccessor",
+    "AtlantisDHDEntityEnergyCapabilityMixin",
+    "LegacySGJAdditionsAtlantisDHDEnergyBridgeMixin",
+    "LegacySGJAdditionsAtlantisDHDOverrideMixin",
+    "AtlantisDHDEntityCrystalValidationMixin",
+    "AtlantisDHDEntityCapacityMixin",
+    "AbstractStargateEntityNetworkFixMixin",
+    "AbstractStargateEntityDialFailResetMixin",
+    "AbstractStargateEntityResetOnLoadMixin",
+    "StargateConnectionTerminateGuardMixin",
+    "SGJourneyIrisInfoDefaultOpenMixin",
+    "SGJourneyIrisInfoPegasusShieldSoundsMixin",
+    "PegasusStargateShieldPowerMixin"
+  ],
+  "client": [
+    "client.AtlantisDHDModelAngleMixin",
+    "client.AtlantisDHDModelBoundsMixin",
+    "client.SGJAdditionsLegacyClientSetupMixin",
+    "client.ClientPacketListenerOpenScreenMixin",
+    "client.SGJourneyBigButtonIlluminationMixin",
+    "client.IrisModelPegasusShieldMixin",
+    "client.MenuScreensCreateMixin",
+    "client.PlayMessagesOpenContainerMixin",
+    "client.AtlantisDHDClickFixMixin",
+    "client.AtlantisDHDConnectedSymbolLockMixin"
+  ]
+}
