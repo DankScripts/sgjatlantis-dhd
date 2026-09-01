@@ -1,7 +1,7 @@
 # Gradle
 .gradle/
 build/
-dist/
+out/
 
 # Minecraft development runs
 run/
@@ -15,9 +15,10 @@ runs/
 .settings/
 .vscode/
 
-# Root-level generated releases
-/*.jar
-/*.zip
+# Generated release files
+dist/
+*.jar
+*.zip
 
 # Operating-system files
 .DS_Store

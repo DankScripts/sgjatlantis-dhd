@@ -7,7 +7,6 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import com.mustangdoc.sgjpatch.init.SGJPatchBlockEntities;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -25,18 +24,10 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.registries.ForgeRegistries;
 import net.povstalec.sgjourney.client.resourcepack.symbols.ClientPointOfOrigin;
 import net.povstalec.sgjourney.client.resourcepack.symbols.ClientSymbols;
 import net.povstalec.sgjourney.common.block_entities.dhd.AbstractDHDEntity;
@@ -447,7 +438,7 @@ public final class AtlantisDHDButtonStateRenderer implements BlockEntityRenderer
     private static AbstractStargateEntity<?> connectedGate(AbstractDHDEntity dhd) {
         try {
             if (dhd.stargateCache.isPresent()) {
-                return dhd.stargateCache.get();
+                return dhd.stargateCache.getCached();
             }
         }
         catch (RuntimeException ignored) {
@@ -520,10 +511,10 @@ public final class AtlantisDHDButtonStateRenderer implements BlockEntityRenderer
     private static void coloredQuad(VertexConsumer consumer, PoseStack.Pose pose,
                                     double x0, double y, double z0, double x1, double z1,
                                     float red, float green, float blue, float alpha) {
-        consumer.vertex(pose.pose(), (float)x0, (float)y, (float)z0).color(red, green, blue, alpha).endVertex();
-        consumer.vertex(pose.pose(), (float)x0, (float)y, (float)z1).color(red, green, blue, alpha).endVertex();
-        consumer.vertex(pose.pose(), (float)x1, (float)y, (float)z1).color(red, green, blue, alpha).endVertex();
-        consumer.vertex(pose.pose(), (float)x1, (float)y, (float)z0).color(red, green, blue, alpha).endVertex();
+        consumer.addVertex(pose.pose(), (float)x0, (float)y, (float)z0).setColor(red, green, blue, alpha);
+        consumer.addVertex(pose.pose(), (float)x0, (float)y, (float)z1).setColor(red, green, blue, alpha);
+        consumer.addVertex(pose.pose(), (float)x1, (float)y, (float)z1).setColor(red, green, blue, alpha);
+        consumer.addVertex(pose.pose(), (float)x1, (float)y, (float)z0).setColor(red, green, blue, alpha);
     }
 
     private static void applyModelRotation(BlockState state, PoseStack poseStack) {
@@ -705,39 +696,5 @@ public final class AtlantisDHDButtonStateRenderer implements BlockEntityRenderer
     private record SymbolMask(int width, int height, byte[] alpha) {
     }
 
-    @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-    public static final class Registration {
-        private Registration() {
-        }
 
-        @SubscribeEvent
-        public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-            event.registerBlockEntityRenderer(SGJPatchBlockEntities.ATLANTIS_DHD.get(),
-                    AtlantisDHDButtonStateRenderer::new);
-
-            ResourceLocation legacyId = ResourceLocation.fromNamespaceAndPath("sgjadditions", "atlantis_dhd");
-            BlockEntityType<?> legacyType = ForgeRegistries.BLOCK_ENTITY_TYPES.getValue(legacyId);
-            if (legacyType != null && legacyType != SGJPatchBlockEntities.ATLANTIS_DHD.get()) {
-                registerLegacyRenderer(event, legacyType);
-            }
-        }
-
-        @SubscribeEvent
-        public static void registerReloadListener(RegisterClientReloadListenersEvent event) {
-            event.registerReloadListener((ResourceManagerReloadListener) resourceManager -> {
-                MODEL_ROTATIONS.clear();
-                SYMBOL_TEXTURE_LISTS.clear();
-                POINT_OF_ORIGIN_TEXTURES.clear();
-                RESOURCE_MASKS.clear();
-                SPRITE_MASKS.clear();
-            });
-        }
-
-        @SuppressWarnings({"rawtypes", "unchecked"})
-        private static void registerLegacyRenderer(EntityRenderersEvent.RegisterRenderers event,
-                                                   BlockEntityType<?> legacyType) {
-            event.registerBlockEntityRenderer((BlockEntityType)legacyType,
-                    context -> new AtlantisDHDButtonStateRenderer(context));
-        }
-    }
 }

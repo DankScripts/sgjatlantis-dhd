@@ -1,8 +1,7 @@
 Copyright (c) 2026 MustangDoc / DankScripts. All Rights Reserved.
 
-The source code, binary baselines, and assets in this repository are provided
-for inspection, compatibility development, and contribution to this project
-only.
+The source code and assets in this repository are provided for inspection,
+compatibility development, and contribution to this project only.
 
 No permission is granted to copy, redistribute, repackage, publish, sell,
 license, or create and distribute derivative versions of this project or its
@@ -12,10 +11,6 @@ Submitting a contribution does not grant permission to redistribute this
 project. By submitting a contribution, you agree that it may be incorporated
 into and distributed as part of this project under these terms.
 
-This repository does not contain the More Gates mod. When its narrowly guarded
-compatibility bridge is enabled, More Gates resources are read and converted
-locally from the user's own installed copy.
-
-Third-party names, trademarks, APIs, dependencies, and resources remain the
-property of their respective owners and are subject to their own terms.
+Third-party names, trademarks, APIs, and dependencies remain the property of
+their respective owners and are subject to their own terms.
 
