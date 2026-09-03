@@ -12,7 +12,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
  * with incompatible packets or synchronized state.
  */
 public final class SGJPatchNetwork {
-    private static final String PROTOCOL_VERSION = "2.0.2-beta.2-hotfix2";
+    private static final String PROTOCOL_VERSION = "2.0.3-beta.3";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             ResourceLocation.fromNamespaceAndPath("sgjadditions_capacity_patch", "network"),

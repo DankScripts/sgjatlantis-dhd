@@ -1,0 +1,118 @@
+{
+  "version": "2.0.2-beta.2-hotfix4",
+  "baseline_sha256": "b7d90bc1ae544ad176b5b0391b8b6bf592a276dc37fe660f95b924f3ce24524e",
+  "crystals": [
+    {
+      "index": 8,
+      "row": "rear",
+      "from": [
+        25.3,
+        19,
+        11
+      ],
+      "to": [
+        28.3,
+        19.25,
+        15
+      ],
+      "drop": 0.3,
+      "surface_y": 18.4,
+      "new_gap": 0.3
+    },
+    {
+      "index": 9,
+      "row": "rear",
+      "from": [
+        21.55,
+        19,
+        11
+      ],
+      "to": [
+        24.55,
+        19.25,
+        15
+      ],
+      "drop": 0.3,
+      "surface_y": 18.4,
+      "new_gap": 0.3
+    },
+    {
+      "index": 10,
+      "row": "rear",
+      "from": [
+        17.55,
+        19,
+        11
+      ],
+      "to": [
+        20.55,
+        19.25,
+        15
+      ],
+      "drop": 0.3,
+      "surface_y": 18.4,
+      "new_gap": 0.3
+    },
+    {
+      "index": 11,
+      "row": "front",
+      "from": [
+        17.55,
+        17.85,
+        6
+      ],
+      "to": [
+        20.55,
+        18.1,
+        10
+      ],
+      "drop": 0.225,
+      "surface_y": 17.4,
+      "new_gap": 0.225
+    },
+    {
+      "index": 12,
+      "row": "front",
+      "from": [
+        21.55,
+        17.85,
+        6
+      ],
+      "to": [
+        24.55,
+        18.1,
+        10
+      ],
+      "drop": 0.225,
+      "surface_y": 17.4,
+      "new_gap": 0.225
+    },
+    {
+      "index": 13,
+      "row": "front",
+      "from": [
+        25.55,
+        17.85,
+        6
+      ],
+      "to": [
+        28.55,
+        18.1,
+        10
+      ],
+      "drop": 0.225,
+      "surface_y": 17.4,
+      "new_gap": 0.225
+    }
+  ],
+  "changed_runtime_entries": [
+    "META-INF/MANIFEST.MF",
+    "META-INF/mods.toml",
+    "assets/sgjadditions/models/custom/atlantisdhd_controls.json",
+    "assets/sgjadditions_capacity_patch/models/custom/atlantisdhd_controls.json",
+    "com/mustangdoc/sgjpatch/network/SGJPatchNetwork.class",
+    "resourcepacks/sgjatlantis_sgjadditions_override/assets/sgjadditions/models/custom/atlantisdhd_controls.json"
+  ],
+  "all_other_runtime_entries_byte_identical": true,
+  "in_game_tested": false
+}

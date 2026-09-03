@@ -1,0 +1,122 @@
+{
+  "version": "2.0.2-beta.2-hotfix5",
+  "baseline_sha256": "24949e441968638a315e929b059f2d020c287301f4f3cec0c91fc87e908fc22f",
+  "changes": [
+    {
+      "model": "assets/sgjadditions_capacity_patch/models/custom/atlantisdhd_controls.json",
+      "plate_elements": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        256,
+        257,
+        258,
+        259,
+        260,
+        261,
+        262,
+        263,
+        264,
+        265,
+        266,
+        267,
+        268,
+        269,
+        270,
+        271
+      ],
+      "faces": 126,
+      "old_uv_min": 0,
+      "new_uv": [
+        4,
+        4,
+        12,
+        12
+      ],
+      "geometry_unchanged": true
+    },
+    {
+      "model": "assets/sgjadditions/models/custom/atlantisdhd_controls.json",
+      "plate_elements": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        256,
+        257,
+        258,
+        259,
+        260,
+        261,
+        262,
+        263,
+        264,
+        265,
+        266,
+        267,
+        268,
+        269,
+        270,
+        271
+      ],
+      "faces": 126,
+      "old_uv_min": 0,
+      "new_uv": [
+        4,
+        4,
+        12,
+        12
+      ],
+      "geometry_unchanged": true
+    },
+    {
+      "model": "resourcepacks/sgjatlantis_sgjadditions_override/assets/sgjadditions/models/custom/atlantisdhd_controls.json",
+      "plate_elements": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        256,
+        257,
+        258,
+        259,
+        260,
+        261,
+        262,
+        263,
+        264,
+        265,
+        266,
+        267,
+        268,
+        269,
+        270,
+        271
+      ],
+      "faces": 126,
+      "old_uv_min": 0,
+      "new_uv": [
+        4,
+        4,
+        12,
+        12
+      ],
+      "geometry_unchanged": true
+    }
+  ],
+  "changed_runtime_entries": [
+    "META-INF/MANIFEST.MF",
+    "META-INF/mods.toml",
+    "assets/sgjadditions/models/custom/atlantisdhd_controls.json",
+    "assets/sgjadditions_capacity_patch/models/custom/atlantisdhd_controls.json",
+    "com/mustangdoc/sgjpatch/network/SGJPatchNetwork.class",
+    "resourcepacks/sgjatlantis_sgjadditions_override/assets/sgjadditions/models/custom/atlantisdhd_controls.json"
+  ],
+  "all_geometry_and_buttons_unchanged": true,
+  "all_other_runtime_entries_byte_identical": true,
+  "in_game_tested": false
+}

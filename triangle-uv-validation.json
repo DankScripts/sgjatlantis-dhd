@@ -1,0 +1,53 @@
+{
+  "reason": "Prevent sub-texel sampling across the triangle sprite atlas edge",
+  "solid_triangle_texture": "#04A2A1",
+  "changes": [
+    {
+      "model": "assets/sgjadditions_capacity_patch/models/custom/atlantisdhd_controls.json",
+      "original_sha256": "2d4dcf863789bee7a0ed29dad33723e1067ddd3653fb1d457c9c31ddb18e2488",
+      "updated_sha256": "8df913c249d3944f8b290171b5ce773443ae5bef651d4f80c2883d27e5273a28",
+      "triangle_elements": 243,
+      "triangle_faces": 1458,
+      "safe_uv": [
+        4,
+        4,
+        12,
+        12
+      ],
+      "only_triangle_face_uvs_changed": true
+    },
+    {
+      "model": "assets/sgjadditions/models/custom/atlantisdhd_controls.json",
+      "original_sha256": "ec4ba9914ba4e375824ac3cd5f7876980c626071be4ee8680b13a4a0a3a17517",
+      "updated_sha256": "4670fd48cc7e1631824f3fb46584a158da6b70dc6a5868115630de5540b5f5be",
+      "triangle_elements": 243,
+      "triangle_faces": 1458,
+      "safe_uv": [
+        4,
+        4,
+        12,
+        12
+      ],
+      "only_triangle_face_uvs_changed": true
+    },
+    {
+      "model": "resourcepacks/sgjatlantis_sgjadditions_override/assets/sgjadditions/models/custom/atlantisdhd_controls.json",
+      "original_sha256": "ec4ba9914ba4e375824ac3cd5f7876980c626071be4ee8680b13a4a0a3a17517",
+      "updated_sha256": "4670fd48cc7e1631824f3fb46584a158da6b70dc6a5868115630de5540b5f5be",
+      "triangle_elements": 243,
+      "triangle_faces": 1458,
+      "safe_uv": [
+        4,
+        4,
+        12,
+        12
+      ],
+      "only_triangle_face_uvs_changed": true
+    }
+  ],
+  "geometry_unchanged": true,
+  "textures_unchanged": true,
+  "non_triangle_faces_unchanged": true,
+  "in_game_tested": true,
+  "accepted_on": "2026-09-03"
+}

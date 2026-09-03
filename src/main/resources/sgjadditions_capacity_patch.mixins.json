@@ -22,7 +22,10 @@
     "StargateConnectionTerminateGuardMixin",
     "SGJourneyIrisInfoDefaultOpenMixin",
     "SGJourneyIrisInfoPegasusShieldSoundsMixin",
-    "PegasusStargateShieldPowerMixin"
+    "PegasusStargateShieldPowerMixin",
+    "AtlantisDHDSneakUsePositionMixin",
+    "AtlantisDHDConcealedCableBootstrapMixin",
+    "LargeNaquadahCableDHDPowerBridgeMixin"
   ],
   "client": [
     "client.AtlantisDHDModelAngleMixin",

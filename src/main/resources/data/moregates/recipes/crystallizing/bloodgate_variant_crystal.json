@@ -1,0 +1,31 @@
+{
+  "type": "sgjourney:crystallizing",
+  "crystal_base": {
+    "item": "sgjourney:stargate_variant_crystal",
+    "amount": 1
+  },
+  "primary_ingredient": {
+    "item": "sgjourney:naquadah",
+    "amount": 1
+  },
+  "secondary_ingredient": {
+    "item": "minecraft:skeleton_skull",
+    "amount": 1
+  },
+  "output": {
+    "item": "sgjourney:stargate_variant_crystal",
+    "nbt": {
+      "Variant": "moregates:bloodgate"
+    }
+  },
+  "input_fluid": {
+    "id": "sgjourney:liquid_naquadah",
+    "amount": 100
+  },
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "moregates"
+    }
+  ]
+}

@@ -21,7 +21,7 @@ import java.util.zip.ZipFile;
 /** Builds the conditional compatibility pack from the user's installed JAR. */
 public final class MoreGates432PackGenerator {
     public static final String PACK_ID = "sgjatlantis_dhd_moregates_432_compat";
-    private static final String GENERATOR_VERSION = "3";
+    private static final String GENERATOR_VERSION = "4";
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static boolean ready;
 
@@ -39,6 +39,7 @@ public final class MoreGates432PackGenerator {
         try (ZipFile zip = new ZipFile(moreGatesJar.toFile())) {
             writePackMetadata(root);
             writeServerRegistryBridges(root);
+            generateCrystallizingRecipeOverrides(zip, root);
             writeClientPointOfOrigin(root);
             generateSymbolSet(zip, root,
                     "assets/moregates/textures/symbols/enchantment/enchantment.png",
@@ -63,7 +64,9 @@ public final class MoreGates432PackGenerator {
                     && Files.isRegularFile(root.resolve(
                     "assets/moregates/textures/symbol/generated/enchantment_38.png"))
                     && Files.isRegularFile(root.resolve(
-                    "assets/moregates/textures/symbol/generated/universal_custom_38.png"));
+                    "assets/moregates/textures/symbol/generated/universal_custom_38.png"))
+                    && Files.isRegularFile(root.resolve(
+                    "data/moregates/recipes/crystallizing/dark_ascension_variant_crystal.json"));
         } catch (IOException ignored) {
             return false;
         }
@@ -91,6 +94,54 @@ public final class MoreGates432PackGenerator {
         writeSinglePropertyJson(root.resolve(
                         "data/moregates/sgjourney/point_of_origin/icarus.json"),
                 "client_point_of_origin", "sgjourney:icarus");
+    }
+
+    /**
+     * More Gates 4.3.2 omits input_fluid from all of its SGJourney crystallizer
+     * recipes. SGJourney supplies liquid naquadah only later as a serializer
+     * default, after Almost Fluidified has already inspected the recipe JSON.
+     * Copying the exact recipes into this required top-priority pack and making
+     * that default explicit gives Almost Fluidified a real id to unify.
+     */
+    private static void generateCrystallizingRecipeOverrides(ZipFile zip, Path root)
+            throws IOException {
+        String prefix = "data/moregates/recipes/crystallizing/";
+        int generated = 0;
+        Enumeration<? extends ZipEntry> entries = zip.entries();
+        while (entries.hasMoreElements()) {
+            ZipEntry entry = entries.nextElement();
+            if (entry.isDirectory() || !entry.getName().startsWith(prefix)
+                    || !entry.getName().endsWith(".json")) {
+                continue;
+            }
+
+            JsonObject recipe;
+            try (Reader reader = new java.io.InputStreamReader(
+                    zip.getInputStream(entry), StandardCharsets.UTF_8)) {
+                recipe = JsonParser.parseReader(reader).getAsJsonObject();
+            }
+
+            if (!recipe.has("type")
+                    || !"sgjourney:crystallizing".equals(recipe.get("type").getAsString())) {
+                throw new IOException("Unexpected More Gates crystallizer recipe type: "
+                        + entry.getName());
+            }
+
+            if (!recipe.has("input_fluid")) {
+                JsonObject inputFluid = new JsonObject();
+                inputFluid.addProperty("id", "sgjourney:liquid_naquadah");
+                inputFluid.addProperty("amount", 100);
+                recipe.add("input_fluid", inputFluid);
+            }
+
+            writeJson(safeResolve(root, entry.getName()), recipe);
+            generated++;
+        }
+
+        if (generated != 30) {
+            throw new IOException("Expected 30 More Gates crystallizer recipes, found "
+                    + generated);
+        }
     }
 
     private static void writeClientPointOfOrigin(Path root) throws IOException {

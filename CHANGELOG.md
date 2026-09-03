@@ -1,3 +1,50 @@
+# 2.0.3-beta.3
+
+- Insets all triangular-button face UVs into the solid teal texture interior to
+  prevent neighboring texture-atlas colors from bleeding onto narrow bevels.
+- Preserves button geometry, top symbols, encoded gold state, and all
+  non-triangle model faces.
+- Deluminates the complete Atlantis DHD table when it has no stored energy.
+- Draws the powered rear lightbar dynamically and locks its accepted glow alpha
+  to `0.50` after side-by-side comparison with the City Shield table.
+- Normal right-click opens the Atlantis dialer from every part of the table.
+- Crystal Controls opens only with sneak/Shift + right-click.
+- Removes the old side/lower-table shortcut to Crystal Controls.
+- Lets a concealed SGJourney Large Naquadah Cable power a nearby Atlantis DHD
+  through a separate unused virtual cable side.
+- Preserves occupied cable connections, including a Mekanism Teleporter above
+  the concealed cable.
+- Fixes the proxy Crystal Controls block position so client and server slot
+  counts remain synchronized.
+- Exposes the implicit 100 mB Liquid Naquadah input in all 30 MoreGates 4.3.2
+  crystallizer recipes so Almost Fluidified 0.1.8 can unify it when Naquadah is
+  explicitly enabled in that mod's configuration.
+- Places those corrected recipes in the generated top-priority MoreGates
+  compatibility pack so they reliably override MoreGates' original resources.
+- Keeps those overrides as top-level SGJourney crystallizer recipes so fluid
+  unifiers can discover them, with a MoreGates-loaded condition preventing
+  registration when the addon is absent.
+- Preserves every confirmed hotfix5 model and visual unchanged.
+
+# 2.0.2-beta.2-hotfix5
+
+- Insets all 126 dialer-backplate face UVs into the solid-brown texture interior to address white edge bleed.
+- Changes no geometry or button positions; preserves hotfix4 half-gap crystal heights.
+
+# 2.0.2-beta.2-hotfix4
+
+- Lowers all six flat crystals by half their previous clearance.
+- Rear-row gap: 0.60 to 0.30 model pixels; front-row gap: 0.45 to 0.225.
+- Preserves crystal thickness, horizontal positions, textures and all other geometry.
+
+# 2.0.2-beta.2-hotfix3
+
+- Copies the accepted shield table's smooth legs, feet, joints, stepped sides,
+  and full illuminated rear panel onto the DHD.
+- Preserves DHD tabletop controls, textures, GUI, recipes and gameplay code.
+- Includes standalone and SGJ Additions override models and self-contained textures.
+- Backlight is visually emissive; this update adds no power-detection logic.
+
 # 2.0.2-beta.2-hotfix2
 
 - Fixes the physical Atlantis DHD rendering as Minecraft's purple-and-black

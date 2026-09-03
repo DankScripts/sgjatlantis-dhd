@@ -9,8 +9,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.povstalec.sgjourney.common.menu.AbstractDHDMenu;
 
 /**
  * Draws and edits the six flat control crystals and two lower control bars.
@@ -135,6 +137,10 @@ public final class AtlantisTableControlEditor {
     }
 
     public static void render(Object screen, GuiGraphics graphics, int leftPos, int topPos) {
+        if (!isPowered(screen)) {
+            return;
+        }
+
         State state = state(screen);
         for (int index = 0; index < BASE_X.length; index++) {
             Offset offset = state.offset(index);
@@ -150,6 +156,14 @@ public final class AtlantisTableControlEditor {
                 outline(graphics, x - 1, y - 1, width + 2, height + 2, 0xFF00D7E8);
             }
         }
+    }
+
+    private static boolean isPowered(Object screen) {
+        if (!(screen instanceof AbstractContainerScreen<?> containerScreen)
+                || !(containerScreen.getMenu() instanceof AbstractDHDMenu<?> menu)) {
+            return true;
+        }
+        return menu.blockEntity.energyStorage.hasEnergy(1L);
     }
 
     private static void outline(GuiGraphics graphics, int x, int y, int width, int height,

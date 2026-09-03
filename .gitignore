@@ -1,32 +1,11 @@
-# Gradle
 .gradle/
 build/
 dist/
-
-# Minecraft development runs
 run/
-runs/
-
-# IDEs and editors
+out/
 .idea/
-*.iml
-.classpath
-.project
-.settings/
 .vscode/
-
-# Root-level generated releases
-/*.jar
-/*.zip
-
-# Operating-system files
-.DS_Store
-Thumbs.db
-desktop.ini
-
-# Local configuration and logs
+*.iml
 *.log
-logs/
 crash-reports/
-local.properties
-
+logs/

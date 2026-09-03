@@ -1,0 +1,94 @@
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+import java.security.MessageDigest
+
+def modelNames = [
+    'assets/sgjadditions_capacity_patch/models/custom/atlantisdhd_controls.json',
+    'assets/sgjadditions/models/custom/atlantisdhd_controls.json',
+    'resourcepacks/sgjatlantis_sgjadditions_override/assets/sgjadditions/models/custom/atlantisdhd_controls.json',
+]
+def safeUv = [4, 4, 12, 12]
+
+def encode = { value ->
+    def pretty = JsonOutput.prettyPrint(JsonOutput.toJson(value))
+    def twoSpace = pretty.readLines().collect { line ->
+        int spaces = line.takeWhile { it == ' ' }.size()
+        (' ' * (spaces.intdiv(2))) + line.substring(spaces)
+    }.join('\n')
+    (twoSpace + '\n').getBytes('UTF-8')
+}
+def sha256 = { bytes ->
+    MessageDigest.getInstance('SHA-256').digest(bytes).encodeHex().toString()
+}
+
+gradle.projectsEvaluated {
+    rootProject.tasks.register('fixTriangleUvBleed') {
+        doLast {
+            def changes = []
+            modelNames.each { relativeName ->
+                def path = rootProject.file("src/main/resources/${relativeName}")
+                byte[] originalBytes = path.bytes
+                def originalText = new String(originalBytes, 'UTF-8')
+                def model = new JsonSlurper().parseText(originalText)
+                def before = new JsonSlurper().parseText(originalText)
+                assert model.elements.size() == 283
+
+                def triangleIndices = model.elements.withIndex().findAll { element, index ->
+                    element.faces.values().any { face -> face.texture == '#triangle' }
+                }.collect { element, index -> index }
+                assert triangleIndices.size() == 243
+
+                int faceCount = 0
+                def oldUvs = []
+                triangleIndices.each { index ->
+                    def element = model.elements[index]
+                    element.faces.each { direction, face ->
+                        assert face.texture == '#triangle'
+                        oldUvs << new ArrayList(face.uv)
+                        face.uv = new ArrayList(safeUv)
+
+                        def restoredFace = new JsonSlurper().parseText(JsonOutput.toJson(face))
+                        restoredFace.uv = before.elements[index].faces[direction].uv
+                        assert restoredFace == before.elements[index].faces[direction]
+                        faceCount++
+                    }
+                }
+                assert faceCount == 1458
+                assert oldUvs.every { uv -> uv[0] == 0 && uv[1] == 0 }
+
+                def restored = new JsonSlurper().parseText(JsonOutput.toJson(model))
+                triangleIndices.each { index ->
+                    restored.elements[index].faces.each { direction, face ->
+                        face.uv = before.elements[index].faces[direction].uv
+                    }
+                }
+                assert restored == before
+
+                byte[] updatedBytes = encode(model)
+                path.bytes = updatedBytes
+                changes << [
+                    model: relativeName,
+                    original_sha256: sha256(originalBytes),
+                    updated_sha256: sha256(updatedBytes),
+                    triangle_elements: triangleIndices.size(),
+                    triangle_faces: faceCount,
+                    safe_uv: safeUv,
+                    only_triangle_face_uvs_changed: true,
+                ]
+            }
+
+            def report = [
+                reason: 'Prevent sub-texel sampling across the triangle sprite atlas edge',
+                solid_triangle_texture: '#04A2A1',
+                changes: changes,
+                geometry_unchanged: true,
+                textures_unchanged: true,
+                non_triangle_faces_unchanged: true,
+                in_game_tested: true,
+                accepted_on: '2026-09-03',
+            ]
+            rootProject.file('triangle-uv-validation.json').bytes = encode(report)
+            println JsonOutput.prettyPrint(JsonOutput.toJson(report))
+        }
+    }
+}

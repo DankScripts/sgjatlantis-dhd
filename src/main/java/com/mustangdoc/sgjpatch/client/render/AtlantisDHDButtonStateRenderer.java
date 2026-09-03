@@ -16,11 +16,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.core.Direction;
@@ -128,6 +130,12 @@ public final class AtlantisDHDButtonStateRenderer implements BlockEntityRenderer
     private static final float ENCODED_SYMBOL_RED = 1.00F;
     private static final float ENCODED_SYMBOL_GREEN = 0.96F;
     private static final float ENCODED_SYMBOL_BLUE = 0.72F;
+        private static final ResourceLocation LIGHTBAR_TEXTURE =
+            new ResourceLocation(
+                "sgjadditions_capacity_patch",
+                "textures/block/shield_frame/atlantis_prop_lightbar.png");
+        private static final double LIGHTBAR_SURFACE_OFFSET = 0.001D;
+        private static final float LIGHTBAR_GLOW_ALPHA = 0.50F;
     // SGJourney's Pegasus GUI uses a 28 px symbol on a 42 px outer button and
     // a 14 px symbol on a 16 px center button. Apply those same proportions to
     // the accepted physical crystal widths instead of stretching icons until
@@ -147,11 +155,16 @@ public final class AtlantisDHDButtonStateRenderer implements BlockEntityRenderer
         if (!(blockEntity instanceof AbstractDHDEntity dhd)) {
             return;
         }
+        if (!dhd.energyStorage.hasEnergy(1L)) {
+            return;
+        }
 
         ClientSymbols symbols = resolveClientSymbols(dhd);
         ClientPointOfOrigin pointOfOrigin = resolveClientPointOfOrigin(dhd);
         poseStack.pushPose();
         applyModelRotation(blockEntity.getBlockState(), poseStack);
+        drawPoweredLightbar(poseStack, buffers);
+        drawPoweredLightbarGlow(poseStack, buffers);
 
         for (Button button : OUTER_BUTTONS) {
             int symbol = button.symbol();
@@ -170,6 +183,94 @@ public final class AtlantisDHDButtonStateRenderer implements BlockEntityRenderer
 
         poseStack.popPose();
     }
+
+        private static void drawPoweredLightbar(
+            PoseStack poseStack, MultiBufferSource buffers) {
+        VertexConsumer consumer = buffers.getBuffer(
+            RenderType.entityCutoutNoCull(LIGHTBAR_TEXTURE));
+        PoseStack.Pose pose = poseStack.last();
+        double minX = 0.015483220D;
+        double maxX = 1.984516780D;
+        double minY = 1.194248183D;
+        double maxY = 1.267638168D;
+        double minZ = 0.945000000D;
+        double maxZ = 1.005575411D;
+
+        texturedQuad(consumer, pose,
+            maxX, maxY, minZ - LIGHTBAR_SURFACE_OFFSET, 0.0F, 0.0F,
+            maxX, minY, minZ - LIGHTBAR_SURFACE_OFFSET, 0.0F, 0.06875F,
+            minX, minY, minZ - LIGHTBAR_SURFACE_OFFSET, 1.0F, 0.06875F,
+            minX, maxY, minZ - LIGHTBAR_SURFACE_OFFSET, 1.0F, 0.0F,
+            0.0F, 0.0F, -1.0F);
+        texturedQuad(consumer, pose,
+            minX, maxY, maxZ + LIGHTBAR_SURFACE_OFFSET, 0.0F, 0.0F,
+            minX, minY, maxZ + LIGHTBAR_SURFACE_OFFSET, 0.0F, 0.06875F,
+            maxX, minY, maxZ + LIGHTBAR_SURFACE_OFFSET, 1.0F, 0.06875F,
+            maxX, maxY, maxZ + LIGHTBAR_SURFACE_OFFSET, 1.0F, 0.0F,
+            0.0F, 0.0F, 1.0F);
+        texturedQuad(consumer, pose,
+            minX, maxY + LIGHTBAR_SURFACE_OFFSET, minZ, 0.0F, 0.0F,
+            minX, maxY + LIGHTBAR_SURFACE_OFFSET, maxZ, 0.0F, 0.045625F,
+            maxX, maxY + LIGHTBAR_SURFACE_OFFSET, maxZ, 1.0F, 0.045625F,
+            maxX, maxY + LIGHTBAR_SURFACE_OFFSET, minZ, 1.0F, 0.0F,
+            0.0F, 1.0F, 0.0F);
+        texturedQuad(consumer, pose,
+            minX, minY - LIGHTBAR_SURFACE_OFFSET, maxZ, 0.0F, 0.0F,
+            minX, minY - LIGHTBAR_SURFACE_OFFSET, minZ, 0.0F, 0.045625F,
+            maxX, minY - LIGHTBAR_SURFACE_OFFSET, minZ, 1.0F, 0.045625F,
+            maxX, minY - LIGHTBAR_SURFACE_OFFSET, maxZ, 1.0F, 0.0F,
+            0.0F, -1.0F, 0.0F);
+        }
+
+        private static void drawPoweredLightbarGlow(
+            PoseStack poseStack, MultiBufferSource buffers) {
+        VertexConsumer consumer = buffers.getBuffer(RenderType.lightning());
+        PoseStack.Pose pose = poseStack.last();
+        double offset = LIGHTBAR_SURFACE_OFFSET * 2.0D;
+        double minX = 0.015483220D;
+        double maxX = 1.984516780D;
+        double minY = 1.194248183D;
+        double maxY = 1.267638168D;
+        double minZ = 0.945000000D;
+        double maxZ = 1.005575411D;
+
+        lightbarGlowQuad(consumer, pose,
+            maxX, maxY, minZ - offset,
+            maxX, minY, minZ - offset,
+            minX, minY, minZ - offset,
+            minX, maxY, minZ - offset);
+        lightbarGlowQuad(consumer, pose,
+            minX, maxY, maxZ + offset,
+            minX, minY, maxZ + offset,
+            maxX, minY, maxZ + offset,
+            maxX, maxY, maxZ + offset);
+        lightbarGlowQuad(consumer, pose,
+            minX, maxY + offset, minZ,
+            minX, maxY + offset, maxZ,
+            maxX, maxY + offset, maxZ,
+            maxX, maxY + offset, minZ);
+        lightbarGlowQuad(consumer, pose,
+            minX, minY - offset, maxZ,
+            minX, minY - offset, minZ,
+            maxX, minY - offset, minZ,
+            maxX, minY - offset, maxZ);
+        }
+
+        private static void lightbarGlowQuad(
+            VertexConsumer consumer, PoseStack.Pose pose,
+            double x0, double y0, double z0,
+            double x1, double y1, double z1,
+            double x2, double y2, double z2,
+            double x3, double y3, double z3) {
+        consumer.vertex(pose.pose(), (float)x0, (float)y0, (float)z0)
+            .color(SYMBOL_RED, SYMBOL_GREEN, SYMBOL_BLUE, LIGHTBAR_GLOW_ALPHA).endVertex();
+        consumer.vertex(pose.pose(), (float)x1, (float)y1, (float)z1)
+            .color(SYMBOL_RED, SYMBOL_GREEN, SYMBOL_BLUE, LIGHTBAR_GLOW_ALPHA).endVertex();
+        consumer.vertex(pose.pose(), (float)x2, (float)y2, (float)z2)
+            .color(SYMBOL_RED, SYMBOL_GREEN, SYMBOL_BLUE, LIGHTBAR_GLOW_ALPHA).endVertex();
+        consumer.vertex(pose.pose(), (float)x3, (float)y3, (float)z3)
+            .color(SYMBOL_RED, SYMBOL_GREEN, SYMBOL_BLUE, LIGHTBAR_GLOW_ALPHA).endVertex();
+        }
 
     private static void drawButton(PoseStack poseStack, MultiBufferSource buffers,
                                    AbstractDHDEntity dhd, ClientSymbols symbols,
@@ -524,6 +625,32 @@ public final class AtlantisDHDButtonStateRenderer implements BlockEntityRenderer
         consumer.vertex(pose.pose(), (float)x0, (float)y, (float)z1).color(red, green, blue, alpha).endVertex();
         consumer.vertex(pose.pose(), (float)x1, (float)y, (float)z1).color(red, green, blue, alpha).endVertex();
         consumer.vertex(pose.pose(), (float)x1, (float)y, (float)z0).color(red, green, blue, alpha).endVertex();
+    }
+
+    private static void texturedQuad(
+            VertexConsumer consumer, PoseStack.Pose pose,
+            double x0, double y0, double z0, float u0, float v0,
+            double x1, double y1, double z1, float u1, float v1,
+            double x2, double y2, double z2, float u2, float v2,
+            double x3, double y3, double z3, float u3, float v3,
+            float normalX, float normalY, float normalZ) {
+        texturedVertex(consumer, pose, x0, y0, z0, u0, v0, normalX, normalY, normalZ);
+        texturedVertex(consumer, pose, x1, y1, z1, u1, v1, normalX, normalY, normalZ);
+        texturedVertex(consumer, pose, x2, y2, z2, u2, v2, normalX, normalY, normalZ);
+        texturedVertex(consumer, pose, x3, y3, z3, u3, v3, normalX, normalY, normalZ);
+    }
+
+    private static void texturedVertex(
+            VertexConsumer consumer, PoseStack.Pose pose,
+            double x, double y, double z, float u, float v,
+            float normalX, float normalY, float normalZ) {
+        consumer.vertex(pose.pose(), (float)x, (float)y, (float)z)
+                .color(1.0F, 1.0F, 1.0F, 1.0F)
+                .uv(u, v)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(LightTexture.FULL_BRIGHT)
+                .normal(pose.normal(), normalX, normalY, normalZ)
+                .endVertex();
     }
 
     private static void applyModelRotation(BlockState state, PoseStack poseStack) {

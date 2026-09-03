@@ -1,0 +1,20 @@
+{
+  "version": "2.0.3-beta.3",
+  "baseline_jar_sha256": "eb70aceca90fceb96352752329d4bc64967cca507b121f597bc78fb110556a0a",
+  "baseline_source_sha256": "31896968c42920e69ebd9b3f1ab636f315f7ff6b91ed5487ca2374b207fde9fa",
+  "changed_jar_entries": [
+    "META-INF/MANIFEST.MF",
+    "META-INF/mods.toml",
+    "com/mustangdoc/sgjpatch/compat/AtlantisDHDUseHelper.class",
+    "com/mustangdoc/sgjpatch/mixin/AtlantisDHDBlockMixin.class",
+    "com/mustangdoc/sgjpatch/network/SGJPatchNetwork.class"
+  ],
+  "interaction_behavior": {
+    "normal_right_click": "dialer GUI from all table faces",
+    "sneak_right_click": "Crystal Controls",
+    "standalone_and_legacy_compatibility_paths_updated": true
+  },
+  "all_models_textures_resources_and_other_gameplay_classes_byte_identical": true,
+  "network_class_change": "UTF8 protocol version constant only",
+  "minecraft_runtime_tested": false
+}

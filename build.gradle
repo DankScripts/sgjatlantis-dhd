@@ -98,7 +98,7 @@ tasks.register('releaseJar', Jar) {
         ])
     }
 
-    from(zipTree(layout.projectDirectory.file('baseline/confirmed-working-r17b/sgjatlantis-dhd-1.20.1-2.0.3-beta.2-direct-resource-constellations-r17b.jar'))) {
+    from(zipTree(layout.projectDirectory.file('baseline/accepted-balanced-bars/sgjatlantis-dhd-1.20.1-2.0.3-beta.3.jar'))) {
         exclude 'META-INF/MANIFEST.MF'
         exclude 'META-INF/mods.toml'
         exclude 'pack.mcmeta'
@@ -120,6 +120,7 @@ tasks.register('sourceArchive', Zip) {
     destinationDirectory = layout.projectDirectory.dir('dist')
     from(layout.projectDirectory) {
         include 'src/**'
+        include 'com/**'
         include 'blockbench/**'
         include 'tools/**'
         include 'gradle/**'
@@ -129,12 +130,22 @@ tasks.register('sourceArchive', Zip) {
         include 'settings.gradle'
         include 'gradle.properties'
         include 'README.md'
+        include 'README-ALMOSTFLUIDIFIED.md'
+        include 'README-BETA3.md'
+        include 'README-BACKPLATE-UV.md'
+        include 'README-CRYSTAL-HEIGHT.md'
+        include 'README-SHIELD-FRAME.md'
+        include 'README-TRIANGLE-UV.md'
+        include 'BASELINE.md'
         include 'CHANGELOG.md'
         include 'LICENSE.txt'
+        include '*-validation.json'
+        include 'shield-frame-transfer-report.json'
         include 'baseline/README.txt'
         include 'baseline/sgjatlantis-dhd-1.20.1-2.0.0-beta.1.jar'
         include 'baseline/2.0.2-beta.1/**'
         include 'baseline/accepted-gui-r13/**'
+        include 'baseline/accepted-balanced-bars/**'
         include 'baseline/confirmed-working-r17b/**'
         exclude '.gradle/**'
         exclude 'build/**'
