@@ -228,8 +228,12 @@ public class AtlantisDHDScreenFixed extends AbstractDHDScreen<AtlantisDHDMenu> {
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         super.render(graphics, mouseX, mouseY, partialTick);
-        AtlantisGuiOverlay.renderControls(graphics, leftPos, topPos);
-        AtlantisMiniGateOverlay.render(circleButton, graphics);
+        AtlantisGuiOverlay.renderControls(
+            graphics,
+            leftPos,
+            topPos,
+            menu.getDHD().getEnergyStorage().hasEnergy(1L));
+        AtlantisMiniGateOverlay.render(menu, circleButton, graphics);
         renderCenterEditor(graphics);
     }
 

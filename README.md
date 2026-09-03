@@ -1,46 +1,47 @@
-# Atlantis DHD
+# Atlantis DHD 2.0.3-beta.3
 
 Atlantis DHD is a standalone Atlantis/Pegasus-style Dial Home Device for
-Stargate Journey. It provides an Atlantis-themed physical DHD, dialing
-interface, live Pegasus constellation display, crystal controls, energy
-support, and Stargate shield integration.
+Stargate Journey. This branch contains the NeoForge port for Minecraft 1.21.1.
 
-## Current branch
-
-This branch targets:
+## Requirements
 
 - Minecraft 1.21.1
 - NeoForge 21.1.219
 - Java 21
 - Stargate Journey 0.6.48-hotfix1
-- Atlantis DHD 2.0.2-beta.2
 
-The Minecraft 1.20.1 Forge edition will be maintained on a separate
-`1.20.1-forge` branch after its build has been converted into a complete,
-reproducible source project.
+## Features
+
+- Current Atlantis control-table model and physical button rendering.
+- Atlantis/Pegasus dialing interface and live constellation display.
+- Normal right-click opens the dialer.
+- Sneak-right-click opens Crystal Controls when permitted.
+- Native SGJourney support for compatible Pegasus crystals.
+- Large Naquadah Cable power support through the restored decorative floor.
+- Stargate shield controls and migration compatibility.
+
+The minimum operating set is one Large Control Crystal, two Advanced Energy
+Crystals, and one Advanced Transfer Crystal. Advanced Communication Crystals
+remain optional.
 
 ## Building
 
-See [BUILDING.md](BUILDING.md) for the development requirements and build
-command. A successful build places the mod JAR under `build/libs/`.
+Run:
 
-## Compatibility contributions
+```bash
+./gradlew clean build
+```
 
-Compatibility reports and focused pull requests are welcome. When proposing a
-compatibility change, please include the other mod's exact Minecraft version,
-loader, mod version, and a link to its public API or source when available.
+The built JAR is written to `build/libs/`.
 
-## Downloads and support
+See `PORT_STATUS.md` and `CHANGELOG.md` for release-specific details.
+
+## Downloads
 
 Use the official CurseForge project for supported release downloads. Files
-built directly from this development repository may be unfinished or untested.
+built directly from this development branch may be unfinished or untested.
 
 ## License
 
-Copyright (c) 2026 MustangDoc / DankScripts. All Rights Reserved.
-
-The repository is source-visible for inspection, compatibility work, and
-contributions. It is not open-source software and may not be redistributed,
-repackaged, or published without prior written permission. See
-[LICENSE.txt](LICENSE.txt) for the complete terms.
-
+Copyright (c) 2026 MustangDoc / DankScripts. All Rights Reserved. See
+`LICENSE.txt` for details.

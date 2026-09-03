@@ -1,16 +1,7 @@
-Copyright (c) 2026 MustangDoc / DankScripts. All Rights Reserved.
+All Rights Reserved.
 
-The source code and assets in this repository are provided for inspection,
-compatibility development, and contribution to this project only.
+Copyright (c) 2026 MustangDoc / DankScripts.
 
-No permission is granted to copy, redistribute, repackage, publish, sell,
-license, or create and distribute derivative versions of this project or its
-assets without prior written permission from the copyright holder.
-
-Submitting a contribution does not grant permission to redistribute this
-project. By submitting a contribution, you agree that it may be incorporated
-into and distributed as part of this project under these terms.
-
-Third-party names, trademarks, APIs, and dependencies remain the property of
-their respective owners and are subject to their own terms.
-
+This source is published for inspection, compatibility work, and accepted
+contributions. It may not be redistributed, repackaged, or published without
+prior written permission from the copyright holder.

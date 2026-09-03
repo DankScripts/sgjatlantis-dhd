@@ -17,7 +17,11 @@ public final class AtlantisGuiOverlay {
 
     private AtlantisGuiOverlay() {}
 
-    public static void renderControls(GuiGraphics graphics, int left, int top) {
+        public static void renderControls(
+                        GuiGraphics graphics, int left, int top, boolean powered) {
+                if (!powered)
+                        return;
+
         for (int index = 0; index < CONTROLS.length; index++) {
             int[] control = CONTROLS[index];
             ResourceLocation texture = index < 6 ? CRYSTAL : BAR;

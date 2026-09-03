@@ -8,6 +8,9 @@ import com.mustangdoc.sgjpatch.init.SGJPatchBlockEntities;
 import com.mustangdoc.sgjpatch.init.SGJPatchBlocks;
 import com.mustangdoc.sgjpatch.init.SGJPatchItems;
 import com.mustangdoc.sgjpatch.init.SGJPatchMenus;
+import com.mustangdoc.sgjpatch.power.ConcealedFloorDhdPowerBridge;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -43,6 +46,18 @@ public final class SGJAdditionsCapacityPatch {
                 Capabilities.ItemHandler.BLOCK,
                 SGJPatchBlockEntities.ATLANTIS_DHD.get(),
                 (blockEntity, direction) -> blockEntity.getItemHandler(direction)
+        );
+
+        // Any ordinary floor material can conceal the installation. The
+        // provider returns null everywhere except the exact cable-floor-DHD
+        // arrangement, so unrelated blocks and machines remain untouched.
+        Block[] blocks = BuiltInRegistries.BLOCK.stream().toArray(Block[]::new);
+        event.registerBlock(
+                Capabilities.EnergyStorage.BLOCK,
+                (level, pos, state, blockEntity, direction) ->
+                        ConcealedFloorDhdPowerBridge.getFloorEnergyCapability(
+                                level, pos, blockEntity, direction),
+                blocks
         );
     }
 

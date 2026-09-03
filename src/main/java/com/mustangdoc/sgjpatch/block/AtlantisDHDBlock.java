@@ -7,7 +7,6 @@ import com.mustangdoc.sgjpatch.menu.AtlantisDHDCrystalMenu;
 import com.mustangdoc.sgjpatch.standalone.AtlantisDHDEntity;
 import com.mustangdoc.sgjpatch.standalone.AtlantisDHDMenu;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
@@ -31,7 +30,6 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.povstalec.sgjourney.common.block_entities.dhd.AbstractDHDEntity;
 import net.povstalec.sgjourney.common.blocks.dhd.CrystalDHDBlock;
 import net.povstalec.sgjourney.common.misc.NetworkUtils;
 
@@ -82,7 +80,7 @@ public class AtlantisDHDBlock extends CrystalDHDBlock implements SimpleWaterlogg
         if (!(blockEntity instanceof AtlantisDHDEntity dhd))
             throw new IllegalStateException("Atlantis DHD block entity is missing");
 
-        if ((hitResult.getDirection() != Direction.UP || player.isShiftKeyDown()) && dhd.hasPermissions(player, true)) {
+        if (player.isShiftKeyDown() && dhd.hasPermissions(player, true)) {
             MenuProvider provider = new MenuProvider() {
                 @Override
                 public Component getDisplayName() {
@@ -120,7 +118,7 @@ public class AtlantisDHDBlock extends CrystalDHDBlock implements SimpleWaterlogg
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(
             Level level, BlockState state, BlockEntityType<T> type) {
-        return createTickerHelper(type, SGJPatchBlockEntities.ATLANTIS_DHD.get(), AbstractDHDEntity::tick);
+        return createTickerHelper(type, SGJPatchBlockEntities.ATLANTIS_DHD.get(), AtlantisDHDEntity::tick);
     }
 
     @Override

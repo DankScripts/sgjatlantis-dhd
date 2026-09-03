@@ -4,12 +4,13 @@ license="All Rights Reserved"
 
 [[mods]]
 modId="sgjatlantis_dhd"
-version="2.0.2-beta.2"
+version="2.0.3-beta.3"
 displayName="sgjatlantis-dhd"
 authors="MustangDoc"
 description='''
 Standalone Atlantis/Pegasus-style DHD for Stargate Journey.
-Minecraft 1.21.1 NeoForge build with the locked Atlantis GUI and table appearance.
+Minecraft 1.21.1 NeoForge build with the current Atlantis table, crystal operating set,
+sneak-access Crystal Controls, and concealed Large Naquadah Cable power bridge.
 '''
 
 [[mixins]]
