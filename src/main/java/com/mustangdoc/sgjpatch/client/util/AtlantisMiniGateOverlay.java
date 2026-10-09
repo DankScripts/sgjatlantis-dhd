@@ -45,7 +45,7 @@ public final class AtlantisMiniGateOverlay {
 
         Address encodedSymbols = gate.getEncodedSymbols();
         int lockedSymbols = Math.min(gate.getAddress().getLength(), 9);
-        int liveSymbols = Math.max(lockedSymbols, gate.addressBuffer.getLength());
+        int liveSymbols = Math.max(lockedSymbols, gate.getAddressBuffer().getLength());
         if (liveSymbols == 0 && !gate.isSymbolSpinning() && !gate.isConnected())
             blit(graphics, IDLE_SYMBOLS, gateX, gateY, GATE_SIZE);
 
@@ -58,10 +58,10 @@ public final class AtlantisMiniGateOverlay {
         }
 
         if (gate.isSymbolSpinning()) {
-            int index = gate.symbolBuffer;
+            int index = gate.getSymbolBuffer();
             int symbol = symbolAt(encodedSymbols, index);
             if (!validSymbol(symbol))
-                symbol = symbolAt(gate.addressBuffer, index);
+                symbol = symbolAt(gate.getAddressBuffer(), index);
             int position = Math.floorMod(gate.getCurrentSymbol(), 36);
             if (validSymbol(symbol) && !isLockedPosition(gate, lockedSymbols, position))
                 blit(graphics, symbolTexture(symbol, mirrorPosition(position)),

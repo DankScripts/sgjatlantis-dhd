@@ -43,10 +43,27 @@ neoForge {
 }
 
 dependencies {
-    // Stargate Journey 1.21.1 0.6.48-hotfix1 (CurseForge file 8670937)
-    implementation 'curse.maven:sgjourney-689083:8670937'
+    implementation 'curse.maven:sgjourney-689083:9050700'
 }
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
+
+tasks.register('sourceArchive', Zip) {
+    archiveFileName = "sgjatlantis-dhd-${minecraft_version}-${mod_version}-source.zip"
+    destinationDirectory = layout.projectDirectory.dir('dist')
+    from(projectDir) {
+        include 'src/**', 'gradle/**', 'gradlew', 'gradlew.bat', 'build.gradle',
+                'settings.gradle', 'gradle.properties', 'README.md', 'CHANGELOG.md',
+                'BUILDING.md', 'PORT_STATUS.md', 'LICENSE.txt'
+    }
+}
+
+tasks.register('releaseJar', Copy) {
+    dependsOn 'build'
+    from(tasks.named('jar'))
+    into(layout.projectDirectory.dir('dist'))
+}
+
+tasks.register('release') { dependsOn 'releaseJar', 'sourceArchive' }

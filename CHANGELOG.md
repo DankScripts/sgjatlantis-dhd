@@ -1,5 +1,24 @@
 # Changelog
 
+## 2.0.4
+
+- Promotes the SGJourney 0.6.50 compatibility hotfix to a release build.
+- Preserves the current GUI, table assets, crystal requirements, and native
+  dialing callbacks; the missing-crystal report was resolved by the user.
+- Adds release JAR and source ZIP packaging through `./gradlew release`.
+
+## SGJourney 0.6.50 Compatibility Hotfix
+
+- Rebuilt NeoForge 2.0.3-beta.3 against SGJourney 0.6.50 and require that version.
+- Updated DHD/crystal-menu packages, synced energy capacity, block interactions,
+  native symbol/engage callbacks, Pegasus button types, and mini-gate accessors.
+- Preserved the 720x360 dialer background and existing model/texture assets.
+- Center engage closes the full container only after six regular symbols;
+  Escape closes normally without the address requirement.
+- Namespaced the model-angle mixin helper to coexist with City Shield 1.0.2.
+- Combined client startup/resource reload passed with SGJourney 0.6.50, City
+  Shield 1.0.2, JEI, and JEI++. In-game dialing/power checks remain unconfirmed.
+
 ## 2.0.3-beta.3 — Minecraft 1.21.1 NeoForge
 
 - Updated the physical Atlantis DHD table to the current accepted model.

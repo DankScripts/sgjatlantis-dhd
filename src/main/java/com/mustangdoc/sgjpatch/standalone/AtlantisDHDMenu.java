@@ -7,7 +7,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.level.Level;
-import net.povstalec.sgjourney.common.menu.AbstractDHDMenu;
+import net.povstalec.sgjourney.common.menu.dhd.AbstractDHDMenu;
 
 public class AtlantisDHDMenu extends AbstractDHDMenu<AtlantisDHDEntity> {
     public static final int BUTTON_TOGGLE_SHIELD = 1000;

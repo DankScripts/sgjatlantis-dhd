@@ -72,9 +72,9 @@ public class AtlantisDHDBlock extends CrystalDHDBlock implements SimpleWaterlogg
     }
 
     @Override
-    public void use(Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+    public boolean use(Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         if (level.isClientSide())
-            return;
+            return true;
 
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (!(blockEntity instanceof AtlantisDHDEntity dhd))
@@ -107,6 +107,7 @@ public class AtlantisDHDBlock extends CrystalDHDBlock implements SimpleWaterlogg
             };
             NetworkUtils.openMenu((ServerPlayer) player, provider, dhd.getBlockPos());
         }
+        return true;
     }
 
     @Override

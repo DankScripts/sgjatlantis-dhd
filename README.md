@@ -1,4 +1,9 @@
-# Atlantis DHD 2.0.3-beta.3
+# Atlantis DHD 2.0.4
+
+## Source Branches
+
+- [Forge 1.20.1](https://github.com/DankScripts/sgjatlantis-dhd/tree/1.20.1-forge)
+- [NeoForge 1.21.1](https://github.com/DankScripts/sgjatlantis-dhd/tree/1.21.1-neoforge)
 
 Atlantis DHD is a standalone Atlantis/Pegasus-style Dial Home Device for
 Stargate Journey. This branch contains the NeoForge port for Minecraft 1.21.1.
@@ -8,7 +13,7 @@ Stargate Journey. This branch contains the NeoForge port for Minecraft 1.21.1.
 - Minecraft 1.21.1
 - NeoForge 21.1.219
 - Java 21
-- Stargate Journey 0.6.48-hotfix1
+- Stargate Journey 0.6.50 or newer
 
 ## Features
 
@@ -29,10 +34,10 @@ remain optional.
 Run:
 
 ```bash
-./gradlew clean build
+./gradlew release
 ```
 
-The built JAR is written to `build/libs/`.
+The release JAR and source ZIP are written to `dist/`.
 
 See `PORT_STATUS.md` and `CHANGELOG.md` for release-specific details.
 

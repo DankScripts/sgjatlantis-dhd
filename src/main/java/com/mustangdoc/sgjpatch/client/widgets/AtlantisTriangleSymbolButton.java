@@ -12,15 +12,17 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.povstalec.sgjourney.client.resourcepack.symbols.ClientPointOfOrigin;
 import net.povstalec.sgjourney.client.resourcepack.symbols.ClientSymbols;
 import net.povstalec.sgjourney.client.screens.SGJourneyContainerScreen;
 import net.povstalec.sgjourney.client.widgets.dhd.DHDSymbolButton;
 import net.povstalec.sgjourney.common.config.ClientDHDConfig;
 import net.povstalec.sgjourney.common.misc.ColorUtil;
+import net.povstalec.sgjourney.common.packets.ServerboundDHDUpdatePacket;
 import org.joml.Matrix4f;
 
-public final class AtlantisTriangleSymbolButton extends DHDSymbolButton {
+public final class AtlantisTriangleSymbolButton extends DHDSymbolButton<AtlantisDHDMenu> {
     private static final ColorUtil.RGBA HOVER = new ColorUtil.RGBA(255, 255, 255);
     private static final ColorUtil.RGBA DISENGAGED = new ColorUtil.RGBA(65, 65, 65);
     private static final ColorUtil.RGBA ENGAGED = new ColorUtil.RGBA(0, 242, 255);
@@ -40,7 +42,9 @@ public final class AtlantisTriangleSymbolButton extends DHDSymbolButton {
             boolean up,
             ResourceLocation texture,
             float symbolSize) {
-        super(x, y, displaySize, displaySize, menu, symbol, texture, texture, HOVER, DISENGAGED, ENGAGED);
+        super(x, y, displaySize, displaySize, menu, symbol, texture, texture, HOVER, DISENGAGED, ENGAGED,
+            button -> PacketDistributor.sendToServer(new ServerboundDHDUpdatePacket(
+                menu.getDHD().getBlockPos(), ((AtlantisTriangleSymbolButton) button).getSymbol())));
         this.atlantisMenu = menu;
         this.up = up;
         this.sourceSize = sourceSize;

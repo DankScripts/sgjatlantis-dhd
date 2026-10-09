@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mustangdoc.sgjpatch.config.SGJPatchClientConfig;
 import com.mustangdoc.sgjpatch.client.widgets.AtlantisTriangleEngageButton;
 import com.mustangdoc.sgjpatch.client.widgets.AtlantisTriangleSymbolButton;
@@ -15,13 +16,15 @@ import com.mustangdoc.sgjpatch.standalone.AtlantisDHDMenu;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.neoforged.fml.loading.FMLPaths;
 import net.povstalec.sgjourney.client.screens.dhd.AbstractDHDScreen;
-import net.povstalec.sgjourney.client.widgets.dhd.DHDBigButton;
+import net.povstalec.sgjourney.client.widgets.dhd.PegasusDHDBigButton;
+import net.povstalec.sgjourney.common.config.ClientDHDConfig;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -94,7 +97,6 @@ public class AtlantisDHDScreenFixed extends AbstractDHDScreen<AtlantisDHDMenu> {
         addAtlantisTableLayout();
     }
 
-    @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
         graphics.blit(
                 BACKGROUND,
@@ -204,13 +206,17 @@ public class AtlantisDHDScreenFixed extends AbstractDHDScreen<AtlantisDHDMenu> {
                 false,
                 CENTER_DOWN,
                 () -> {
-                    menu.engageStargate();
-                    onClose();
+                    int regularSymbols = 0;
+                    for (int symbol = 1; symbol <= 38; symbol++) {
+                        if (menu.isSymbolEngaged(symbol)) regularSymbols++;
+                    }
+                    engageStargate();
+                    if (regularSymbols >= 6) onClose();
                 }
         ), 39, centerX + 8, centerY + 13, "Engage");
 
         // Locked R13 shield/minigate anchor.
-        DHDBigButton.Pegasus shieldButton = new DHDBigButton.Pegasus(
+        PegasusDHDBigButton<AtlantisDHDMenu> shieldButton = new PegasusDHDBigButton<>(
                 leftPos + 521,
                 topPos + 66,
                 menu,
@@ -219,7 +225,7 @@ public class AtlantisDHDScreenFixed extends AbstractDHDScreen<AtlantisDHDMenu> {
                     if (minecraft.gameMode != null)
                         minecraft.gameMode.handleInventoryButtonClick(menu.containerId, AtlantisDHDMenu.BUTTON_TOGGLE_SHIELD);
                 }
-        );
+        ) {};
         shieldButton.setTooltip(Tooltip.create(Component.literal("Toggle Shield")));
         circleButton = shieldButton;
         addRenderableWidget(shieldButton);
@@ -227,7 +233,17 @@ public class AtlantisDHDScreenFixed extends AbstractDHDScreen<AtlantisDHDMenu> {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        super.render(graphics, mouseX, mouseY, partialTick);
+        renderBackground(graphics, mouseX, mouseY, partialTick);
+        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+        renderBg(graphics, partialTick, mouseX, mouseY);
+        RenderSystem.disableDepthTest();
+        for (Renderable renderable : renderables) {
+            renderable.render(graphics, mouseX, mouseY, partialTick);
+        }
+        graphics.drawCenteredString(font,
+                ClientDHDConfig.dhd_symbols_numbers.get() ? SYMBOLS_TO_NUMBERS : NUMBERS_TO_SYMBOLS,
+                leftPos + imageWidth / 2, topPos + imageHeight + 1, 0xFFFFFF);
+        RenderSystem.enableDepthTest();
         AtlantisGuiOverlay.renderControls(
             graphics,
             leftPos,
@@ -235,6 +251,12 @@ public class AtlantisDHDScreenFixed extends AbstractDHDScreen<AtlantisDHDMenu> {
             menu.getDHD().getEnergyStorage().hasEnergy(1L));
         AtlantisMiniGateOverlay.render(menu, circleButton, graphics);
         renderCenterEditor(graphics);
+    }
+
+    @Override
+    public void onClose() {
+        if (minecraft != null && minecraft.player != null) minecraft.player.closeContainer();
+        else super.onClose();
     }
 
     @Override

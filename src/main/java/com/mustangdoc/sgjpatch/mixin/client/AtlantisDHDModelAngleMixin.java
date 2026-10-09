@@ -2,6 +2,7 @@ package com.mustangdoc.sgjpatch.mixin.client;
 
 import com.google.gson.JsonObject;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -22,13 +23,14 @@ public class AtlantisDHDModelAngleMixin {
     }
 
     private static boolean sgjpatch$isAtlantisAngle(float angle) {
-        return near(angle, -57.51492F) || near(angle, 57.51492F)
-                || near(angle, -60.98254F) || near(angle, 60.98254F)
-                || near(angle, -59.91350F) || near(angle, 59.91350F)
-                || near(angle, -61.89373F) || near(angle, 61.89373F);
+        return sgjpatch$near(angle, -57.51492F) || sgjpatch$near(angle, 57.51492F)
+            || sgjpatch$near(angle, -60.98254F) || sgjpatch$near(angle, 60.98254F)
+            || sgjpatch$near(angle, -59.91350F) || sgjpatch$near(angle, 59.91350F)
+            || sgjpatch$near(angle, -61.89373F) || sgjpatch$near(angle, 61.89373F);
     }
 
-    private static boolean near(float a, float b) {
+    @Unique
+        private static boolean sgjpatch$near(float a, float b) {
         return Math.abs(a - b) < 0.0002F;
     }
 }

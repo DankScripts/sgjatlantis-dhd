@@ -9,7 +9,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.povstalec.sgjourney.client.SyncedConfig;
+import net.povstalec.sgjourney.common.config.SyncedConfig;
 import net.povstalec.sgjourney.common.block_entities.StructureGenEntity;
 import net.povstalec.sgjourney.common.block_entities.stargate.AbstractStargateEntity;
 import net.povstalec.sgjourney.common.blockstates.ShieldingState;
@@ -129,7 +129,7 @@ public class AtlantisDHDEntity extends CrystalDHDEntity {
     @Override
     public long getEnergyCapacity() {
         return level != null && level.isClientSide()
-                ? SyncedConfig.pegasusDHDEnergyCapacity
+                ? SyncedConfig.pegasus_dhd_energy_buffer_capacity.get()
                 : CommonDHDConfig.pegasus_dhd_energy_buffer_capacity.getAsLong();
     }
 
