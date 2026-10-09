@@ -32,7 +32,7 @@ public abstract class AtlantisDHDSneakUsePositionMixin {
             entityField.setAccessible(true);
             Object entity = entityField.get(provider);
             if (entity instanceof BlockEntity) {
-                BlockPos entityPos = ((BlockEntity) entity).m_58899_();
+                BlockPos entityPos = ((BlockEntity) entity).getBlockPos();
                 if (entityPos != null) menuPos = entityPos;
             }
         } catch (ReflectiveOperationException | SecurityException exception) {

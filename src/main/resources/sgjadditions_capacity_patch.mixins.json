@@ -10,6 +10,7 @@
     "AbstractDHDEntityCenterFeedbackClearMixin",
     "AbstractDHDEntityResetOnLoadMixin",
     "AbstractDHDMenuAccessor",
+    "AbstractDHDMenuLegacyActionsMixin",
     "EnergyBlockEntityAccessor",
     "AtlantisDHDEntityEnergyCapabilityMixin",
     "LegacySGJAdditionsAtlantisDHDEnergyBridgeMixin",
@@ -30,7 +31,6 @@
   "client": [
     "client.AtlantisDHDModelAngleMixin",
     "client.AtlantisDHDModelBoundsMixin",
-    "client.SGJAdditionsLegacyClientSetupMixin",
     "client.ClientPacketListenerOpenScreenMixin",
     "client.SGJourneyBigButtonIlluminationMixin",
     "client.IrisModelPegasusShieldMixin",

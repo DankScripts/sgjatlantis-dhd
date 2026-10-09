@@ -42,7 +42,7 @@ side="BOTH"
 [[dependencies.sgjadditions_capacity_patch]]
 modId="sgjourney"
 mandatory=true
-versionRange="[0.6.44,)"
+versionRange="[0.6.50,)"
 ordering="AFTER"
 side="BOTH"
 

@@ -1,4 +1,15 @@
-# Atlantis DHD Upgrade 2.0.3-beta.3
+# Atlantis DHD Upgrade 2.0.4
+
+## Source Branches
+
+- [Forge 1.20.1](https://github.com/DankScripts/sgjatlantis-dhd/tree/1.20.1-forge)
+- [NeoForge 1.21.1](https://github.com/DankScripts/sgjatlantis-dhd/tree/1.21.1-neoforge)
+
+The 2.0.4 Forge release targets SGJourney 0.6.50 and retains the accepted
+table and GUI. Center engage closes the full container only after at least
+six regular symbols are entered; Escape closes normally. Build release JARs
+and source ZIPs with `./gradlew release`; use the merged JAR in `dist/`,
+not the incomplete `-delta.jar` in `build/libs/`.
 
 The user-accepted Forge 1.20.1 runtime from 2026-09-03 is the current permanent
 baseline. Its exact JAR and checksums are stored in

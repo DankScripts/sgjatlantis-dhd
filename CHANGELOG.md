@@ -1,3 +1,11 @@
+# 2.0.4
+
+- Requires SGJourney 0.6.50 and preserves the accepted Forge GUI and table.
+- Includes the migrated menu/widget compatibility bridges for SGJourney 0.6.50.
+- Center engage closes the full container after at least six regular symbols
+  are entered, avoiding the screen-reopen loop; Escape remains unrestricted.
+- Packages the shared migrated sources with the buildable release source ZIP.
+
 # 2.0.3-beta.3
 
 - Insets all triangular-button face UVs into the solid teal texture interior to
