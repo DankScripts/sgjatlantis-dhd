@@ -12,7 +12,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
  * with incompatible packets or synchronized state.
  */
 public final class SGJPatchNetwork {
-    private static final String PROTOCOL_VERSION = "2.0.3-beta.3";
+    private static final String PROTOCOL_VERSION = "2.0.5-address-guide1";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             ResourceLocation.fromNamespaceAndPath("sgjadditions_capacity_patch", "network"),
@@ -30,6 +30,16 @@ public final class SGJPatchNetwork {
                 .encoder(ServerboundToggleIrisPacket::encode)
                 .decoder(ServerboundToggleIrisPacket::decode)
                 .consumerMainThread(ServerboundToggleIrisPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(AtlantisAddressLookup.Request.class, nextPacketId++)
+                .encoder(AtlantisAddressLookup.Request::encode)
+                .decoder(AtlantisAddressLookup.Request::decode)
+                .consumerMainThread(AtlantisAddressLookup.Request::handle)
+                .add();
+        CHANNEL.messageBuilder(AtlantisAddressLookup.Response.class, nextPacketId++)
+                .encoder(AtlantisAddressLookup.Response::encode)
+                .decoder(AtlantisAddressLookup.Response::decode)
+                .consumerMainThread(AtlantisAddressLookup.Response::handle)
                 .add();
     }
 }

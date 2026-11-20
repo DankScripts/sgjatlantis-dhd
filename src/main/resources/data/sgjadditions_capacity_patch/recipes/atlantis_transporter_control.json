@@ -1,0 +1,22 @@
+{
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "G": {
+      "item": "minecraft:glass"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IGI",
+    "IRI",
+    "IGI"
+  ],
+  "result": {
+    "item": "sgjadditions_capacity_patch:atlantis_transporter_control"
+  }
+}

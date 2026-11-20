@@ -7,21 +7,12 @@ version = mod_version
 group = mod_group_id
 
 base {
-    archivesName = 'sgjatlantis-dhd-1.20.1'
+    // The ordinary jar contains only this source set. The public mod also needs
+    // the frozen 2.0.5 baseline classes, which releaseJar merges in below.
+    archivesName = 'sgjatlantis-dhd-1.20.1-classes-only'
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
-
-def migratedRootSources = objects.sourceDirectorySet('migratedRootSources', 'SGJourney 0.6.50 migrated root sources')
-migratedRootSources.srcDir(file('migration-src').isDirectory()
-    ? layout.projectDirectory.dir('migration-src')
-    : layout.projectDirectory.dir('../../src/main/java'))
-migratedRootSources.include(
-    'com/mustangdoc/sgjpatch/SGJAdditionsCapacityPatch.java',
-    'com/mustangdoc/sgjpatch/menu/AtlantisDHDCompatMenu.java',
-    'com/mustangdoc/sgjpatch/mixin/client/ClientPacketListenerOpenScreenMixin.java',
-    'com/mustangdoc/sgjpatch/mixin/client/SGJourneyBigButtonIlluminationMixin.java')
-sourceSets.main.java.source(migratedRootSources)
 
 minecraft {
     mappings channel: mapping_channel, version: mapping_version
@@ -47,33 +38,34 @@ minecraft {
 
 repositories {
     maven { url = 'https://www.cursemaven.com' }
-    maven { url = 'https://maven.blamejared.com' }
 }
 
 dependencies {
+    // Optional browser API only; JEI is not bundled or required at runtime.
+    compileOnly files(System.getenv('JEI_JAR') ?: new File(System.getProperty('user.home'), 'curseforge/minecraft/Instances/All the Mods 9 - Stargates/mods/jei-1.20.1-forge-15.20.0.116.jar'))
+
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    compileOnly files('baseline/2.0.2-beta.1/sgjatlantis-dhd-1.20.1-2.0.2-beta.1.jar')
-    compileOnly fg.deobf(files('baseline/sgjadditions-1.1.0.jar'))
-    compileOnly fg.deobf('mezz.jei:jei-1.20.1-common-api:15.20.0.116')
-    compileOnly fg.deobf('mezz.jei:jei-1.20.1-forge-api:15.20.0.116')
+    compileOnly files('baseline/2.0.5-after-moregates-removal/sgjatlantis-dhd-1.20.1-2.0.5.jar')
+    compileOnly files(System.getenv('LANTEA_JAR') ?: new File(System.getProperty('user.home'), 'curseforge/minecraft/Instances/All the Mods 9 - Stargates/mods/lantea-0.7.4.2+mc1.20.1.jar'))
 
     def configuredSgJourneyJar = System.getenv('SGJOURNEY_JAR')
-    if (configuredSgJourneyJar != null && !configuredSgJourneyJar.isBlank()) {
-        compileOnly files(configuredSgJourneyJar)
-    } else {
-        compileOnly fg.deobf("curse.maven:sgjourney-689083:${sgjourney_file_id}")
-    }
+    compileOnly files(configuredSgJourneyJar != null && !configuredSgJourneyJar.isBlank()
+            ? configuredSgJourneyJar
+            : 'libs/Stargate.Journey-1.20.1-0.6.55-alpha.jar')
 }
 
 tasks.named('processResources', ProcessResources).configure {
     inputs.property 'mod_version', mod_version
+    inputs.property 'file.jarVersion', mod_version
     filesMatching('META-INF/mods.toml') {
-        expand mod_version: mod_version
+        expand([
+                mod_version: mod_version,
+                file: [jarVersion: mod_version]
+        ])
     }
 }
 
 tasks.named('jar', Jar).configure {
-    archiveClassifier = 'delta'
     from(layout.projectDirectory.dir('blockbench')) {
         into 'blockbench'
         include 'atlantis_dhd_table_original.bbmodel'
@@ -111,15 +103,19 @@ tasks.register('releaseJar', Jar) {
         ])
     }
 
-    from(zipTree(tasks.named('jar', Jar).flatMap { it.archiveFile })) {
-        exclude 'com/struxnet/sgjadditions/**'
-    }
-    from(zipTree(layout.projectDirectory.file('baseline/accepted-balanced-bars/sgjatlantis-dhd-1.20.1-2.0.3-beta.3.jar'))) {
+    // Current compiled classes must win over the accepted 2.0.5 baseline.
+    from(zipTree(tasks.named('jar', Jar).flatMap { it.archiveFile }))
+    from(zipTree(layout.projectDirectory.file('baseline/2.0.5-after-moregates-removal/sgjatlantis-dhd-1.20.1-2.0.5.jar'))) {
         exclude 'META-INF/MANIFEST.MF'
         exclude 'META-INF/mods.toml'
+        exclude 'assets/sgjadditions_capacity_patch/lang/en_us.json'
         exclude 'pack.mcmeta'
         exclude 'sgjadditions_capacity_patch.mixins.json'
         exclude 'com/mustangdoc/sgjpatch/network/SGJPatchNetwork.class'
+        exclude 'com/mustangdoc/sgjpatch/compat/AtlantisShieldButtonHelper.class'
+        exclude 'com/mustangdoc/sgjpatch/mixin/LargeNaquadahCableDHDPowerBridgeMixin.class'
+        exclude 'com/mustangdoc/sgjpatch/compat/moregates/**'
+        exclude 'data/moregates/**'
         exclude 'assets/sgjadditions/models/custom/atlantisdhd.json'
         exclude 'assets/sgjadditions/models/block/atlantisdhd.json'
         exclude 'assets/sgjadditions/models/block/atlantisdhd.json.textures'
@@ -130,66 +126,113 @@ tasks.register('releaseJar', Jar) {
     }
 }
 
-tasks.register('verifySgJourney0650Compatibility') {
-    dependsOn 'releaseJar'
+tasks.register('compileAtlantisDialProgressTest', JavaCompile) {
+    source = files('tools/tests/AtlantisDialProgressTest.java',
+            'tools/tests/AtlantisClipboardAddressTest.java',
+            'tools/tests/CityDhdLinkPolicyTest.java',
+            'src/main/java/com/mustangdoc/sgjpatch/client/util/AtlantisClipboardAddress.java',
+            'src/main/java/com/mustangdoc/sgjpatch/city/CityDhdLinkPolicy.java',
+            'src/main/java/com/mustangdoc/sgjpatch/standalone/AtlantisDialProgress.java')
+    classpath = files()
+    destinationDirectory = layout.buildDirectory.dir('atlantis-dial-tests')
+}
 
+tasks.register('verifyAtlantisDialProgress', JavaExec) {
+    dependsOn 'compileAtlantisDialProgressTest'
+    classpath = files(layout.buildDirectory.dir('atlantis-dial-tests'))
+    mainClass = 'com.mustangdoc.sgjpatch.standalone.AtlantisDialProgressTest'
+}
+
+tasks.named('check').configure { dependsOn 'verifyAtlantisDialProgress' }
+
+tasks.register('verifyAtlantisClipboardAddress', JavaExec) {
+    dependsOn 'compileAtlantisDialProgressTest'
+    classpath = files(layout.buildDirectory.dir('atlantis-dial-tests'))
+    mainClass = 'com.mustangdoc.sgjpatch.client.util.AtlantisClipboardAddressTest'
+}
+
+tasks.named('check').configure { dependsOn 'verifyAtlantisClipboardAddress' }
+
+tasks.register('verifyCityDhdLinkPolicy', JavaExec) {
+    dependsOn 'compileAtlantisDialProgressTest'
+    classpath = files(layout.buildDirectory.dir('atlantis-dial-tests'))
+    mainClass = 'com.mustangdoc.sgjpatch.city.CityDhdLinkPolicyTest'
+}
+
+tasks.named('check').configure { dependsOn 'verifyCityDhdLinkPolicy' }
+
+tasks.register('verifyReleaseJar') {
+    dependsOn 'releaseJar', 'verifyAtlantisDialProgress', 'verifyAtlantisClipboardAddress', 'verifyCityDhdLinkPolicy'
     doLast {
-        def jarFile = tasks.named('releaseJar', Jar).get().archiveFile.get().asFile
-        def requiredEntries = [
-            'com/mustangdoc/sgjpatch/block/AtlantisDHDBlock.class',
-            'com/mustangdoc/sgjpatch/client/integration/SGJPatchJeiPlugin.class',
-            'com/mustangdoc/sgjpatch/client/screens/AtlantisDHDScreenFixed.class',
-            'com/mustangdoc/sgjpatch/client/widgets/AtlantisPegasusBigButton.class',
-            'com/mustangdoc/sgjpatch/mixin/AbstractDHDMenuLegacyActionsMixin.class',
-            'com/mustangdoc/sgjpatch/mixin/client/ClientPacketListenerOpenScreenMixin.class',
-            'com/mustangdoc/sgjpatch/mixin/client/AtlantisDHDConnectedSymbolLockMixin.class',
-            'assets/sgjpatch/textures/gui/atlantis_dhd_clean.png',
-            'META-INF/coremods.json',
-            'coremods/sgjadditions_0650_compat.js'
+        def releaseFile = tasks.named('releaseJar', Jar).get().archiveFile.get().asFile
+        def required = [
+                'META-INF/mods.toml',
+                'sgjadditions_capacity_patch.mixins.json',
+                'com/mustangdoc/sgjpatch/SGJAdditionsCapacityPatch.class',
+                'com/mustangdoc/sgjpatch/standalone/AtlantisBlockEntityDHD.class',
+                'com/mustangdoc/sgjpatch/standalone/AtlantisPendingDial.class',
+                'com/mustangdoc/sgjpatch/standalone/AtlantisDialProgress.class',
+                'com/mustangdoc/sgjpatch/standalone/AtlantisDHDApi.class',
+                'com/mustangdoc/sgjpatch/standalone/AtlantisDHDEntity.class',
+                'com/mustangdoc/sgjpatch/mixin/AtlantisDHDEntityDhdApiMixin.class',
+                'com/mustangdoc/sgjpatch/client/util/LinkedMiniGate.class',
+                'com/mustangdoc/sgjpatch/client/util/AtlantisClipboardAddress.class',
+                'com/mustangdoc/sgjpatch/client/screens/AtlantisDHDScreenFixed.class'
         ]
-
-        new java.util.zip.ZipFile(jarFile).withCloseable { zip ->
-            requiredEntries.each { entryName ->
-                if (zip.getEntry(entryName) == null) {
-                    throw new GradleException("${jarFile.name} is missing compatibility class ${entryName}")
-                }
+        new java.util.zip.ZipFile(releaseFile).withCloseable { zip ->
+            def missing = required.findAll { zip.getEntry(it) == null }
+            if (!missing.isEmpty()) {
+                throw new GradleException("Incomplete Forge release JAR: missing ${missing}")
             }
-            def foreignClasses = zip.entries().findAll {
-                !it.directory && it.name.startsWith('com/struxnet/sgjadditions/') && it.name.endsWith('.class')
-            }*.name
-            if (!foreignClasses.isEmpty()) {
-                throw new GradleException("${jarFile.name} contains classes owned by SGJourney Additions: ${foreignClasses}")
+            def screenPrefix = 'com/mustangdoc/sgjpatch/client/screens/AtlantisDHDScreenFixed'
+            def obsoleteScreenTypes = [
+                    'net/povstalec/sgjourney/common/menu/AbstractDHDMenu',
+                    'net/povstalec/sgjourney/client/widgets/dhd/DHDBigButton$Pegasus',
+                    'com/mustangdoc/sgjpatch/compat/AtlantisShieldButtonHelper',
+                    'com/mustangdoc/sgjpatch/compat/AtlantisShieldIndicatorHelper'
+            ]
+            def stale = zip.entries().findAll { it.name.startsWith(screenPrefix) && it.name.endsWith('.class') }
+                    .findAll { entry ->
+                        def contents = new String(zip.getInputStream(entry).bytes, 'ISO-8859-1')
+                        obsoleteScreenTypes.any { contents.contains(it) }
+                    }.collect { it.name }
+            if (!stale.isEmpty()) {
+                throw new GradleException("Obsolete SGJourney dialer references in release JAR: ${stale}")
             }
-            def splitPackageClasses = zip.entries().findAll {
-                !it.directory && it.name.startsWith('net/povstalec/sgjourney/') && it.name.endsWith('.class')
-            }*.name
-            if (!splitPackageClasses.isEmpty()) {
-                throw new GradleException("${jarFile.name} contains split-package SGJourney classes: ${splitPackageClasses}")
+            if (zip.getEntry('com/mustangdoc/sgjpatch/compat/AtlantisShieldButtonHelper.class') != null) {
+                throw new GradleException('Obsolete reflective Atlantis shield button helper in release JAR')
             }
-
-            def screenEntry = zip.getEntry('com/mustangdoc/sgjpatch/client/screens/AtlantisDHDScreenFixed.class')
-            def screenConstants = zip.getInputStream(screenEntry).getText('ISO-8859-1')
-            if (!screenConstants.contains('atlantis_dhd_clean.png')) {
-                throw new GradleException('AtlantisDHDScreenFixed is missing the accepted UI background')
+            def coremod = zip.getEntry('coremods/sgjadditions_0650_compat.js')
+            if (coremod == null) {
+                throw new GradleException('Missing Atlantis compatibility transformer')
             }
-            if (screenConstants.contains('atlantis_dhd_crystal_outer_green')) {
-                throw new GradleException('AtlantisDHDScreenFixed was replaced by the rejected UI rewrite')
+            def script = zip.getInputStream(coremod).getText('UTF-8')
+            def obsoleteTransforms = [
+                    'guard_atlantis_engage_close',
+                    'remap_accepted_atlantis_screen',
+                    'remap_accepted_atlantis_symbol_button',
+                    'remap_accepted_atlantis_center_button'
+            ].findAll { script.contains("'${it}':") }
+            if (!obsoleteTransforms.isEmpty()) {
+                throw new GradleException("Obsolete Atlantis screen transformers registered: ${obsoleteTransforms}")
             }
-
-            def baselineFile = layout.projectDirectory.file(
-                    'baseline/accepted-balanced-bars/sgjatlantis-dhd-1.20.1-2.0.3-beta.3.jar').asFile
-            new java.util.zip.ZipFile(baselineFile).withCloseable { baselineZip ->
-                def screenPrefix = 'com/mustangdoc/sgjpatch/client/screens/AtlantisDHDScreenFixed'
-                def acceptedScreenEntries = baselineZip.entries().findAll {
-                    !it.directory && it.name.startsWith(screenPrefix) && it.name.endsWith('.class')
-                }*.name
-                acceptedScreenEntries.each { entryName ->
-                    def acceptedBytes = baselineZip.getInputStream(baselineZip.getEntry(entryName)).bytes
-                    def releaseBytes = zip.getInputStream(zip.getEntry(entryName)).bytes
-                    if (!java.util.Arrays.equals(acceptedBytes, releaseBytes)) {
-                        throw new GradleException("Accepted Atlantis UI bytecode changed: ${entryName}")
-                    }
-                }
+            def helper = zip.getEntry('com/mustangdoc/sgjpatch/compat/AtlantisEngageCloseHelper.class')
+            if (helper == null) {
+                throw new GradleException('Missing Atlantis engage handler')
+            }
+            def javaHome = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(17) }.get().metadata.installationPath.asFile
+            def javap = new File(javaHome, "bin/javap${System.getProperty('os.name').toLowerCase().contains('windows') ? '.exe' : ''}")
+            def disassembly = new ByteArrayOutputStream()
+            exec {
+                commandLine javap, '-classpath', releaseFile, '-c', '-p',
+                        'com.mustangdoc.sgjpatch.compat.AtlantisEngageCloseHelper'
+                standardOutput = disassembly
+            }
+            def bytecode = disassembly.toString('UTF-8')
+            if (bytecode.contains('sgjpatch$closeAfterEngage') ||
+                    bytecode.contains('String m_7379_') ||
+                    bytecode.contains('net/minecraft/client/gui/screens/Screen.m_7379_')) {
+                throw new GradleException('Atlantis engage handler still closes the screen on connect')
             }
         }
     }
@@ -198,7 +241,6 @@ tasks.register('verifySgJourney0650Compatibility') {
 tasks.register('sourceArchive', Zip) {
     archiveFileName = "sgjatlantis-dhd-1.20.1-${mod_version}-source.zip"
     destinationDirectory = layout.projectDirectory.dir('dist')
-    from(migratedRootSources) { into 'migration-src' }
     from(layout.projectDirectory) {
         include 'src/**'
         include 'com/**'
@@ -211,8 +253,9 @@ tasks.register('sourceArchive', Zip) {
         include 'settings.gradle'
         include 'gradle.properties'
         include 'README.md'
-        include 'README-ALMOSTFLUIDIFIED.md'
         include 'README-BETA3.md'
+        include 'README-2.0.5.md'
+        include 'README-LANTEA-JUMPER.md'
         include 'README-BACKPLATE-UV.md'
         include 'README-CRYSTAL-HEIGHT.md'
         include 'README-SHIELD-FRAME.md'
@@ -223,21 +266,19 @@ tasks.register('sourceArchive', Zip) {
         include '*-validation.json'
         include 'shield-frame-transfer-report.json'
         include 'baseline/README.txt'
-        include 'baseline/sgjadditions-1.1.0.jar'
-        include 'baseline/sgjatlantis-dhd-1.20.1-2.0.0-beta.1.jar'
-        include 'baseline/2.0.2-beta.1/**'
-        include 'baseline/accepted-gui-r13/**'
-        include 'baseline/accepted-balanced-bars/**'
-        include 'baseline/confirmed-working-r17b/**'
+        include 'baseline/2.0.5-after-moregates-removal/**'
+        exclude 'tools/crossgate-audit/**'
         exclude '.gradle/**'
         exclude 'build/**'
         exclude 'dist/**'
+        exclude 'tools/__pycache__/**'
+        exclude 'tools/fonts/**'
         exclude 'run/**'
     }
 }
 
 tasks.register('release') {
-    dependsOn 'verifySgJourney0650Compatibility', 'sourceArchive'
+    dependsOn 'verifyReleaseJar', 'sourceArchive'
 }
 
 tasks.withType(JavaCompile).configureEach {

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "result": {
+    "count": 1,
+    "item": "sgjadditions_capacity_patch:atlantis_copper_illuminated_panel"
+  },
+  "ingredients": [
+    {
+      "item": "sgjadditions_capacity_patch:atlantis_copper_seamless_alloy"
+    },
+    {
+      "item": "minecraft:glowstone_dust"
+    }
+  ]
+}

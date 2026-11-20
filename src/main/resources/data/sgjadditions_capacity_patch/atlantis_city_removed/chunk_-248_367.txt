@@ -1,0 +1,12 @@
+3 306 10 minecraft:stone_bricks -
+3 307 10 minecraft:stone_bricks -
+3 308 10 minecraft:stone_bricks -
+3 309 10 minecraft:stone_bricks -
+3 310 10 minecraft:stone_bricks -
+3 311 10 minecraft:stone_bricks -
+3 312 10 minecraft:stone_bricks -
+3 313 10 minecraft:stone_bricks -
+5 307 15 minecraft:stone_bricks -
+5 310 15 minecraft:stone_bricks -
+11 311 15 minecraft:stone_bricks -
+11 314 15 minecraft:stone_bricks -

@@ -2,6 +2,7 @@ package com.mustangdoc.sgjpatch.client.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,6 +22,7 @@ import net.povstalec.sgjourney.common.menu.dhd.AbstractDHDMenu;
  * F8 offset moves the visible control and its edit hitbox together.</p>
  */
 public final class AtlantisTableControlEditor {
+    private static final int VISIBLE_EDITOR_CONTROLS = 6;
     private static final int F8 = 297;
     private static final int RESET = 82;
     private static final int LEFT = 263;
@@ -33,7 +35,7 @@ public final class AtlantisTableControlEditor {
     private static final int BAR_WIDTH = 52;
     private static final int BAR_HEIGHT = 18;
 
-    private static final int[] BASE_X = {112, 165, 218, 112, 165, 218, 138, 202};
+    private static final int[] BASE_X = {112, 165, 218, 112, 165, 218, 133, 197};
     private static final int[] BASE_Y = {89, 89, 89, 134, 134, 134, 192, 192};
     private static final int[] DEFAULT_DX = {-42, -42, -42, -42, -42, -42, -24, -22};
     private static final int[] DEFAULT_DY = {-19, -19, -19, -17, -17, -17, 32, 32};
@@ -123,7 +125,7 @@ public final class AtlantisTableControlEditor {
 
         // Walk backwards so the visually topmost element wins if the user
         // intentionally overlaps controls while editing.
-        for (int index = BASE_X.length - 1; index >= 0; index--) {
+        for (int index = VISIBLE_EDITOR_CONTROLS - 1; index >= 0; index--) {
             Offset offset = state.offset(index);
             int x = leftPos + BASE_X[index] + offset.dx;
             int y = topPos + BASE_Y[index] + offset.dy;
@@ -142,7 +144,11 @@ public final class AtlantisTableControlEditor {
         }
 
         State state = state(screen);
-        for (int index = 0; index < BASE_X.length; index++) {
+        // The accepted layout draws the two large lower bars itself.  Only draw
+        // the six upper crystals here so the old, smaller editor bars cannot
+        // appear underneath them.
+        RenderSystem.setShaderColor(0.42F, 0.90F, 0.68F, 1.0F);
+        for (int index = 0; index < VISIBLE_EDITOR_CONTROLS; index++) {
             Offset offset = state.offset(index);
             int x = leftPos + BASE_X[index] + offset.dx;
             int y = topPos + BASE_Y[index] + offset.dy;
@@ -156,6 +162,7 @@ public final class AtlantisTableControlEditor {
                 outline(graphics, x - 1, y - 1, width + 2, height + 2, 0xFF00D7E8);
             }
         }
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     private static boolean isPowered(Object screen) {

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "sgjadditions_capacity_patch:block/red_stone"
+  }
+}

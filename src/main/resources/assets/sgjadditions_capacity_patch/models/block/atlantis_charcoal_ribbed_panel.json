@@ -1,0 +1,7 @@
+{
+  "textures": {
+    "end": "sgjadditions_capacity_patch:block/atlantis_charcoal_seamless_alloy",
+    "side": "sgjadditions_capacity_patch:block/atlantis_charcoal_ribbed_panel"
+  },
+  "parent": "minecraft:block/cube_column"
+}

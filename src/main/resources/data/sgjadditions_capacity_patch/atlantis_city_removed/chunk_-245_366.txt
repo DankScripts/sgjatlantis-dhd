@@ -1,0 +1,16 @@
+11 416 13 minecraft:cyan_terracotta -
+11 416 15 minecraft:cyan_terracotta -
+12 416 12 minecraft:cyan_terracotta -
+12 416 14 minecraft:cyan_terracotta -
+13 414 14 minecraft:cyan_terracotta -
+13 414 15 minecraft:cyan_terracotta -
+13 415 11 minecraft:polished_andesite -
+13 416 13 minecraft:cyan_terracotta -
+14 412 15 minecraft:cyan_terracotta -
+14 413 14 minecraft:cyan_terracotta -
+14 414 14 minecraft:cyan_terracotta -
+14 416 12 minecraft:cyan_terracotta -
+15 412 14 minecraft:cyan_terracotta -
+15 412 15 minecraft:cyan_terracotta -
+15 413 13 minecraft:cyan_terracotta -
+15 413 14 minecraft:cyan_terracotta -

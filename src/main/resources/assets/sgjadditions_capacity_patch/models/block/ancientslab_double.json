@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "particle": "sgjadditions_capacity_patch:block/stair_riser",
+    "bottom": "sgjadditions_capacity_patch:block/ivory_stone",
+    "top": "sgjadditions_capacity_patch:block/ivory_stone",
+    "side": "sgjadditions_capacity_patch:block/stair_riser"
+  }
+}

@@ -1,10 +1,126 @@
-# 2.0.4
+## 2.0.5 - SGJourney 0.6.55-alpha
 
-- Requires SGJourney 0.6.50 and preserves the accepted Forge GUI and table.
-- Includes the migrated menu/widget compatibility bridges for SGJourney 0.6.50.
-- Center engage closes the full container after at least six regular symbols
-  are entered, avoiding the screen-reopen loop; Escape remains unrestricted.
-- Packages the shared migrated sources with the buildable release source ZIP.
+- Initialize the bundled Pegasus gate's DHD callbacks after loading its saved
+  registry entry. Repair missing or one-sided links when the pair is within
+  range and neither side belongs to another device; synchronize symbols after linking.
+- Log why the city table link recovery cannot run, without changing ownership.
+
+- Refresh the bundled Forge Atlantis city with Arg's new rooms and fixtures.
+  Keep the existing bundled gate, DHD, shield, and ZPM hub settings.
+- Start the third bundled ZPM at 93% entropy instead of 99.9%; the other
+  two remain depleted.
+- Register the additional bundled transporter stations, including Genetics Lab
+  and Lower Spire, in the city transporter directory.
+- Refresh a stale cached city gate controller after reinstall and during normal
+  city ticks, only when its saved registry identity matches the physical gate.
+- Let the Forge Atlantis paste guide accept six to eight destination symbols
+  without an explicit point of origin. It adds `0` to the guide, not to the gate.
+- Draw the Forge mini-gate's active chevron lights after the base chevrons,
+  even with Oculus installed. The world rendering order is unchanged.
+- Keep the Forge mini-gate on the linked gate's live animation during brief
+  link updates and stop substituting the stock Pegasus ring when no SGJourney
+  gate is available.
+- Render the linked gate's live model, chevrons, and glyphs on the Forge
+  Atlantis dialer, including MoreGates variants loaded by Stargate Journey.
+- Animate the Milky Way mechanical iris when toggled from the Forge Atlantis
+  table, with a mechanical opening or closing cue.
+- Clear a partial Atlantis table address on center press without interrupting
+  a complete address that is still locking.
+- Fix the Forge table iris-button crash by invoking its registered action
+  directly instead of looking up an obsolete synthetic screen method.
+- Fix the Forge Atlantis connect button crash caused by an obsolete screen
+  transformer calling a removed SGJourney method.
+- Keep the Atlantis dialer open and defer connection until the Stargate has
+  locked the entered address, rather than resetting an in-progress dial.
+- Migrate the Forge Atlantis dialer screen to the current DHD menu and packet
+  APIs while preserving the existing table controls.
+- Recalculate crystal effects using the 0.6.55 energy, network, and range
+  fields instead of removed legacy fields.
+- Restore memory-crystal dial-attempt recording and forward the DHD's
+  auto-close policy through its API adapter.
+- Apply crystal effects and memory recording in every Atlantis inventory slot,
+  accept call-forwarding devices, and avoid replacing occupied slots when
+  stocking the bundled city DHD.
+- Refreshed city completeness still needs in-game verification.
+
+## 2.0.5-dev-102 - SGJourney 0.6.55-alpha
+
+- Fix the DHD crystal guard's mixin callbacks for SGJourney's return-valued
+  dialing methods, which prevented client and server startup.
+
+## 2.0.5-dev-101 — SGJourney 0.6.55-alpha
+
+- Migrate the Forge DHD binary baseline to SGJourney's new API through a
+  focused `BlockEntityDHD` adapter mixin.
+- Resolve linked gate state through `DHDControlledStargate`, preserving the
+  existing rendering, shield, and dial-cancel behavior.
+
+# 2.0.5
+
+- Removes the legacy More Gates 4.3.2 compatibility bridge, its config option,
+  and recipe overrides now that More Gates has been updated by its maintainer.
+- Prevents repeat city repairs from replacing the existing Atlantis Stargate.
+  On load, removes stale SGJourney addresses left by earlier repairs while
+  restoring the original address captured with the bundled city gate.
+- Adds `/sgjatlantis city install` for operators to install or repair the bundled
+  city in two-chunk batches from any dimension or the server console, plus
+  `/sgjatlantis city status` for progress.
+- Registers the bundled Pegasus Stargate with SGJourney after structure placement
+  and repairs its network entry when an existing city's gate chunks load.
+- Repairs partially generated Atlantis chunks by reapplying every captured city
+  block during `/sgjatlantis city install`; unrelated positions are left alone and
+  existing puddle jumpers are not duplicated.
+- Fixes jumper-to-SGJourney dialing by passing the required Point of Origin 0
+  to SGJourney's instant-dial operation. Typing the final 0 is optional.
+- Refreshes the bundled Atlantis city from the current ATM9 Stargates `world`
+  save: 2,009 chunks and 2,266,341 exact placed blocks. Ordinary stone, clay
+  and dirt used in city walls and floors are retained at city height, while
+  environmental snow blocks and thin snow layers are excluded. The bundle
+  includes all three placed control consoles, both complete
+  roof doors and weather seals, 36 saved block entities and both parked puddle
+  jumpers. The installer preserves the door and table states in the bundle.
+- Adds optional Lantea 0.7.2.0 jumper DHD compatibility: nearby SGJourney gates can be dialed and disconnected from the cockpit, retaining Lantea's gene/crystal checks and SGJourney's power rules. Autopilot and jumper transit are not changed.
+- Replaces the jumper's numeric SGJourney prompt with a compact Atlantis triangle dialer and animated miniature gate, rotated 180 degrees to match the cockpit panel. The selected and encoded symbols light up as the gate dials.
+- Mirrors the inverted jumper dialer so its upright miniature gate sits at the upper right, restores upright constellation glyphs by default and numbers while Shift is held, and illuminates selected triangles in gold. The miniature gate's center is an explicit Dial/Close control.
+- Starts SGJourney's staged glyph engagement immediately, then lets the gate validate the address at final engagement, so unsuccessful addresses still visibly dial and report their failure.
+- Keeps Lantea's original screen for native Lantea gates by default. A server config option enables the Atlantis screen there while native gate validation and dialing remain Lantea's own.
+- Changes jumper-to-SGJourney dialing from an instant connection to SGJourney's
+  normal staged Pegasus sequence, including visible chevron engagement and the
+  normal event-horizon opening effect.
+- Illuminates the matching physical jumper glyphs as numeric symbols are entered.
+  SGJourney's duplicate Pegasus Robandus slot is mapped to Lantea's Robandus key;
+  SGJourney-only extended symbols remain unlit because the jumper has no matching
+  physical keys.
+- Makes an Atlantis DHD table linked to the same Stargate mirror the jumper's
+  actively encoded symbols throughout the dialing sequence.
+- Keeps all Lantea integration optional through reflection and pseudo mixins;
+  Lantea is neither bundled nor declared as a required dependency.
+
+- Makes both ceiling-hatch rims opaque with solid metal textures and closed inner/outer edges.
+
+- Carries forward the installed 2.0.4 JAR as the release baseline.
+- Bundles the constructed Lantea city copied from the `world` save as 2,009
+  chunk-sized structures at its original coordinates, including the underwater
+  foundations, Pegasus Stargate, block-state patterns, and block entities.
+- Preserves both parked puddle jumpers while omitting transient dropped items
+  and falling blocks.
+- Adds independent circular ceiling hatches at Y 428 and Y 443 and one shared
+  Atlantis-style table with a two-door GUI. Each successful table command uses
+  50 FE from a 10,000 FE buffer that accepts power on every side.
+- Restores the shield table's two continuous angled legs beneath the jumper
+  bay tabletop, and connects a Large Naquadah Cable two or three blocks below the table anchor
+  through the floor.
+- Fixes concealed door-table power by following intermediate cable segments to real network endpoints, with separate outputs for the DHD and door table sharing a cable network.
+- Replaces instant roof hatch switching with six-second Milky Way iris blade
+  animation, synchronized motion, saved motor state, and aperture collision.
+  Closure reverses if a player or vehicle enters the doorway.
+- Seals both fully closed roof hatches against rain and snow with an invisible,
+  non-colliding weather barrier that clears after opening completes.
+- Adds an optional craftable redstone port for each door: power opens the
+  adjacent roof door and removing power closes it.
+- Adds recipes, inventory models, and loot for the table and replacement hatch
+  panels and redstone port. Closing a door refuses to overwrite an obstructing
+  block or entity.
 
 # 2.0.3-beta.3
 
@@ -183,3 +299,8 @@
 - Adds current SGJourney unstable wormhole, vortex, and disconnect definitions
   to legacy More Gates gate variants while retaining each variant's textures,
   sounds, colors, and model settings.
+## 2.0.5-dev-103 - SGJourney 0.6.55-alpha
+
+- Migrate the Forge baseline DHD's crystal recalculation to SGJourney's
+  current protocol, energy, transfer, and communication fields.
+

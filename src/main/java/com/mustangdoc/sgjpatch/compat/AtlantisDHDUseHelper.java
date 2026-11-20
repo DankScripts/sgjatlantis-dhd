@@ -3,6 +3,7 @@ package com.mustangdoc.sgjpatch.compat;
 import com.mustangdoc.sgjpatch.block.AtlantisDHDBlock;
 import com.mustangdoc.sgjpatch.menu.AtlantisDHDCrystalMenu;
 import com.mustangdoc.sgjpatch.standalone.AtlantisDHDEntity;
+import com.mustangdoc.sgjpatch.standalone.AtlantisDHDMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -39,6 +40,18 @@ public final class AtlantisDHDUseHelper {
             return InteractionResult.CONSUME;
         }
 
-        return block.sgjpatch$useNormal(state, level, pos, player, hand, hit);
+        if (player instanceof ServerPlayer serverPlayer && AtlantisNativeDhd.open(serverPlayer, pos))
+            return InteractionResult.CONSUME;
+        if (player instanceof ServerPlayer serverPlayer) {
+            BlockEntity blockEntity = level.getBlockEntity(pos);
+            if (blockEntity instanceof AtlantisDHDEntity dhd) {
+                SimpleMenuProvider provider = new SimpleMenuProvider(
+                        (containerId, inventory, menuPlayer) ->
+                                new AtlantisDHDMenu(containerId, inventory, dhd),
+                        Component.literal("Atlantis DHD"));
+                NetworkHooks.openScreen(serverPlayer, provider, pos);
+            }
+        }
+        return InteractionResult.CONSUME;
     }
 }

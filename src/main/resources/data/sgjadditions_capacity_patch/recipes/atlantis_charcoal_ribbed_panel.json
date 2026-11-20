@@ -1,0 +1,8 @@
+{
+  "count": 1,
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "sgjadditions_capacity_patch:atlantis_charcoal_seamless_alloy"
+  },
+  "result": "sgjadditions_capacity_patch:atlantis_charcoal_ribbed_panel"
+}

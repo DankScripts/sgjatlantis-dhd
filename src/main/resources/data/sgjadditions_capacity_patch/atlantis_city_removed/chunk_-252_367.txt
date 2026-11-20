@@ -1,0 +1,2 @@
+3 341 12 minecraft:stone_bricks -
+3 341 13 minecraft:stone_bricks -

@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "lit=true,seam_flipped=true": {
+      "model": "sgjadditions_capacity_patch:block/atlantis_bronze_illuminated_panel_flipped"
+    },
+    "lit=true,seam_flipped=false": {
+      "model": "sgjadditions_capacity_patch:block/atlantis_bronze_illuminated_panel"
+    },
+    "lit=false": {
+      "model": "sgjadditions_capacity_patch:block/powered_off_atlantis_bronze_illuminated_panel"
+    }
+  }
+}

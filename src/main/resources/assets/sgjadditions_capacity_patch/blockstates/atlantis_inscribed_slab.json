@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "type=bottom,lit=false": {
+      "model": "sgjadditions_capacity_patch:block/atlantis_inscribed_slab_lit"
+    },
+    "type=bottom,lit=true": {
+      "model": "sgjadditions_capacity_patch:block/atlantis_inscribed_slab_lit"
+    },
+    "type=top,lit=false": {
+      "model": "sgjadditions_capacity_patch:block/atlantis_inscribed_slab_top_lit"
+    },
+    "type=top,lit=true": {
+      "model": "sgjadditions_capacity_patch:block/atlantis_inscribed_slab_top_lit"
+    },
+    "type=double,lit=false": {
+      "model": "sgjadditions_capacity_patch:block/atlantis_inscribed_slab_double_lit"
+    },
+    "type=double,lit=true": {
+      "model": "sgjadditions_capacity_patch:block/atlantis_inscribed_slab_double_lit"
+    }
+  }
+}

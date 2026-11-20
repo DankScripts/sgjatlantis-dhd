@@ -1,10 +1,13 @@
 package com.mustangdoc.sgjpatch.mixin;
 
-import java.util.ArrayDeque;
-import java.util.HashSet;
+import com.mustangdoc.sgjpatch.hatch.AtlantisHatchTableBlockEntity;
+import com.mustangdoc.sgjpatch.hatch.AtlantisHatchCableBootstrapEvents;
+import com.mustangdoc.sgjpatch.compat.ConcealedCableRouting;
+import com.mustangdoc.sgjpatch.standalone.AtlantisDHDEntity;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Queue;
-import java.util.Set;
+import java.util.Map;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -12,55 +15,61 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Adds a virtual output from a Large Naquadah Cable to the nearby Atlantis
- * DHD. A free cable side is used so a real block entity above the cable (the
- * measured installation has a Mekanism Teleporter there) keeps its own power.
+ * Gives concealed Atlantis tables separate virtual outputs on real cable endpoints.
+ * Intermediate SGJourney cable segments need not have block entities.
  */
 @Mixin(targets = "net.povstalec.sgjourney.common.block_entities.tech.CableBlockEntity", remap = false)
 public abstract class LargeNaquadahCableDHDPowerBridgeMixin {
+    @Redirect(method="transferEnergy", at=@At(value="INVOKE",
+            target="Lnet/povstalec/sgjourney/common/data/ConduitNetworks$ConduitNetwork;transferEnergy(Lnet/minecraft/world/level/Level;JZZ)J",
+            remap=false),remap=false)
+    private long sgjpatch$guardMixedTransfer(
+            net.povstalec.sgjourney.common.data.ConduitNetworks.ConduitNetwork network,
+            Level level,long amount,boolean simulate,boolean zeroPoint){
+        return com.mustangdoc.sgjpatch.power.MixedPowerTransfer.run(network,amount,simulate,zeroPoint,
+                ()->network.transferEnergy(level,amount,simulate,zeroPoint));
+    }
     private static final int MAX_CONNECTED_CABLE_BLOCKS = 1024;
     private static final int CONCEALED_CABLE_DEPTH = 2;
     private static int sgjpatch$diagnosticsRemaining = 24;
     private static final String LARGE_CABLE_CLASS =
             "net.povstalec.sgjourney.common.block_entities.tech.CableBlockEntity$LargeNaquadahCable";
-    private static final String STANDALONE_DHD_CLASS =
-            "com.mustangdoc.sgjpatch.standalone.AtlantisDHDEntity";
-    private static final String LEGACY_DHD_CLASS =
-            "com.struxnet.sgjadditions.common.block_entities.AtlantisDHDEntity";
 
-    @Inject(method = "getConnectedSides", at = @At(value = "RETURN", remap = false), remap = false)
+    @Unique private long sgjpatch$routeTick = Long.MIN_VALUE;
+    @Unique private Map<Direction, BlockEntity> sgjpatch$routes = Map.of();
+
+    @Inject(method = "update", at = @At("HEAD"), remap = false)
+    private void sgjpatch$invalidateRoutes(CallbackInfo callback) {
+        sgjpatch$routeTick = Long.MIN_VALUE;
+        sgjpatch$routes = Map.of();
+    }
+
+    @Inject(method = "getConnectedSides", at = @At(value = "RETURN", remap = false),
+            cancellable = true, remap = false)
     private void sgjpatch$addVirtualDhdOutput(
             CallbackInfoReturnable<List<Direction>> callback) {
         if (!sgjpatch$isLargeCable(this)) return;
 
-        List<Direction> connectedSides = callback.getReturnValue();
-        if (connectedSides == null) return;
+        if (callback.getReturnValue() == null) return;
 
         BlockEntity cable = (BlockEntity) (Object) this;
         Level level = cable.getLevel();
         BlockPos cablePos = cable.getBlockPos();
-        if (level == null || cablePos == null
-                || sgjpatch$hasDirectAtlantisDhd(level, cablePos)) return;
+        if (level == null || cablePos == null) return;
 
-        BlockEntity receiver = sgjpatch$findNearbyAtlantisDhd(level, cablePos);
-        if (receiver == null) return;
-
-        Direction virtualSide = sgjpatch$findFreeSide(level, cablePos);
-        if (virtualSide == null) {
-            sgjpatch$log("No free virtual side on Large cable " + cablePos
-                + " for Atlantis DHD " + receiver.getBlockPos());
-            return;
-        }
-
-        if (!connectedSides.contains(virtualSide)) connectedSides.add(virtualSide);
-        sgjpatch$log("Virtual side " + virtualSide + " on Large cable "
-            + cablePos + " -> Atlantis DHD " + receiver.getBlockPos());
+        List<Direction> connectedSides = new ArrayList<>(callback.getReturnValue());
+        for (Direction side : sgjpatch$outputRoutes(level, cablePos).keySet())
+            if (!connectedSides.contains(side)) connectedSides.add(side);
+        // Do not leave virtual sides behind in SGJourney's cached physical connections.
+        callback.setReturnValue(connectedSides);
     }
 
     @Redirect(
@@ -78,62 +87,67 @@ public abstract class LargeNaquadahCableDHDPowerBridgeMixin {
 
         BlockEntity cable = (BlockEntity) (Object) this;
         BlockPos cablePos = cable.getBlockPos();
-        if (cablePos == null || sgjpatch$hasDirectAtlantisDhd(level, cablePos)) {
-            return null;
-        }
+        if (cablePos == null) return null;
 
-        Direction virtualSide = sgjpatch$findFreeSide(level, cablePos);
-        if (virtualSide == null
-                || !cablePos.relative(virtualSide).equals(outputPos)) return null;
-
-        BlockEntity receiver = sgjpatch$findNearbyAtlantisDhd(level, cablePos);
-        if (receiver != null) {
-            sgjpatch$log("Routed virtual side " + virtualSide + " from "
-                    + cablePos + " to Atlantis DHD " + receiver.getBlockPos());
-        }
-        return receiver;
-    }
-
-    private static Direction sgjpatch$findFreeSide(Level level, BlockPos cablePos) {
-        for (Direction direction : Direction.values()) {
-            if (level.getBlockEntity(cablePos.relative(direction)) == null) {
-                return direction;
-            }
+        for (var route : sgjpatch$outputRoutes(level, cablePos).entrySet()) {
+            BlockEntity receiver = route.getValue();
+            if (cablePos.relative(route.getKey()).equals(outputPos)
+                    && !receiver.isRemoved()
+                    && level.getBlockEntity(receiver.getBlockPos()) == receiver) return receiver;
         }
         return null;
     }
 
-    private static boolean sgjpatch$hasDirectAtlantisDhd(
-            Level level, BlockPos cablePos) {
-        for (Direction direction : Direction.values()) {
-            if (sgjpatch$isAtlantisDhd(
-                    level.getBlockEntity(cablePos.relative(direction)))) return true;
-        }
-        return false;
-    }
-
-    private static BlockEntity sgjpatch$findNearbyAtlantisDhd(
-            Level level, BlockPos cablePos) {
+    @Unique
+    private Map<Direction, BlockEntity> sgjpatch$outputRoutes(Level level, BlockPos cablePos) {
+        // Topology is stable between block updates. Do not rediscover the entire
+        // cable run for every endpoint on every server tick. update() still
+        // invalidates immediately; the bounded refresh catches remote changes.
+        long now = level.getGameTime();
+        if (sgjpatch$routeTick != Long.MIN_VALUE && now >= sgjpatch$routeTick
+                && now - sgjpatch$routeTick < 20L) return sgjpatch$routes;
         Block cableBlock = level.getBlockState(cablePos).getBlock();
-        Queue<BlockPos> pending = new ArrayDeque<>();
-        Set<BlockPos> visited = new HashSet<>();
-        pending.add(cablePos);
+        List<BlockEntity> receivers = ConcealedCableRouting.findReceivers(cablePos,
+                MAX_CONNECTED_CABLE_BLOCKS,
+                pos -> level.hasChunkAt(pos) && level.getBlockState(pos).getBlock() == cableBlock,
+                pos -> {
+                    List<BlockPos> neighbors = new ArrayList<>(6);
+                    for (Direction side : Direction.values()) neighbors.add(pos.relative(side));
+                    return neighbors;
+                }, pos -> {
+                    List<BlockEntity> above = sgjpatch$findConcealedHatchTables(level, pos);
+                    BlockEntity dhd = sgjpatch$findAtlantisDhdAboveCable(level, pos);
+                    if (dhd != null) above.add(dhd);
+                    return above;
+                });
+        // Keep the original DHD first, but give each hatch its own output as well.
+        receivers.sort(Comparator.comparingInt(receiver -> sgjpatch$isAtlantisDhd(receiver) ? 0 : 1));
+        List<Direction> freeSides = new ArrayList<>(6);
+        for (Direction side : Direction.values()) {
+            BlockEntity direct = level.getBlockEntity(cablePos.relative(side));
+            if (direct == null) freeSides.add(side);
+            else receivers.remove(direct);
+        }
+        sgjpatch$routes = ConcealedCableRouting.assign(freeSides, receivers);
+        sgjpatch$routeTick = level.getGameTime();
+        return sgjpatch$routes;
+    }
 
-        while (!pending.isEmpty() && visited.size() < MAX_CONNECTED_CABLE_BLOCKS) {
-            BlockPos currentPos = pending.remove();
-            if (!visited.add(currentPos)
-                    || level.getBlockState(currentPos).getBlock() != cableBlock) continue;
-
-            BlockEntity receiver = sgjpatch$findAtlantisDhdAboveCable(
-                    level, currentPos);
-            if (receiver != null) return receiver;
-
-            for (Direction direction : Direction.values()) {
-                BlockPos connectedPos = currentPos.relative(direction);
-                if (!visited.contains(connectedPos)) pending.add(connectedPos);
+    private static List<BlockEntity> sgjpatch$findConcealedHatchTables(Level level, BlockPos cablePos) {
+        List<BlockEntity> tables = new ArrayList<>();
+        for (int depth = AtlantisHatchCableBootstrapEvents.MIN_CABLE_DEPTH;
+                depth <= AtlantisHatchCableBootstrapEvents.MAX_CABLE_DEPTH; depth++) {
+            BlockPos above = cablePos.above(depth);
+            for (int dx = -1; dx <= 1; dx++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    BlockEntity receiver = level.getBlockEntity(above.offset(dx, 0, dz));
+                    if (receiver instanceof AtlantisHatchTableBlockEntity table
+                            && AtlantisHatchCableBootstrapEvents.isBelowFootprint(table, cablePos))
+                        tables.add(table);
+                }
             }
         }
-        return null;
+        return tables;
     }
 
     private static BlockEntity sgjpatch$findAtlantisDhdAboveCable(
@@ -172,14 +186,6 @@ public abstract class LargeNaquadahCableDHDPowerBridgeMixin {
     }
 
     private static boolean sgjpatch$isAtlantisDhd(BlockEntity candidate) {
-        Class<?> type = candidate == null ? null : candidate.getClass();
-        while (type != null) {
-            String className = type.getName();
-            if (STANDALONE_DHD_CLASS.equals(className)
-                    || LEGACY_DHD_CLASS.equals(className)
-                    || className.endsWith(".AtlantisDHDEntity")) return true;
-            type = type.getSuperclass();
-        }
-        return false;
+        return candidate instanceof AtlantisDHDEntity;
     }
 }

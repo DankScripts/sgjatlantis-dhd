@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "sgjadditions_capacity_patch:atlantis_floor_conduit"
+    },
+    {
+      "item": "minecraft:yellow_dye"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "item": "sgjadditions_capacity_patch:atlantis_bronze_floor_conduit"
+  }
+}

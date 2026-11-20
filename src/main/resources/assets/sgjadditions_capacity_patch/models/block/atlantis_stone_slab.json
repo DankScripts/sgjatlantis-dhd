@@ -1,0 +1,103 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "sgjadditions_capacity_patch:block/atlantis_metal_grey",
+    "top": "sgjadditions_capacity_patch:block/atlantis_metal_grey",
+    "bottom": "sgjadditions_capacity_patch:block/atlantis_metal_grey",
+    "side": "sgjadditions_capacity_patch:block/atlantis_metal_grey"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        8,
+        16
+      ],
+      "faces": {
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#bottom",
+          "cullface": "down",
+          "forge_data": {
+            "color": "ff7a6b5b"
+          }
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#top",
+          "forge_data": {
+            "color": "ff7a6b5b"
+          }
+        },
+        "north": {
+          "uv": [
+            0,
+            8,
+            16,
+            16
+          ],
+          "texture": "#side",
+          "cullface": "north",
+          "forge_data": {
+            "color": "ff7a6b5b"
+          }
+        },
+        "south": {
+          "uv": [
+            0,
+            8,
+            16,
+            16
+          ],
+          "texture": "#side",
+          "cullface": "south",
+          "forge_data": {
+            "color": "ff7a6b5b"
+          }
+        },
+        "west": {
+          "uv": [
+            0,
+            8,
+            16,
+            16
+          ],
+          "texture": "#side",
+          "cullface": "west",
+          "forge_data": {
+            "color": "ff7a6b5b"
+          }
+        },
+        "east": {
+          "uv": [
+            0,
+            8,
+            16,
+            16
+          ],
+          "texture": "#side",
+          "cullface": "east",
+          "forge_data": {
+            "color": "ff7a6b5b"
+          }
+        }
+      }
+    }
+  ],
+  "render_type": "minecraft:cutout"
+}

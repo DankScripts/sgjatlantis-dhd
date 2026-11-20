@@ -1,0 +1,8 @@
+{
+  "sources": [
+    {
+      "type": "single",
+      "resource": "sgjadditions_capacity_patch:entity/puddle_jumper/dhd_glyphs_lit"
+    }
+  ]
+}

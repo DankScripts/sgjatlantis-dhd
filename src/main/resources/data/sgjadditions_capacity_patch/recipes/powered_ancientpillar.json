@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "sgjadditions_capacity_patch:ancientpillar"
+    },
+    {
+      "item": "minecraft:redstone"
+    }
+  ],
+  "result": {
+    "item": "sgjadditions_capacity_patch:powered_ancientpillar",
+    "count": 1
+  }
+}

@@ -1,0 +1,4 @@
+ATLANTIS is typeset in the Anquietas typeface by Joseph Spicer (2004), based on the Ancient alphabet in Stargate.
+Font reference: https://www.thescifiworld.net/fonts.htm
+The font program is a build-time reference only and is not included.
+The models, material artwork and lighting integration were made for SGJ Atlantis; no Lantea assets are included.

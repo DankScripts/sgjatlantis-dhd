@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "sgjadditions_capacity_patch:block/atlantis_stone_slab"
+    },
+    "type=top": {
+      "model": "sgjadditions_capacity_patch:block/atlantis_stone_slab_top"
+    },
+    "type=double": {
+      "model": "sgjadditions_capacity_patch:block/atlantis_stone_slab_double"
+    }
+  }
+}

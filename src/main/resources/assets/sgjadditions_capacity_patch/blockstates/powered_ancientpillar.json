@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "sgjadditions_capacity_patch:block/powered_off_ancientpillar"
+    },
+    "lit=true": {
+      "model": "sgjadditions_capacity_patch:block/ancientpillar"
+    }
+  }
+}

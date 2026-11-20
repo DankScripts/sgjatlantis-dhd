@@ -6,16 +6,18 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "sgjadditions_capacity_patch.refmap.json",
   "mixins": [
+    "AtlantisRecentAddressesMixin",
+    "AtlantisJumperConfigBootstrapMixin",
     "AbstractDHDEntityAccessor",
     "AbstractDHDEntityCenterFeedbackClearMixin",
     "AbstractDHDEntityResetOnLoadMixin",
     "AbstractDHDMenuAccessor",
-    "AbstractDHDMenuLegacyActionsMixin",
     "EnergyBlockEntityAccessor",
+    "AtlantisMapColorMixin",
     "AtlantisDHDEntityEnergyCapabilityMixin",
-    "LegacySGJAdditionsAtlantisDHDEnergyBridgeMixin",
-    "LegacySGJAdditionsAtlantisDHDOverrideMixin",
     "AtlantisDHDEntityCrystalValidationMixin",
+    "AtlantisDhdDialCrystalGuardMixin",
+    "AtlantisDHDEntityDhdApiMixin",
     "AtlantisDHDEntityCapacityMixin",
     "AbstractStargateEntityNetworkFixMixin",
     "AbstractStargateEntityDialFailResetMixin",
@@ -26,9 +28,17 @@
     "PegasusStargateShieldPowerMixin",
     "AtlantisDHDSneakUsePositionMixin",
     "AtlantisDHDConcealedCableBootstrapMixin",
-    "LargeNaquadahCableDHDPowerBridgeMixin"
+    "LargeNaquadahCableDHDPowerBridgeMixin",
+    "LanteaJumperDialMixin",
+    "LanteaGateIrisStateMixin",
+    "LanteaKawooshHazardIrisMixin",
+    "ServerboundToggleIrisLanteaMixin",
+    "LanteaTransitCrossingAccessor",
+    "LanteaTransitIrisMixin",
+    "JumperWormholeSeatsMixin"
   ],
   "client": [
+    "client.AtlantisKeypadSurfaceMixin",
     "client.AtlantisDHDModelAngleMixin",
     "client.AtlantisDHDModelBoundsMixin",
     "client.ClientPacketListenerOpenScreenMixin",
@@ -36,7 +46,10 @@
     "client.IrisModelPegasusShieldMixin",
     "client.MenuScreensCreateMixin",
     "client.PlayMessagesOpenContainerMixin",
-    "client.AtlantisDHDClickFixMixin",
-    "client.AtlantisDHDConnectedSymbolLockMixin"
+    "client.AtlantisDHDConnectedSymbolLockMixin",
+    "client.LanteaJumperGlyphRendererMixin",
+    "client.LanteaEnergyIrisRendererMixin",
+    "client.LanteaKawooshIrisMixin",
+    "client.StargateRendererModelAccessor"
   ]
 }

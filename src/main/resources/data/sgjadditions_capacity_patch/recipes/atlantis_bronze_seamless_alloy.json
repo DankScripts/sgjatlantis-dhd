@@ -1,0 +1,19 @@
+{
+  "pattern": [
+    "II",
+    "ID"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "D": {
+      "item": "minecraft:brown_dye"
+    }
+  },
+  "result": {
+    "item": "sgjadditions_capacity_patch:atlantis_bronze_seamless_alloy",
+    "count": 4
+  }
+}

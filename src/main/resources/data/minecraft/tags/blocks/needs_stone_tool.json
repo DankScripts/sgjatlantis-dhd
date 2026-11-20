@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "sgjadditions_capacity_patch:atlantis_inscribed_stairs",
+    "sgjadditions_capacity_patch:atlantis_inscribed_slab",
+    "sgjadditions_capacity_patch:atlantis_metal_stairs",
+    "sgjadditions_capacity_patch:atlantis_stone_stairs",
+    "sgjadditions_capacity_patch:atlantis_metal_slab",
+    "sgjadditions_capacity_patch:atlantis_metal_block",
+    "sgjadditions_capacity_patch:atlantis_stone_slab",
+    "sgjadditions_capacity_patch:atlantis_stone_block"
+  ]
+}

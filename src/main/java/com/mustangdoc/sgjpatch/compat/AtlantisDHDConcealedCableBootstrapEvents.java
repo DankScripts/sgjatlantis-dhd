@@ -24,6 +24,7 @@ public final class AtlantisDHDConcealedCableBootstrapEvents {
     private static final Set<BlockEntity> PENDING_DHDS =
             Collections.newSetFromMap(new WeakHashMap<>());
     private static final Map<BlockEntity, Boolean> DIAGNOSED_DHDS = new WeakHashMap<>();
+    private static final Map<BlockEntity, Long> NEXT_ATTEMPT = new WeakHashMap<>();
 
     private AtlantisDHDConcealedCableBootstrapEvents() {}
 
@@ -31,14 +32,14 @@ public final class AtlantisDHDConcealedCableBootstrapEvents {
         Level level = dhd.getLevel();
         if (level == null || level.isClientSide()) return;
 
+        ConcealedPowerBootstrapChanges.watch(dhd);
         PENDING_DHDS.add(dhd);
-        System.out.println("[SGJPATCH-POWERBRIDGE] Registered Atlantis DHD "
-                + dhd.getBlockPos() + " for concealed cable bootstrap");
     }
 
     public static void unregister(BlockEntity dhd) {
         PENDING_DHDS.remove(dhd);
         DIAGNOSED_DHDS.remove(dhd);
+        NEXT_ATTEMPT.remove(dhd);
     }
 
     @SubscribeEvent
@@ -47,23 +48,25 @@ public final class AtlantisDHDConcealedCableBootstrapEvents {
                 || event.level.getGameTime() % 20L != 0L) return;
 
         for (BlockEntity dhd : PENDING_DHDS.toArray(BlockEntity[]::new)) {
-            if (dhd.isRemoved() || dhd.getLevel() != event.level) continue;
+            if (dhd.isRemoved()) {unregister(dhd);continue;}
+            if (dhd.getLevel() != event.level) continue;
+            if(event.level.getGameTime()<NEXT_ATTEMPT.getOrDefault(dhd,0L))continue;
+            NEXT_ATTEMPT.put(dhd,event.level.getGameTime()+200L);
 
             BlockPos dhdPos = dhd.getBlockPos();
             BlockPos cablePos = findConcealedLargeCable(dhd);
             if (cablePos == null) {
-                diagnoseMissingCable(dhd);
+                unregister(dhd);
                 continue;
             }
 
             ConduitNetworks networks = ConduitNetworks.get(event.level);
-            for (CableBlockEntity cable : ConduitNetworks.findConnectedCables(
-                    event.level, cablePos)) {
+            var endpoints = ConduitNetworks.findConnectedCables(event.level, cablePos);
+            for (CableBlockEntity cable : endpoints) {
                 cable.update();
             }
             networks.update(event.level, cablePos);
-            boolean networkAccepted = ConduitNetworks.findConnectedCables(
-                    event.level, cablePos).stream().anyMatch(cable ->
+            boolean networkAccepted = endpoints.stream().anyMatch(cable ->
                             networks.getCableNetwork(cable.networkID()) != null);
             if (!networkAccepted) {
                 if (!Boolean.TRUE.equals(DIAGNOSED_DHDS.put(dhd, Boolean.TRUE))) {
@@ -71,13 +74,14 @@ public final class AtlantisDHDConcealedCableBootstrapEvents {
                             + cablePos + " for Atlantis DHD " + dhdPos
                             + " but SGJourney rejected the rebuilt output network");
                 }
-                continue;
+                break;
             }
 
             PENDING_DHDS.remove(dhd);
             DIAGNOSED_DHDS.remove(dhd);
             System.out.println("[SGJPATCH-POWERBRIDGE] Bootstrapped concealed Large cable "
                     + cablePos + " for Atlantis DHD " + dhdPos);
+            break; // At most one expensive cable rebuild per level per second.
         }
     }
 
@@ -93,7 +97,7 @@ public final class AtlantisDHDConcealedCableBootstrapEvents {
 
         for (BlockPos footprintPos : footprint) {
             BlockPos cablePos = footprintPos.below(CONCEALED_CABLE_DEPTH);
-            if (level.getBlockState(cablePos).getBlock()
+            if (level.hasChunkAt(cablePos) && level.getBlockState(cablePos).getBlock()
                     instanceof CableBlock.LargeNaquadahCable) {
                 return cablePos;
             }

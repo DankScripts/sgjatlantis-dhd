@@ -240,33 +240,6 @@ function remapAcceptedScreenClass(classNode) {
 
 function initializeCoreMod() {
     return {
-        'guard_atlantis_engage_close': {
-            'target': {
-                'type': 'CLASS',
-                'name': 'com.mustangdoc.sgjpatch.compat.AtlantisEngageCloseHelper'
-            },
-            'transformer': function(classNode) {
-                var replacements = 0;
-                for (var methodIndex = 0; methodIndex < classNode.methods.size(); methodIndex++) {
-                    var method = classNode.methods.get(methodIndex);
-                    if (String(method.name) !== 'press') {
-                        continue;
-                    }
-                    var iterator = method.instructions.iterator();
-                    while (iterator.hasNext()) {
-                        var instruction = iterator.next();
-                        if (instruction instanceof LdcInsnNode && String(instruction.cst) === 'm_7379_') {
-                            instruction.cst = 'sgjpatch$closeAfterEngage';
-                            replacements++;
-                        }
-                    }
-                }
-                if (replacements !== 1) {
-                    throw new Error('Expected one Atlantis engage close callback; found ' + replacements);
-                }
-                return classNode;
-            }
-        },
         'bridge_atlantis_widget_render': {
             'target': {
                 'type': 'CLASS',
@@ -378,27 +351,6 @@ function initializeCoreMod() {
                 }
                 throw new Error('SGJourney Additions ClientModEvents.onClientSetup was not found');
             }
-        },
-        'remap_accepted_atlantis_screen': {
-            'target': {
-                'type': 'CLASS',
-                'name': 'com.mustangdoc.sgjpatch.client.screens.AtlantisDHDScreenFixed'
-            },
-            'transformer': remapAcceptedScreenClass
-        },
-        'remap_accepted_atlantis_symbol_button': {
-            'target': {
-                'type': 'CLASS',
-                'name': 'com.mustangdoc.sgjpatch.client.screens.AtlantisDHDScreenFixed$AtlantisTriangleSymbolButton'
-            },
-            'transformer': remapAcceptedScreenClass
-        },
-        'remap_accepted_atlantis_center_button': {
-            'target': {
-                'type': 'CLASS',
-                'name': 'com.mustangdoc.sgjpatch.client.screens.AtlantisDHDScreenFixed$AtlantisTriangleCenterButton'
-            },
-            'transformer': remapAcceptedScreenClass
         },
         'synchronize_kubejs_generated_data_reads': {
             'target': {

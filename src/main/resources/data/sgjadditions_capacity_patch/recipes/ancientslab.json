@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": ["PPP"],
+  "key": {"P": {"item": "sgjadditions_capacity_patch:ancientpillar"}},
+  "result": {"item": "sgjadditions_capacity_patch:ancientslab", "count": 6}
+}

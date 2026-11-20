@@ -4,23 +4,15 @@ license="All Rights Reserved"
 
 [[mods]]
 modId="sgjadditions_capacity_patch"
-version="${mod_version}"
+version="${file.jarVersion}"
 displayTest="MATCH_VERSION"
-displayName="Atlantis DHD Upgrade / SGJ Additions Compatibility"
+displayName="Atlantis DHD Upgrade"
 description='''
 Standalone Atlantis DHD upgrade for SGJourney, including the accepted triangle dialer GUI, crystal interface, Pegasus shield support, and arbitrary-angle Blockbench model rendering.
 
-Version 2.0.3-beta.3 adds concealed Large Naquadah Cable power support for the Atlantis DHD while preserving occupied cable connections such as Mekanism Teleporters. It also fixes the proxy Crystal Controls position so client and server inventory slot counts remain synchronized.
-
-The mod also includes an optional compatibility bridge for the exact More Gates 4.3.2 Forge 1.20.1 JAR (CurseForge file 5783142). It translates that legacy add-on's symbol, point-of-origin, wormhole, and disconnect resources to the current SGJourney formats at startup. The bridge is enabled by default and does nothing unless that exact More Gates JAR is installed.
-
-Its More Gates crystallizer recipe overrides also expose SGJourney's previously implicit 100 mB Liquid Naquadah input. Almost Fluidified 0.1.8 can then replace that input only when Naquadah fluid unification is explicitly configured; without Almost Fluidified, the recipes retain normal SGJourney behavior.
+Version 2.0.5 retains the installed 2.0.4 fixes and bundles the constructed Atlantis city from the world save, including underwater foundations and the Pegasus Stargate. It adds two independent jumper-bay ceiling hatches, a shared Atlantis-style control table with a two-door GUI and 50 FE operation cost, and optional direct redstone door control. The table, replacement hatch panels, and redstone ports have crafting recipes.
 
 Config file: config/sgjatlantis-dhd.toml
-Defaults:
-useOriginalSGJAdditionsDHD = false
-enableMoreGates432CompatibilityPatch = true
-Restart Minecraft after changing either setting.
 '''
 
 mixinConfigs="sgjadditions_capacity_patch.mixins.json"
@@ -42,20 +34,8 @@ side="BOTH"
 [[dependencies.sgjadditions_capacity_patch]]
 modId="sgjourney"
 mandatory=true
-versionRange="[0.6.50,)"
+versionRange="[0.6.55-alpha,)"
 ordering="AFTER"
 side="BOTH"
 
-[[dependencies.sgjadditions_capacity_patch]]
-modId="sgjadditions"
-mandatory=false
-versionRange="[1.1.0,)"
-ordering="AFTER"
-side="BOTH"
 
-[[dependencies.sgjadditions_capacity_patch]]
-modId="moregates"
-mandatory=false
-versionRange="[0,)"
-ordering="AFTER"
-side="BOTH"

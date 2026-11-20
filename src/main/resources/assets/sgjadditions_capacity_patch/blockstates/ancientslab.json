@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "type=bottom,waterlogged=false": {
+      "model": "sgjadditions_capacity_patch:block/ancientslab"
+    },
+    "type=bottom,waterlogged=true": {
+      "model": "sgjadditions_capacity_patch:block/ancientslab"
+    },
+    "type=top,waterlogged=false": {
+      "model": "sgjadditions_capacity_patch:block/ancientslab_top"
+    },
+    "type=top,waterlogged=true": {
+      "model": "sgjadditions_capacity_patch:block/ancientslab_top"
+    },
+    "type=double,waterlogged=false": {
+      "model": "sgjadditions_capacity_patch:block/ancientslab_double"
+    },
+    "type=double,waterlogged=true": {
+      "model": "sgjadditions_capacity_patch:block/ancientslab_double"
+    }
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "end": "sgjadditions_capacity_patch:block/atlantis_silver_seamless_alloy",
+    "side": "sgjadditions_capacity_patch:block/atlantis_silver_illuminated_panel"
+  },
+  "elements": [
+    {
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "cullface": "north",
+          "texture": "#side",
+          "uv": [
+            0,
+            16,
+            16,
+            0
+          ]
+        },
+        "east": {
+          "cullface": "east",
+          "texture": "#side",
+          "uv": [
+            0,
+            16,
+            16,
+            0
+          ]
+        },
+        "west": {
+          "cullface": "west",
+          "texture": "#side",
+          "uv": [
+            0,
+            16,
+            16,
+            0
+          ]
+        },
+        "up": {
+          "cullface": "up",
+          "texture": "#end",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        },
+        "south": {
+          "cullface": "south",
+          "texture": "#side",
+          "uv": [
+            0,
+            16,
+            16,
+            0
+          ]
+        },
+        "down": {
+          "cullface": "down",
+          "texture": "#end",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
+        }
+      },
+      "from": [
+        0,
+        0,
+        0
+      ]
+    }
+  ]
+}

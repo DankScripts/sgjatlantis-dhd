@@ -1,0 +1,36 @@
+{
+  "variants": {
+    "facing=north,lit=false": {
+      "model": "sgjadditions_capacity_patch:block/powered_off_wallpanel",
+      "y": 0
+    },
+    "facing=north,lit=true": {
+      "model": "sgjadditions_capacity_patch:block/wallpanel",
+      "y": 0
+    },
+    "facing=east,lit=false": {
+      "model": "sgjadditions_capacity_patch:block/powered_off_wallpanel",
+      "y": 90
+    },
+    "facing=east,lit=true": {
+      "model": "sgjadditions_capacity_patch:block/wallpanel",
+      "y": 90
+    },
+    "facing=south,lit=false": {
+      "model": "sgjadditions_capacity_patch:block/powered_off_wallpanel",
+      "y": 180
+    },
+    "facing=south,lit=true": {
+      "model": "sgjadditions_capacity_patch:block/wallpanel",
+      "y": 180
+    },
+    "facing=west,lit=false": {
+      "model": "sgjadditions_capacity_patch:block/powered_off_wallpanel",
+      "y": 270
+    },
+    "facing=west,lit=true": {
+      "model": "sgjadditions_capacity_patch:block/wallpanel",
+      "y": 270
+    }
+  }
+}

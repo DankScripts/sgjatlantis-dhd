@@ -140,6 +140,14 @@
       "shade_quads": true,
       "emissive_ambient": true,
       "render_type": "solid"
+    },
+    "keypad": {
+      "loader": "forge:obj",
+      "model": "sgjadditions_capacity_patch:models/custom/atlantis_keypad.obj",
+      "flip_v": false,
+      "automatic_culling": false,
+      "shade_quads": true,
+      "render_type": "solid"
     }
   }
 }

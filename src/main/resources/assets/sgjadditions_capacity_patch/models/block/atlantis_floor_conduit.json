@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "all": "sgjadditions_capacity_patch:block/atlantis_floor_conduit"
+  },
+  "parent": "minecraft:block/cube_all"
+}

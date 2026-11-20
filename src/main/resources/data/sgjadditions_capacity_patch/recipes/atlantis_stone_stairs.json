@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "M  ",
+    "MM ",
+    "MMM"
+  ],
+  "key": {
+    "M": {
+      "item": "sgjadditions_capacity_patch:brownancioentblock"
+    }
+  },
+  "result": {
+    "item": "sgjadditions_capacity_patch:atlantis_stone_stairs",
+    "count": 4
+  }
+}

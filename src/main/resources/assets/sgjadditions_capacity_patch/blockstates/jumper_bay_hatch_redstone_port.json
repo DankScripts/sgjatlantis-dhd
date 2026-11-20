@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "upper=false,powered=false": {"model": "sgjadditions_capacity_patch:block/jumper_bay_hatch_redstone_port"},
+    "upper=false,powered=true": {"model": "sgjadditions_capacity_patch:block/jumper_bay_hatch_redstone_port"},
+    "upper=true,powered=false": {"model": "sgjadditions_capacity_patch:block/jumper_bay_hatch_redstone_port"},
+    "upper=true,powered=true": {"model": "sgjadditions_capacity_patch:block/jumper_bay_hatch_redstone_port"}
+  }
+}

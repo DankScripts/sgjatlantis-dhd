@@ -1,0 +1,4 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {"all": "sgjadditions_capacity_patch:block/atlantis_shield_projector"}
+}

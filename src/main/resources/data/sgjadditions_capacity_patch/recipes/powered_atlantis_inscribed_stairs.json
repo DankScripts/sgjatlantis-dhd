@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "sgjadditions_capacity_patch:atlantis_inscribed_stairs"
+    },
+    {
+      "item": "minecraft:redstone"
+    }
+  ],
+  "result": {
+    "item": "sgjadditions_capacity_patch:powered_atlantis_inscribed_stairs",
+    "count": 1
+  }
+}

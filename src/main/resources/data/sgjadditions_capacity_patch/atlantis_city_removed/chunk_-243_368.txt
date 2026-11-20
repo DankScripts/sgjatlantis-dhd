@@ -1,0 +1,6 @@
+0 429 5 minecraft:iron_bars east=false;north=true;south=false;waterlogged=false;west=true
+1 429 4 minecraft:iron_bars east=false;north=true;south=false;waterlogged=false;west=true
+2 429 3 minecraft:iron_bars east=false;north=true;south=false;waterlogged=false;west=true
+3 429 2 minecraft:iron_bars east=false;north=true;south=false;waterlogged=false;west=true
+4 429 0 minecraft:iron_bars east=false;north=true;south=true;waterlogged=false;west=false
+4 429 1 minecraft:iron_bars east=false;north=true;south=false;waterlogged=false;west=true

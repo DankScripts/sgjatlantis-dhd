@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "all": "sgjadditions_capacity_patch:block/atlantis_silver_seamless_alloy"
+  },
+  "parent": "minecraft:block/cube_all"
+}

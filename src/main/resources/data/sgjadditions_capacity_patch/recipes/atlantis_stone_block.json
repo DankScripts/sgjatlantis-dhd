@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "MM",
+    "MM"
+  ],
+  "key": {
+    "M": {
+      "item": "sgjadditions_capacity_patch:brownancioentblock"
+    }
+  },
+  "result": {
+    "item": "sgjadditions_capacity_patch:atlantis_stone_block",
+    "count": 4
+  }
+}

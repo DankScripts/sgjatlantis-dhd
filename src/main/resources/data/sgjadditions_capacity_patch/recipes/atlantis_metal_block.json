@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "MM",
+    "MM"
+  ],
+  "key": {
+    "M": {
+      "item": "sgjadditions_capacity_patch:blueancientblock"
+    }
+  },
+  "result": {
+    "item": "sgjadditions_capacity_patch:atlantis_metal_block",
+    "count": 4
+  }
+}

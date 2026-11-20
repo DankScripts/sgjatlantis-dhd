@@ -1,0 +1,28 @@
+{
+  "key": {
+    "I": {
+      "item": "minecraft:iron_block"
+    },
+    "R": {
+      "item": "minecraft:redstone_block"
+    },
+    "E": {
+      "item": "minecraft:ender_pearl"
+    },
+    "C": {
+      "item": "sgjadditions_capacity_patch:atlantis_transporter_control"
+    },
+    "M": {
+      "item": "sgjadditions_capacity_patch:atlantis_transporter_map"
+    }
+  },
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "IMI",
+    "CEC",
+    "IRI"
+  ],
+  "result": {
+    "item": "sgjadditions_capacity_patch:atlantis_transporter_room"
+  }
+}

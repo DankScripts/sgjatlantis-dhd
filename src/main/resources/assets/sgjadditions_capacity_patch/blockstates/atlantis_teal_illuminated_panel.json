@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "seam_flipped=false": {
+      "model": "sgjadditions_capacity_patch:block/atlantis_teal_illuminated_panel"
+    },
+    "seam_flipped=true": {
+      "model": "sgjadditions_capacity_patch:block/atlantis_teal_illuminated_panel_flipped"
+    }
+  }
+}

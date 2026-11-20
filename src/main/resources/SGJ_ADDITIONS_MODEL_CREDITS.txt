@@ -1,0 +1,11 @@
+SGJ Additions model geometry: Struxnet590, Stargate Journey Additions 1.1.0
+Source: https://www.curseforge.com/minecraft/mc-mods/stargate-journey-additions
+
+Atlantis DHD ports the shapes for the Ancient pillar, stairs, lights, wall
+panel, clamps, and post. All of these use replacement Atlantis DHD textures,
+including Atlantis metal grey and pale-white illumination. The old SGJ
+Additions DHD model is not included.
+
+This is a local review build. The CurseForge project lists Creative Commons
+4.0, while the 1.1.0 JAR metadata says All Rights Reserved. Redistribution
+rights should be clarified with the upstream author before public release.
