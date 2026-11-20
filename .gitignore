@@ -3,9 +3,14 @@
 /dist/
 /run/
 /runs/
+/out/
+/logs/
+/crash-reports/
 /baseline/
 /libs/
 /.idea/
 /.vscode/
+*.iml
+*.log
 /.env
 /.env.*
