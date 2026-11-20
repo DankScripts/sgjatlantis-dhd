@@ -130,6 +130,10 @@ tasks.register('compileAtlantisDialProgressTest', JavaCompile) {
     source = files('tools/tests/AtlantisDialProgressTest.java',
             'tools/tests/AtlantisClipboardAddressTest.java',
             'tools/tests/CityDhdLinkPolicyTest.java',
+            'tools/tests/NativeDhdCenterActionTest.java',
+            'tools/tests/PegasusShieldTransitionTest.java',
+            'src/main/java/com/mustangdoc/sgjpatch/client/render/PegasusShieldTransitionHelper.java',
+            'src/main/java/com/mustangdoc/sgjpatch/compat/NativeDhdCenterAction.java',
             'src/main/java/com/mustangdoc/sgjpatch/client/util/AtlantisClipboardAddress.java',
             'src/main/java/com/mustangdoc/sgjpatch/city/CityDhdLinkPolicy.java',
             'src/main/java/com/mustangdoc/sgjpatch/standalone/AtlantisDialProgress.java')
@@ -161,8 +165,25 @@ tasks.register('verifyCityDhdLinkPolicy', JavaExec) {
 
 tasks.named('check').configure { dependsOn 'verifyCityDhdLinkPolicy' }
 
+tasks.register('verifyNativeDhdCenterAction', JavaExec) {
+    dependsOn 'compileAtlantisDialProgressTest'
+    classpath = files(layout.buildDirectory.dir('atlantis-dial-tests'))
+    mainClass = 'com.mustangdoc.sgjpatch.compat.NativeDhdCenterActionTest'
+}
+
+tasks.named('check').configure { dependsOn 'verifyNativeDhdCenterAction' }
+
+tasks.register('verifyPegasusShieldTransition', JavaExec) {
+    dependsOn 'compileAtlantisDialProgressTest'
+    classpath = files(layout.buildDirectory.dir('atlantis-dial-tests'))
+    mainClass = 'com.mustangdoc.sgjpatch.client.render.PegasusShieldTransitionTest'
+}
+
+tasks.named('check').configure { dependsOn 'verifyPegasusShieldTransition' }
+
 tasks.register('verifyReleaseJar') {
-    dependsOn 'releaseJar', 'verifyAtlantisDialProgress', 'verifyAtlantisClipboardAddress', 'verifyCityDhdLinkPolicy'
+    dependsOn 'releaseJar', 'verifyAtlantisDialProgress', 'verifyAtlantisClipboardAddress', 'verifyCityDhdLinkPolicy', 'verifyNativeDhdCenterAction'
+    dependsOn 'verifyPegasusShieldTransition'
     doLast {
         def releaseFile = tasks.named('releaseJar', Jar).get().archiveFile.get().asFile
         def required = [

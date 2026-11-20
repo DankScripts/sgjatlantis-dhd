@@ -24,8 +24,8 @@ public abstract class LanteaEnergyIrisRendererMixin {
                                            MultiBufferSource buffers, int light, int overlay, CallbackInfo ci) {
         if (!(candidate instanceof BlockEntity gate) || !(candidate instanceof LanteaEnergyIrisState iris)) return;
         LanteaIrisHum.sync(gate, iris.sgjpatch$irisClosed());
-        if (!iris.sgjpatch$irisClosed() || !gate.getBlockState().hasProperty(HorizontalDirectionalBlock.FACING)) return;
+        if (!gate.getBlockState().hasProperty(HorizontalDirectionalBlock.FACING)) return;
         Direction facing = gate.getBlockState().getValue(HorizontalDirectionalBlock.FACING);
-        PegasusShieldMeshRenderer.renderLantea(poses, buffers, light, facing);
+        PegasusShieldMeshRenderer.renderLantea(gate, iris.sgjpatch$irisClosed(), poses, buffers, light, facing);
     }
 }

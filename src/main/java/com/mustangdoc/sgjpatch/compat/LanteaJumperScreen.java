@@ -3,8 +3,17 @@ package com.mustangdoc.sgjpatch.compat;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.math.Axis;
 import com.mustangdoc.sgjpatch.client.render.NativePegasusTextureHelper;
+import com.mustangdoc.sgjpatch.client.render.PegasusShieldTransitionHelper;
+import io.github.aqueoxx.lantea.blockentity.StargateControllerBlockEntity;
+import io.github.aqueoxx.lantea.client.render.StargateControllerRenderer;
+import io.github.aqueoxx.lantea.core.state.ChevronOrder;
+import io.github.aqueoxx.lantea.core.state.GateState;
+import io.github.aqueoxx.lantea.core.state.GlyphLights;
+import io.github.aqueoxx.lantea.core.structure.GateKind;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -12,8 +21,13 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.Sheets;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -28,6 +42,9 @@ public final class LanteaJumperScreen extends Screen {
     private static final int TABLE_W = 720, TABLE_H = 360;
     // Keep the table's miniature gate at its original upper-right position.
     private static final int TABLE_GATE_X = 505, TABLE_GATE_Y = 38;
+    private static final int GATE_CENTER = 59;
+    // The native opening is 5 blocks across at 17 GUI units per block; the iris art has a transparent rim.
+    private static final int NATIVE_IRIS_SIZE = 86;
     private static final int TABLE_BAR_Y = 252;
     private static final int TABLE_DIALER_X_OFFSET = -46;
     private static final int TABLE_CONTROLS_X_OFFSET = -24;
@@ -113,6 +130,9 @@ public final class LanteaJumperScreen extends Screen {
     private int canvasWidth() { return stationary() ? TABLE_W : W; }
     private int canvasHeight() { return stationary() ? TABLE_H : H; }
     private boolean nativeGate() { return stationary() || "lantea".equals(state.backend()); }
+    private boolean availableKey(int symbol) {
+        return !stationary() || symbol < state.symbols();
+    }
     private boolean acceptsSymbols() { return "Ready".equals(state.status()) || "Entering address".equals(state.status()); }
     private int maxDestinations() { return stationary() ? 7 : nativeGate() ? 6 : 8; }
     /** Advance only through symbols acknowledged by the native gate. */
@@ -124,13 +144,15 @@ public final class LanteaJumperScreen extends Screen {
     }
     private void guideMessage() {
         int next=guideNext();
-        if (next == -2) message=Component.literal("Wrong sequence. Right-click to clear and start again.");
+        if (next == -2) message=Component.literal(stationary()
+                ? "Wrong sequence. Press the centre diamond to clear and start again."
+                : "Wrong sequence. Right-click to clear and start again.");
         else if (next == -1) message=Component.literal("Address entered. Press the glowing centre diamond to dial.");
         else if (next >= 0) message=Component.literal("Symbol " + (chosen.size()+1) + "/" + guideKeys.length
                 + ": press the glowing button.");
     }
     private void press(int symbol) {
-        if (pending || !state.valid()) return;
+        if (pending || !state.valid() || !availableKey(symbol)) return;
         if (!nativeGate()) {
             pending = true;
             LanteaJumperNetwork.command(state.token(), symbol == -1 ? 1 : 4,
@@ -138,12 +160,10 @@ public final class LanteaJumperScreen extends Screen {
             return;
         }
         if (symbol == -1) {
-            if ("Awaiting activation".equals(state.status())) {
+            int action = NativeDhdCenterAction.forStatus(state.status(), stationary());
+            if (action != 0) {
                 pending = true;
-                LanteaJumperNetwork.command(state.token(), 1, "");
-            } else if (!acceptsSymbols()) {
-                pending = true;
-                LanteaJumperNetwork.command(state.token(), 2, "");
+                LanteaJumperNetwork.command(state.token(), action, "");
             } else message = Component.literal("Enter the destination symbols and origin 0 first.");
             return;
         }
@@ -169,10 +189,18 @@ public final class LanteaJumperScreen extends Screen {
         }
         if (button != 0) return super.mouseClicked(mouseX, mouseY, button);
         if(clickMemory(x,y))return true;
-        // The center of the upright miniature gate doubles as a clear Dial control.
-        int gateX = stationary() ? TABLE_GATE_X : 246;
-        int gateY = stationary() ? TABLE_GATE_Y : 1;
-        if (x >= gateX + 26 && x <= gateX + 92 && y >= gateY + 26 && y <= gateY + 92) { if (stationary()) LanteaJumperNetwork.command(state.token(),7,""); else press(-1); return true; }
+        if (stationary()) {
+            double dx = x - TABLE_GATE_X - GATE_CENTER;
+            double dy = y - TABLE_GATE_Y - GATE_CENTER;
+            double radius = irisSize() / 2.0 - 1;
+            if (dx * dx + dy * dy <= radius * radius) {
+                LanteaJumperNetwork.command(state.token(), 7, "");
+                return true;
+            }
+        } else if (x >= 246 + 26 && x <= 246 + 92 && y >= 1 + 26 && y <= 1 + 92) {
+            press(-1);
+            return true;
+        }
         for (int[] key : KEYS) {
             if (contains(key, x, y)) { press(key[0]); return true; }
         }
@@ -290,16 +318,13 @@ public final class LanteaJumperScreen extends Screen {
             g.fill(x + size / 2 - halfWidth, y + row, x + size / 2 + halfWidth + 1, y + row + 1, 0xB3FFAE32);
         }
     }
-    private void renderGate(GuiGraphics g) {
+    private void renderGate(GuiGraphics g, float partialTick) {
         int x = stationary() ? TABLE_GATE_X : 246, y = stationary() ? TABLE_GATE_Y : 1;
-        blit(g, GATE + "gate_base.png", x, y, 118, 118);
         if (stationary()) {
-            var client = Minecraft.getInstance();
-            var gate = client.level == null || client.player == null ? null
-                    : LanteaIrisBridge.nearest(client.level, client.player.blockPosition(), false);
-            boolean closed = gate instanceof LanteaEnergyIrisState iris && iris.sgjpatch$irisClosed();
-            blit(g, GUI + (closed ? "atlantis_shield_button_on_large.png" : "atlantis_shield_button_off_large.png"), x + 22, y + 22, 74, 74);
+            renderNativeTableGate(g, x, y, partialTick);
+            return;
         }
+        blit(g, GATE + "gate_base.png", x, y, 118, 118);
         int[] encoded = state.encodedSymbols();
         blit(g, GATE + "idle_symbols.png", x, y, 118, 118);
         int[] positions = state.lockedPositions();
@@ -323,6 +348,151 @@ public final class LanteaJumperScreen extends Screen {
                 blit(g, GATE + "chevron_slot_" + slot + ".png", x, y, 118, 118);
         }
     }
+    private int irisSize() {
+        return state.nativeGatePos() != null ? NATIVE_IRIS_SIZE : 74;
+    }
+
+    private void renderNativeTableGate(GuiGraphics g, int x, int y, float partialTick) {
+        var client = Minecraft.getInstance();
+        var pos = state.nativeGatePos();
+        var block = client.level != null && pos != null && client.level.hasChunkAt(pos)
+                ? client.level.getBlockEntity(pos) : null;
+        if (block instanceof StargateControllerBlockEntity gate && !gate.isRemoved() && gate.structureAssembled()) {
+            g.flush();
+            Lighting.setupForFlatItems();
+            var pose = g.pose();
+            pose.pushPose();
+            try {
+                pose.translate(x + GATE_CENTER, y + GATE_CENTER, 100);
+                pose.scale(17, -17, 17);
+                pose.mulPose(Axis.YP.rotationDegrees(180));
+                pose.translate(-0.5, -3.5, -0.5);
+                // The in-world renderer omits ring sections already baked into chunks.
+                boolean pegasus = gate.kind() == GateKind.PEGASUS;
+                var motion = gate.motion();
+                double motionTime = gate.motionTime(partialTick);
+                drawNativeModel(g, pegasus ? StargateControllerRenderer.PEGASUS_GATE_MODEL
+                        : StargateControllerRenderer.GATE_MODEL);
+                if (pegasus) {
+                    renderPegasusGlyphs(g, gate, motionTime);
+                } else {
+                    pose.pushPose();
+                    try {
+                        pose.translate(0.5, 3.5, 0.5);
+                        pose.mulPose(Axis.ZP.rotationDegrees((float) motion.angle(motionTime)));
+                        pose.translate(-0.5, -3.5, -0.5);
+                        drawNativeModel(g, StargateControllerRenderer.RING_MODEL);
+                    } finally {
+                        pose.popPose();
+                    }
+                    pose.pushPose();
+                    try {
+                        pose.translate(0, motion.latch(motionTime) * 0.16, 0);
+                        drawNativeModel(g, StargateControllerRenderer.LATCH_MODEL);
+                    } finally {
+                        pose.popPose();
+                    }
+                }
+                var lights = pegasus ? StargateControllerRenderer.PEGASUS_CHEVRON_LIGHT_MODELS
+                        : StargateControllerRenderer.CHEVRON_LIGHT_MODELS;
+                var snapshot = gate.snapshot();
+                for (int i = 0; i < Math.min(snapshot.chevrons(), ChevronOrder.size()); i++) {
+                    int slot = ChevronOrder.chevronForLock(i, snapshot.length());
+                    pose.pushPose();
+                    try {
+                        if (!pegasus && slot == 0) pose.translate(0, motion.latch(motionTime) * 0.16, 0);
+                        drawNativeGlow(g, lights.get(slot), 0.35F, 0.85F, 1F);
+                    } finally {
+                        pose.popPose();
+                    }
+                }
+                g.flush();
+            } finally {
+                pose.popPose();
+                Lighting.setupFor3DItems();
+            }
+        }
+
+        float reveal = block instanceof LanteaEnergyIrisState iris
+                ? PegasusShieldTransitionHelper.reveal(block, iris.sgjpatch$irisClosed()) : 0F;
+        g.pose().pushPose();
+        try {
+            g.pose().translate(0, 0, 200);
+            int size = irisSize();
+            int inset = GATE_CENTER - size / 2;
+            if (reveal < 1F)
+                blit(g, GUI + "atlantis_shield_button_off_large.png", x + inset, y + inset, size, size);
+            if (reveal > 0F) {
+                RenderSystem.enableBlend();
+                RenderSystem.defaultBlendFunc();
+                g.setColor(1F, 1F, 1F, reveal);
+                try {
+                    blit(g, GUI + "atlantis_shield_button_on_large.png", x + inset, y + inset, size, size);
+                } finally {
+                    g.setColor(1F, 1F, 1F, 1F);
+                    RenderSystem.disableBlend();
+                }
+            }
+        } finally {
+            g.pose().popPose();
+        }
+    }
+
+    private static void renderPegasusGlyphs(GuiGraphics g, StargateControllerBlockEntity gate, double motionTime) {
+        var snapshot = gate.snapshot();
+        int length = snapshot.length();
+        var locked = gate.litSymbols();
+        for (int i = 0; i < Math.min(locked.size(), ChevronOrder.size()); i++)
+            drawPegasusGlyph(g, gate, locked.get(i), GlyphLights.lockedTile(i, length), false);
+
+        var motion = gate.motion();
+        int travelling = GlyphLights.travellingTile(motion, motionTime, length);
+        if (travelling >= 0) drawPegasusGlyph(g, gate, motion.symbol(), travelling, true);
+        if (snapshot.state() == GateState.INCOMING) {
+            int swept = GlyphLights.sweptTiles(motion, motionTime);
+            for (int tile = 0; tile < swept; tile++)
+                drawPegasusGlyph(g, gate, tile, tile, tile == swept - 1);
+        }
+    }
+
+    private static void drawPegasusGlyph(GuiGraphics g, StargateControllerBlockEntity gate, int symbol, int tile,
+                                         boolean moving) {
+        var alphabet = gate.kind().glyphSet();
+        if (!alphabet.contains(symbol)) return;
+        var model = alphabet.isPointOfOrigin(symbol)
+                ? StargateControllerRenderer.PEGASUS_ORIGIN_LIGHT_MODELS.get(gate.origin())
+                : StargateControllerRenderer.PEGASUS_GLYPH_MODELS.get(symbol);
+        if (model == null) return;
+        var pose = g.pose();
+        pose.pushPose();
+        try {
+            pose.translate(0.5, 3.5, 0.5);
+            pose.mulPose(Axis.ZP.rotationDegrees((symbol - tile) * 360F / GlyphLights.SYMBOLS));
+            pose.translate(-0.5, -3.5, -0.5);
+            drawNativeGlow(g, model, moving ? 1F : 0.55F, moving ? 1F : 0.90F, 1F);
+        } finally {
+            pose.popPose();
+        }
+    }
+
+    private static void drawNativeGlow(GuiGraphics g, ResourceLocation modelId, float red, float green, float blue) {
+        var model = Minecraft.getInstance().getModelManager().getModel(modelId);
+        var buffer = g.bufferSource().getBuffer(Sheets.cutoutBlockSheet());
+        // Use the same GUI pass as the ring; only override the baked color of the lit quads.
+        for (var quad : model.getQuads(null, null, RandomSource.create(42L))) {
+            buffer.putBulkData(g.pose().last(), quad, red, green, blue, 1F,
+                    LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, false);
+        }
+    }
+
+    private static void drawNativeModel(GuiGraphics g, ResourceLocation modelId) {
+        var client = Minecraft.getInstance();
+        var model = client.getModelManager().getModel(modelId);
+        var quads = model.getQuads(null, null, RandomSource.create(42L));
+        client.getItemRenderer().renderQuadList(g.pose(), g.bufferSource().getBuffer(Sheets.cutoutBlockSheet()),
+                quads, ItemStack.EMPTY, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+    }
+
     public record KeyShape(double x, double y, double width, double height, boolean up) {
         // Shrink about the centroid: every edge stays parallel and equally inset.
         KeyShape inset(double margin) {
@@ -355,6 +525,11 @@ public final class LanteaJumperScreen extends Screen {
     private void renderKey(GuiGraphics g, int[] key, double mx, double my) {
         KeyShape shape = keyShape(key);
         int symbol=key[0], width=(int)Math.round(shape.width), cx=(int)Math.round(shape.x+shape.width/2);
+        if (!availableKey(symbol)) {
+            triangle(g, shape, 0xFF21150E);
+            triangle(g, shape.inset(1), 0xFF214A43);
+            return;
+        }
         boolean selected=chosen.contains(symbol), hover=shape.contains(mx,my);
         for (int encoded:state.encodedSymbols()) if(encoded==symbol) selected=true;
         triangle(g,shape,0xFF21150E); int inset=1;
@@ -371,7 +546,7 @@ public final class LanteaJumperScreen extends Screen {
         } else if(Screen.hasShiftDown() || symbol==0) {
             g.drawCenteredString(font,Integer.toString(symbol),cx,cy-4,selected?0x382109:0xFFE7CD9C);
         } else {
-            int artSymbol=nativeGate() && symbol>=20?symbol+1:symbol;
+            int artSymbol=nativeGate() && "pegasus".equals(state.glyphSet()) && symbol>=20?symbol+1:symbol;
             String path=NativePegasusTextureHelper.texturePath(artSymbol,true);
             ResourceLocation art=path!=null && "pegasus".equals(state.glyphSet())?texture(path):
                     symbol>0 && symbol<=symbolTextures().size()?symbolTextures().get(symbol-1):null;
@@ -409,12 +584,14 @@ public final class LanteaJumperScreen extends Screen {
             g.fill(-5, -7, W + 5, H + 4, 0xFF35251A);
         }
         if (stationary()) com.mustangdoc.sgjpatch.client.util.AtlantisKeypadSurface.backplate(g, TABLE_DIALER_X_OFFSET, 0);
-        renderGate(g);
+        renderGate(g, partial);
         for (int[] key : KEYS) renderKey(g, key, mx, my);
         renderMemory(g,mx,my);
         g.pose().popPose();
         int textY = Math.min(height - 28, top + Math.round(canvasHeight() * scale) + 5);
-        String status = acceptsSymbols() ? (nativeGate() && pastedAddress != null
+        String status = stationary() && "Entering address".equals(state.status())
+                ? "Entering address • centre diamond to clear"
+                : acceptsSymbols() ? (nativeGate() && pastedAddress != null
                 ? "Pasted " + pastedAddress + " • follow the glowing buttons • centre diamond to dial"
                 : "Select 6–" + maxDestinations() + " glyphs • centre diamond to dial • "
                 + (nativeGate() ? "Ctrl+V to paste a Lantea address" : "hold Shift for numbers"))

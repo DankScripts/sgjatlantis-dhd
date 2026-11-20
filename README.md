@@ -3,6 +3,18 @@
 Source overlay for Atlantis DHD Upgrade on Minecraft 1.20.1 and Forge 47.4.16.
 This branch contains only the Forge edition of Atlantis DHD.
 
+## Bundled Atlantis city
+
+The release includes all 2,009 city chunks from the final Farlands layout,
+including the moved jumper bay table and shield controller and the separate
+decorative console. Use the matching Forge City Shield release for the city
+preset at the new controller position. Replacing the JAR does not rebuild an
+already installed city.
+
+The jumper bay table refreshes its large naquadah cable feeds when it loads
+or is opened with less than 50 FE, including feeds connected through its
+floor conduit. It still requires a powered feed.
+
 ## Build
 
 Use Java 17 and the checked-in Gradle wrapper. Obtain these inputs separately:

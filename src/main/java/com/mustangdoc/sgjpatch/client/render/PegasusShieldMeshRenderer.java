@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.povstalec.sgjourney.client.render.SGJourneyRenderTypes;
@@ -47,7 +48,9 @@ public final class PegasusShieldMeshRenderer {
    }
 
    /** Lantea's controller pose is rooted at the base block, not the gate centre. */
-   public static void renderLantea(PoseStack stack, MultiBufferSource source, int combinedLight, Direction facing) {
+   public static void renderLantea(BlockEntity gate, boolean closed, PoseStack stack, MultiBufferSource source,
+                                   int combinedLight, Direction facing) {
+      if (PegasusShieldTransitionHelper.reveal(gate, closed) <= 0.001F) return;
       ShieldMesh shieldMesh = getMesh();
       if (shieldMesh == null) return;
       stack.pushPose();
@@ -66,8 +69,8 @@ public final class PegasusShieldMeshRenderer {
       ShieldTextureFlow.beginFrame();
       VertexConsumer consumer = source.getBuffer(LanteaShieldRenderType.shield(SHIELD_TEXTURE));
       for (Face face : shieldMesh.faces) {
-         emitTriangle(consumer, pose.pose(), pose.normal(), combinedLight, face, false, 0.9F, false);
-         emitTriangle(consumer, pose.pose(), pose.normal(), combinedLight, face, true, 0.9F, false);
+         emitTriangle(consumer, pose.pose(), pose.normal(), combinedLight, face, false, 0.9F, true);
+         emitTriangle(consumer, pose.pose(), pose.normal(), combinedLight, face, true, 0.9F, true);
       }
       stack.popPose();
    }

@@ -20,6 +20,7 @@
     "AtlantisDHDEntityDhdApiMixin",
     "AtlantisDHDEntityCapacityMixin",
     "AbstractStargateEntityNetworkFixMixin",
+    "CityStargateCacheAccessor",
     "AbstractStargateEntityDialFailResetMixin",
     "AbstractStargateEntityResetOnLoadMixin",
     "StargateConnectionTerminateGuardMixin",

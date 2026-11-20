@@ -1,5 +1,10 @@
 ## 2.0.5 - SGJourney 0.6.55-alpha
 
+- Bundle the final Farlands city layout, including the updated control room,
+  large database console, decorative console, and moved jumper bay and shield controls.
+- Refresh large naquadah cable feeds for the jumper bay table through floor
+  conduits on load and when the table is opened without enough FE.
+
 - Initialize the bundled Pegasus gate's DHD callbacks after loading its saved
   registry entry. Repair missing or one-sided links when the pair is within
   range and neither side belongs to another device; synchronize symbols after linking.

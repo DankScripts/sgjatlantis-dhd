@@ -1,4 +1,5 @@
 package com.mustangdoc.sgjpatch.mixin;
+import com.mustangdoc.sgjpatch.standalone.AtlantisDHDEntity;
 import net.minecraft.nbt.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -10,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.*;
 @Mixin(AbstractDHDEntity.class)
 public abstract class AtlantisRecentAddressesMixin {
     private static final String KEY="AtlantisRecentAddresses";
+    private static final String RANGE_KEY="AtlantisDhdConnectionRange";
     @Inject(method="tick",at=@At("TAIL"),remap=false)
     private static void record(Level level,BlockPos pos,BlockState state,AbstractDHDEntity dhd,CallbackInfo ci) {
         if(level.isClientSide || level.getGameTime()%20!=0 ||
@@ -28,10 +30,16 @@ public abstract class AtlantisRecentAddressesMixin {
     }
     @Inject(method="m_5995_",at=@At("RETURN"),remap=false)
     private void sync(CallbackInfoReturnable<CompoundTag> ci){
-        ci.getReturnValue().put("AtlantisRecentAddresses",((AbstractDHDEntity)(Object)this).getPersistentData().getList("AtlantisRecentAddresses",Tag.TAG_STRING).copy());
+        var dhd=(AbstractDHDEntity)(Object)this;
+        ci.getReturnValue().put(KEY,dhd.getPersistentData().getList(KEY,Tag.TAG_STRING).copy());
+        if(dhd instanceof AtlantisDHDEntity)
+            ci.getReturnValue().putInt(RANGE_KEY,(int)dhd.getMaxConnectionDistance());
     }
     @Inject(method="handleUpdateTag",at=@At("TAIL"),remap=false)
     private void receive(CompoundTag tag,CallbackInfo ci){
-        ((AbstractDHDEntity)(Object)this).getPersistentData().put("AtlantisRecentAddresses",tag.getList("AtlantisRecentAddresses",Tag.TAG_STRING).copy());
+        var dhd=(AbstractDHDEntity)(Object)this;
+        dhd.getPersistentData().put(KEY,tag.getList(KEY,Tag.TAG_STRING).copy());
+        if(dhd instanceof AtlantisDHDEntity && tag.contains(RANGE_KEY,Tag.TAG_INT))
+            ((AbstractDHDEntityAccessor)dhd).sgjpatch$setMaxConnectionDistance(tag.getInt(RANGE_KEY));
     }
 }

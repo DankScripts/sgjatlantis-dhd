@@ -1,5 +1,6 @@
 package com.mustangdoc.sgjpatch.compat;
 
+import com.mojang.logging.LogUtils;
 import com.mustangdoc.sgjpatch.standalone.AtlantisDHDEntity;
 import java.lang.reflect.*;
 import java.util.*;
@@ -12,12 +13,14 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
-import net.povstalec.sgjourney.common.data.StargateNetwork;
 import net.povstalec.sgjourney.api.stargate.BlockEntityStargate;
+import net.povstalec.sgjourney.api.stargate.DHDControlledStargate;
+import org.slf4j.Logger;
 
 /** Optional stationary console adapter. Lantea retains ownership of the actual connection and transit. */
 @Mod.EventBusSubscriber(modid = "sgjadditions_capacity_patch")
 public final class AtlantisNativeDhd {
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final String ROOT = "io.github.aqueoxx.lantea.";
     private static final Map<ServerPlayer, Session> SESSIONS = new WeakHashMap<>();
     private static final Map<AtlantisDHDEntity, LanteaNativeJumperBackend.Gate> ACTIVE_TABLES = new IdentityHashMap<>();
@@ -58,41 +61,57 @@ public final class AtlantisNativeDhd {
     private static Object constant(String type,String name) throws ReflectiveOperationException {
         return Enum.valueOf((Class)Class.forName(ROOT+type),name);
     }
-    private static Target nearest(ServerPlayer p, AtlantisDHDEntity dhd) throws ReflectiveOperationException {
+    private static Target nearest(ServerPlayer p, AtlantisDHDEntity dhd, boolean logMiss) throws ReflectiveOperationException {
         Object services=services(p), registry=call(services,"registry"); Target best=null;
         double range=dhd.getMaxConnectionDistance();
+        int inRange=0, assembled=0;
         for(Object record:(Collection<?>)call(registry,"all")) {
             Object location=call(record,"location");
-            if(!Boolean.TRUE.equals(call(record,"assembled")) || !p.level().dimension().location().toString().equals(call(location,"dimension")))continue;
+            if(!p.level().dimension().location().toString().equals(call(location,"dimension")))continue;
             Vec3 pos=new Vec3(((Number)call(location,"x")).doubleValue()+.5,
                     ((Number)call(location,"y")).doubleValue()+.5,((Number)call(location,"z")).doubleValue()+.5);
             double distance=pos.distanceToSqr(Vec3.atCenterOf(dhd.getBlockPos()));
-            if(distance>range*range || best!=null&&distance>=best.distance)continue;
+            if(distance>range*range)continue;
+            inRange++;
+            if(!Boolean.TRUE.equals(call(record,"assembled")))continue;
+            assembled++;
+            if(best!=null&&distance>=best.distance)continue;
             Optional<?> controller=(Optional<?>)call(services,"controller",call(record,"id"));
             if(controller.isEmpty() || !Boolean.TRUE.equals(call(controller.get(),"structureAssembled")))continue;
             var gate=LanteaNativeJumperBackend.describe(controller.get());
             best=new Target(gate,distance);
         }
+        if(best==null&&logMiss) {
+            LOGGER.info("Atlantis table at {} in {} opened the SGJourney dialer: no live assembled Lantea gate within {} blocks ({} registered in range, {} marked assembled)",
+                    dhd.getBlockPos(), p.level().dimension().location(), range, inRange, assembled);
+        }
         return best;
     }
     private static boolean journeyLinked(ServerPlayer p,AtlantisDHDEntity dhd) {
-        for(var gate:StargateNetwork.get(p.serverLevel()).getStargatesInDimension(p.level().dimension())) {
-            if(gate instanceof BlockEntityStargate<?> block && block.getStargateBlockEntity()!=null
-                    && Vec3.atCenterOf(block.getBlockPos()).distanceToSqr(Vec3.atCenterOf(dhd.getBlockPos()))<=dhd.getMaxConnectionDistanceSqr())return true;
-        }
-        return false;
+        var table=dhd.getDHD();
+        if(table==null)return false;
+        var linked=table.receiverCache().getCached();
+        if(!(linked instanceof BlockEntityStargate<?> gate)
+                || !(linked instanceof DHDControlledStargate controlled)
+                || controlled.controllerCache().getCached()!=table
+                || !p.level().dimension().equals(gate.getDimension())
+                || gate.getBlockPos().distSqr(dhd.getBlockPos())>dhd.getMaxConnectionDistanceSqr()
+                || !p.serverLevel().hasChunkAt(gate.getBlockPos()))return false;
+        var block=gate.getStargateBlockEntity();
+        return block!=null && !block.isRemoved() && p.level().getBlockEntity(gate.getBlockPos())==block
+                && block.getCapability(DHDControlledStargate.DHD_CONTROLLED_STARGATE_CAPABILITY).orElse(null)==controlled;
     }
     public static boolean open(ServerPlayer p, BlockPos pos) {
         if(!ModList.get().isLoaded("lantea") || !(p.level().getBlockEntity(pos) instanceof AtlantisDHDEntity dhd)
                 || journeyLinked(p,dhd))return false;
         try {
-            Target target=nearest(p,dhd); if(target==null)return false;
+            Target target=nearest(p,dhd,true); if(target==null)return false;
             if(p.isSpectator() || p.distanceToSqr(Vec3.atCenterOf(pos))>64)return true;
             Session session=new Session(dhd,target.gate,p.serverLevel().getGameTime());
             SESSIONS.put(p,session); send(p,session,true,Component.literal("Select symbols or paste a Lantea address with Ctrl+V."));
             return true;
         } catch(ReflectiveOperationException|RuntimeException ex) {
-            com.mojang.logging.LogUtils.getLogger().error("Cannot open native Atlantis DHD",ex);
+            LOGGER.error("Cannot open native Atlantis DHD",ex);
             p.displayClientMessage(Component.literal("Lantea DHD compatibility failed; see the game log."),true);
             return true;
         }
@@ -108,7 +127,7 @@ public final class AtlantisNativeDhd {
             if(action==0&&now<s.poll)return true;
             if(action!=0&&action!=4&&now<s.action){send(p,s,false,Component.literal("Please retry that button."));return true;}
             s.poll=now+5; if(action!=0&&action!=4)s.action=now+1;
-            Target target=nearest(p,s.dhd);
+            Target target=nearest(p,s.dhd,false);
             if(target==null || target.gate.controller()!=s.gate.controller() || journeyLinked(p,s.dhd))throw new IllegalStateException("Gate link changed; reopen the DHD.");
             if ((action==1 || action==5 || action==6)
                     && !AtlantisDhdCrystalRequirements.canDial(s.dhd)) {
@@ -257,8 +276,11 @@ public final class AtlantisNativeDhd {
     }
     private static void send(ServerPlayer p,Session s,boolean open,Component message) throws ReflectiveOperationException {
         var snapshot=LanteaNativeJumperBackend.snapshot(s.gate);
+        var host=call(s.gate.controller(),"host");
+        var gatePos=host instanceof net.minecraft.world.level.block.entity.BlockEntity block ? block.getBlockPos() : null;
         LanteaJumperNetwork.send(p,new LanteaJumperNetwork.State(s.token,s.token,open,true,s.gate.symbols(),message,
-                snapshot.status(),"lantea_dhd",s.gate.glyphSet(),snapshot.encodedSymbols(),new int[0],-1,snapshot.typedSymbols(),AtlantisLanteaMemory.addresses(s.dhd)));
+                snapshot.status(),"lantea_dhd",s.gate.glyphSet(),snapshot.encodedSymbols(),new int[0],-1,snapshot.typedSymbols(),
+                AtlantisLanteaMemory.addresses(s.dhd),gatePos));
     }
 
     /** Keep the physical table in sync even after the dialer screen closes. */

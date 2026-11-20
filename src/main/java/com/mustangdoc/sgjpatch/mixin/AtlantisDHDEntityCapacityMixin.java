@@ -136,8 +136,8 @@ public abstract class AtlantisDHDEntityCapacityMixin {
             if (stargate != null) {
                 dhd.setSymbolsFromStargate();
                 stargate.updateFromDHD(adapter);
-                dhd.updateClient();
             }
+            dhd.updateClient();
         }
     }
 

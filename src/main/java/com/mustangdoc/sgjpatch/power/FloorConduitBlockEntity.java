@@ -55,6 +55,16 @@ public final class FloorConduitBlockEntity extends BlockEntity {
   for(FloorConduitBlockEntity member:built.members)member.network=built;
   return built;
  }
+ public Set<BlockPos> connectedLargeCablePositions(){
+  Set<BlockPos> cables=new LinkedHashSet<>();
+  if(level==null || level.isClientSide)return cables;
+  for(Endpoint endpoint:getNetwork().endpoints){
+   BlockPos pos=endpoint.pos();
+   if(level.hasChunkAt(pos) && level.getBlockState(pos).getBlock()
+           instanceof net.povstalec.sgjourney.common.blocks.tech.CableBlock.LargeNaquadahCable)cables.add(pos);
+  }
+  return cables;
+ }
  private boolean hasLanteaHubAbove(){
   if(level==null)return false;
   BlockEntity above=level.getBlockEntity(worldPosition.above());

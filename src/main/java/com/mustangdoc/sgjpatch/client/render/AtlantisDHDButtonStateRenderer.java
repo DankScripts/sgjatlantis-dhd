@@ -10,14 +10,17 @@ import com.mojang.math.Axis;
 import com.mustangdoc.sgjpatch.compat.LanteaDhdTableLights;
 import com.mustangdoc.sgjpatch.init.SGJPatchBlockEntities;
 import com.mustangdoc.sgjpatch.standalone.AtlantisDHDApi;
+import io.github.aqueoxx.lantea.blockentity.StargateControllerBlockEntity;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -38,6 +41,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.povstalec.sgjourney.client.resourcepack.symbols.ClientPointOfOrigin;
@@ -372,15 +376,49 @@ public final class AtlantisDHDButtonStateRenderer implements BlockEntityRenderer
         return texture == null ? EMPTY_SYMBOL_MASK : loadResourceMask(texture);
     }
 
+    private static final Map<AbstractDHDEntity, NativeGlyphs> NATIVE_GLYPHS = new WeakHashMap<>();
+    private record NativeGlyphs(long tick, double range, ResourceLocation symbols) {}
+
     private static ResourceLocation lanteaSymbols(AbstractDHDEntity dhd) {
-        if (dhd.getLevel()==null || connectedGate(dhd)!=null) return null;
-        var gate=com.mustangdoc.sgjpatch.compat.LanteaIrisBridge.nearest(dhd.getLevel(),dhd.getBlockPos(),false);
-        if(gate==null)return null;
-        try {
-            String kind=gate.getClass().getMethod("kind").invoke(gate).toString().toLowerCase(java.util.Locale.ROOT);
-            String symbols=kind.contains("pegasus")?"galaxy_pegasus":kind.contains("universe")?"universal":"galaxy_milky_way";
-            return ResourceLocation.fromNamespaceAndPath("sgjourney",symbols);
-        } catch(ReflectiveOperationException ignored) {return null;}
+        if (!(dhd.getLevel() instanceof ClientLevel level) || connectedGate(dhd) != null
+                || !ModList.get().isLoaded("lantea")) return null;
+        long tick = level.getGameTime();
+        double range = dhd.getMaxConnectionDistance();
+        var cached = NATIVE_GLYPHS.get(dhd);
+        if (cached != null && cached.range() == range && tick >= cached.tick() && tick - cached.tick() < 20)
+            return cached.symbols();
+        var symbols = NativeGlyphLookup.find(level, dhd, range);
+        NATIVE_GLYPHS.put(dhd, new NativeGlyphs(tick, range, symbols));
+        return symbols;
+    }
+
+    private static final class NativeGlyphLookup {
+        private static ResourceLocation find(ClientLevel level, AbstractDHDEntity dhd, double range) {
+            var pos = dhd.getBlockPos();
+            int radius = (int) Math.ceil(range);
+            double bestDistance = range * range;
+            StargateControllerBlockEntity best = null;
+            for (int x = (pos.getX() - radius) >> 4; x <= ((pos.getX() + radius) >> 4); x++) {
+                for (int z = (pos.getZ() - radius) >> 4; z <= ((pos.getZ() + radius) >> 4); z++) {
+                    var chunk = level.getChunkSource().getChunkNow(x, z);
+                    if (chunk == null) continue;
+                    for (var candidate : chunk.getBlockEntities().values()) {
+                        if (!(candidate instanceof StargateControllerBlockEntity gate)
+                                || gate.isRemoved() || !gate.structureAssembled()) continue;
+                        double distance = pos.distSqr(gate.getBlockPos());
+                        if (distance > bestDistance || (best != null && distance == bestDistance)) continue;
+                        best = gate;
+                        bestDistance = distance;
+                    }
+                }
+            }
+            if (best == null) return null;
+            return ResourceLocation.fromNamespaceAndPath("sgjourney", switch (best.kind().glyphSet().id()) {
+                case "pg" -> "galaxy_pegasus";
+                case "u" -> "universal";
+                default -> "galaxy_milky_way";
+            });
+        }
     }
     private static ResourceLocation resolveSymbolsKey(AbstractDHDEntity dhd) {
         ResourceLocation nativeSymbols=lanteaSymbols(dhd);
@@ -398,6 +436,7 @@ public final class AtlantisDHDButtonStateRenderer implements BlockEntityRenderer
     }
 
     private static ResourceLocation resolvePointOfOriginKey(AbstractDHDEntity dhd) {
+        if (lanteaSymbols(dhd) != null) return ResourceLocation.fromNamespaceAndPath("sgjourney", "universal");
         AbstractStargateEntity<?> gate = connectedGate(dhd);
         var variant = clientVariant(gate);
         if (variant != null && variant.symbols().permanentPointOfOrigin().isPresent())

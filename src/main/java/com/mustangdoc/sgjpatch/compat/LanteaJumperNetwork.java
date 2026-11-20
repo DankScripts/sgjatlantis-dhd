@@ -20,7 +20,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 @Mod.EventBusSubscriber(modid = "sgjadditions_capacity_patch", bus = Mod.EventBusSubscriber.Bus.MOD)
 public final class LanteaJumperNetwork {
-    private static final String VERSION = "10";
+    private static final String VERSION = "11";
     private static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation("sgjadditions_capacity_patch", "lantea_jumper"),
             () -> VERSION, VERSION::equals, VERSION::equals);
@@ -64,10 +64,11 @@ public final class LanteaJumperNetwork {
         }
     }
     public record State(UUID token, UUID jumper, boolean open, boolean valid, int symbols, Component message, String status,
-                        String backend, String glyphSet, int[] encodedSymbols, int[] lockedPositions, int movingPosition, int[] typedSymbols, String[] memory) {
+                        String backend, String glyphSet, int[] encodedSymbols, int[] lockedPositions, int movingPosition, int[] typedSymbols, String[] memory,
+                        BlockPos nativeGatePos) {
         public State(UUID token, UUID jumper, boolean open, boolean valid, int symbols, Component message, String status,
                      String backend, String glyphSet, int[] encodedSymbols, int[] lockedPositions, int movingPosition, int[] typedSymbols) {
-            this(token,jumper,open,valid,symbols,message,status,backend,glyphSet,encodedSymbols,lockedPositions,movingPosition,typedSymbols,new String[0]);
+            this(token,jumper,open,valid,symbols,message,status,backend,glyphSet,encodedSymbols,lockedPositions,movingPosition,typedSymbols,new String[0],null);
         }
         public State(UUID token, UUID jumper, boolean open, boolean valid, int symbols, Component message, String status,
                      String backend, String glyphSet, int[] encodedSymbols, int[] lockedPositions, int movingPosition) {
@@ -80,10 +81,12 @@ public final class LanteaJumperNetwork {
             b.writeVarIntArray(typedSymbols);
             b.writeVarInt(memory.length);
             for(String address:memory)b.writeUtf(address,80);
+            b.writeNullable(nativeGatePos, FriendlyByteBuf::writeBlockPos);
         }
         static State decode(FriendlyByteBuf b) {
             return new State(b.readUUID(), b.readUUID(), b.readBoolean(), b.readBoolean(), b.readVarInt(), b.readComponent(), b.readUtf(40),
-                    b.readUtf(16), b.readUtf(80), b.readVarIntArray(9), b.readVarIntArray(9), b.readInt(), b.readVarIntArray(9), readMemory(b));
+                    b.readUtf(16), b.readUtf(80), b.readVarIntArray(9), b.readVarIntArray(9), b.readInt(), b.readVarIntArray(9), readMemory(b),
+                    b.readNullable(FriendlyByteBuf::readBlockPos));
         }
         static void handle(State state, Supplier<NetworkEvent.Context> context) {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> LanteaJumperScreen.receive(state));

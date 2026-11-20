@@ -1,8 +1,11 @@
 package com.mustangdoc.sgjpatch.hatch;
 
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.WeakHashMap;
+import com.mustangdoc.sgjpatch.power.FloorConduitBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -14,7 +17,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-/** Rebuilds the SGJourney network when a table loads above a concealed cable. */
+/** Refreshes native cable feeds for hatch tables, including feeds through the floor. */
 @Mod.EventBusSubscriber(modid = "sgjadditions_capacity_patch", bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class AtlantisHatchCableBootstrapEvents {
     public static final int MIN_CABLE_DEPTH = 2;
@@ -71,14 +74,22 @@ public final class AtlantisHatchCableBootstrapEvents {
             Direction across = table.getBlockState().getValue(AtlantisHatchTableBlock.FACING)
                     .getCounterClockWise();
             Direction along = table.getBlockState().getValue(AtlantisHatchTableBlock.FACING);
-            search: for (int depth = MIN_CABLE_DEPTH; depth <= MAX_CABLE_DEPTH; depth++) {
+            Set<BlockPos> candidates = new LinkedHashSet<>();
+            for (int depth = MIN_CABLE_DEPTH; depth <= MAX_CABLE_DEPTH; depth++) {
                 for (int offset = -1; offset <= 1; offset++) {
                   for (int forward = -1; forward <= 1; forward++) {
-                    BlockPos cablePos = table.getBlockPos().relative(across, offset)
-                            .relative(along, forward).below(depth);
-                    if (!level.hasChunkAt(cablePos)
+                    candidates.add(table.getBlockPos().relative(across, offset)
+                            .relative(along, forward).below(depth));
+                  }
+                }
+            }
+            BlockPos floorPos = table.getBlockPos().below();
+            if (level.hasChunkAt(floorPos) && level.getBlockEntity(floorPos) instanceof FloorConduitBlockEntity floor)
+                candidates.addAll(floor.connectedLargeCablePositions());
+            Set<BlockPos> refreshedEndpoints = new HashSet<>();
+            for (BlockPos cablePos : candidates) {
+                    if (refreshedEndpoints.contains(cablePos) || !level.hasChunkAt(cablePos)
                             || !(level.getBlockState(cablePos).getBlock() instanceof CableBlock.LargeNaquadahCable)) continue;
-
                     cableFound = true;
                     // A saved floor can load before its cable endpoint. Recalculate the
                     // cable's upper connection as if that floor had just been replaced.
@@ -92,7 +103,9 @@ public final class AtlantisHatchCableBootstrapEvents {
                     // SGJourney deliberately omits block entities on intermediate cable segments.
                     // Rebuild from the cable block, then update its actual network endpoints.
                     var endpoints = ConduitNetworks.findConnectedCables(level, cablePos);
+                    if (endpoints.isEmpty()) continue;
                     for (CableBlockEntity part : endpoints) {
+                        refreshedEndpoints.add(part.getBlockPos());
                         part.update();
                     }
                     ConduitNetworks networks = ConduitNetworks.get(level);
@@ -103,14 +116,13 @@ public final class AtlantisHatchCableBootstrapEvents {
                         connected = true;
                         System.out.println("[Atlantis DHD] Rebuilt concealed cable network at "
                                 + cablePos + " for jumper bay door table " + table.getBlockPos()
-                                + " (depth " + depth + ", endpoints " + endpoints.size() + ")");
-                        break search;
+                                + " (endpoints " + endpoints.size() + ")");
                     }
-                    break search;
-                  }
-                }
             }
-            if (connected || !cableFound) unregister(table);
+            if (connected || !cableFound) {
+                PENDING.remove(table);
+                DIAGNOSED.remove(table);
+            }
             else if (DIAGNOSED.add(table))
                 System.out.println("[Atlantis DHD] Door table " + table.getBlockPos()
                         + (cableFound ? " found its concealed cable, but no usable network yet; retrying."

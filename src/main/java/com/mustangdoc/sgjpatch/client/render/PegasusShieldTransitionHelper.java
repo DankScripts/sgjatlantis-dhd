@@ -19,8 +19,16 @@ public final class PegasusShieldTransitionHelper {
    }
 
    public static float alpha(Object var0, float var1) {
-      boolean var2 = readClosed(var0, var1);
-      long var3 = System.nanoTime();
+      boolean closed = readClosed(var0, var1);
+      float reveal = reveal(var0, closed);
+      return !closed && reveal <= 0.001F ? 0.0F : MAX_ALPHA;
+   }
+
+   public static float reveal(Object gate, boolean closed) {
+      return reveal(gate, closed, System.nanoTime());
+   }
+
+   static float reveal(Object var0, boolean var2, long var3) {
       synchronized (STATES) {
          PegasusShieldTransitionHelper.Transition var6 = STATES.get(var0);
          if (var6 == null) {
@@ -47,7 +55,7 @@ public final class PegasusShieldTransitionHelper {
          currentTargetClosed = var6.targetClosed;
          currentTransitionPhase = transitionPhase(var6, var3);
          currentTimeSeconds = (float)((double)var3 * 1.0E-9);
-         return !var6.targetClosed && var11 <= 0.001F ? 0.0F : 0.9F;
+         return var11;
       }
    }
 

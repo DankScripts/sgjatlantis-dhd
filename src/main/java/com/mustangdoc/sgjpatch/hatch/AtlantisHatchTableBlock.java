@@ -66,7 +66,11 @@ public final class AtlantisHatchTableBlock extends HorizontalDirectionalBlock im
 
     @Override
     public VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return switch (state.getValue(FACING)) {
+        return tableShape(state.getValue(FACING));
+    }
+
+    public static VoxelShape tableShape(Direction facing) {
+        return switch (facing) {
             case EAST -> EAST_SHAPE;
             case SOUTH -> SOUTH_SHAPE;
             case WEST -> WEST_SHAPE;
@@ -92,6 +96,9 @@ public final class AtlantisHatchTableBlock extends HorizontalDirectionalBlock im
                                  InteractionHand hand, BlockHitResult hit) {
         if (level.isClientSide) return InteractionResult.SUCCESS;
         if (player instanceof ServerPlayer serverPlayer) {
+            if (level.getBlockEntity(pos) instanceof AtlantisHatchTableBlockEntity table
+                    && table.storedEnergy() < AtlantisHatchTableBlockEntity.OPERATION_COST)
+                AtlantisHatchCableBootstrapEvents.register(table);
             NetworkHooks.openScreen(serverPlayer,
                     new SimpleMenuProvider((id, inventory, ignored) ->
                             new AtlantisHatchMenu(id, inventory, level, pos),
