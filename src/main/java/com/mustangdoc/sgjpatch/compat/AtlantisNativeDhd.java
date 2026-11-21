@@ -92,14 +92,13 @@ public final class AtlantisNativeDhd {
         if(table==null)return false;
         var linked=table.receiverCache().getCached();
         if(!(linked instanceof BlockEntityStargate<?> gate)
-                || !(linked instanceof DHDControlledStargate controlled)
-                || controlled.controllerCache().getCached()!=table
+                || linked.controllerCache().getCached()!=table
                 || !p.level().dimension().equals(gate.getDimension())
                 || gate.getBlockPos().distSqr(dhd.getBlockPos())>dhd.getMaxConnectionDistanceSqr()
                 || !p.serverLevel().hasChunkAt(gate.getBlockPos()))return false;
         var block=gate.getStargateBlockEntity();
         return block!=null && !block.isRemoved() && p.level().getBlockEntity(gate.getBlockPos())==block
-                && block.getCapability(DHDControlledStargate.DHD_CONTROLLED_STARGATE_CAPABILITY).orElse(null)==controlled;
+                && block.getCapability(DHDControlledStargate.DHD_CONTROLLED_STARGATE_CAPABILITY).orElse(null)==linked;
     }
     public static boolean open(ServerPlayer p, BlockPos pos) {
         if(!ModList.get().isLoaded("lantea") || !(p.level().getBlockEntity(pos) instanceof AtlantisDHDEntity dhd)

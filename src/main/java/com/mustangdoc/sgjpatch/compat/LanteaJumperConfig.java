@@ -1,9 +1,11 @@
 package com.mustangdoc.sgjpatch.compat;
 
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
 
 /** Optional jumper presentation settings, owned by the server choosing the DHD screen. */
 @Mod.EventBusSubscriber(modid = "sgjadditions_capacity_patch", bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -21,14 +23,14 @@ public final class LanteaJumperConfig {
                         "On multiplayer servers this setting is chosen by the server.")
                 .define("useAtlantisDialerForLanteaGates", false);
         SPEC = builder.build();
-        // Forge initializes automatic subscribers inside the owning mod's construction context,
-        // before common configs are loaded. The baseline mod constructor need not be replaced.
     }
 
     private LanteaJumperConfig() {}
 
-    public static void register() {
+    @SubscribeEvent
+    public static void onConstruct(FMLConstructModEvent event) {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, SPEC, "sgjatlantis-jumper-common.toml");
+        com.mustangdoc.sgjpatch.city.AtlantisLightingConfig.register();
     }
 
     public static boolean useAtlantisForLantea() {

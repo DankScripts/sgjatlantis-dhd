@@ -6,7 +6,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.level.block.entity.BlockEntity;
+import net.povstalec.sgjourney.api.dhd.DHD;
 import net.povstalec.sgjourney.api.stargate.DHDControlledStargate;
 import net.povstalec.sgjourney.common.misc.AutoCache;
 import net.povstalec.sgjourney.common.sgjourney.Address;
@@ -14,9 +14,9 @@ import net.povstalec.sgjourney.common.sgjourney.StargateInfo;
 import net.povstalec.sgjourney.common.sgjourney.dhd.SGJourneyBlockEntityDHD;
 import org.jetbrains.annotations.Nullable;
 
-public final class AtlantisBlockEntityDHD implements SGJourneyBlockEntityDHD {
+public final class AtlantisBlockEntityDHD implements SGJourneyBlockEntityDHD<AtlantisDHDEntity> {
     private final AtlantisDHDEntity dhd;
-    private final AutoCache.Receiver stargateCache = new AutoCache.Receiver(this);
+    private final AutoCache.Receiver<DHD, DHDControlledStargate> stargateCache = new AutoCache.Receiver<>(this);
 
     public AtlantisBlockEntityDHD(AtlantisDHDEntity dhd) {
         this.dhd = dhd;
@@ -24,7 +24,7 @@ public final class AtlantisBlockEntityDHD implements SGJourneyBlockEntityDHD {
     }
 
     @Override
-    public AutoCache.Receiver receiverCache() {
+    public AutoCache.Receiver<DHD, DHDControlledStargate> receiverCache() {
         return stargateCache;
     }
 
@@ -116,5 +116,5 @@ public final class AtlantisBlockEntityDHD implements SGJourneyBlockEntityDHD {
     }
 
     @Override
-    public void updateFromBlockEntity(BlockEntity blockEntity) {}
+    public void updateFromBlockEntity(AtlantisDHDEntity blockEntity) {}
 }

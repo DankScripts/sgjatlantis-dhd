@@ -113,6 +113,18 @@ tasks.register('releaseJar', Jar) {
         exclude 'sgjadditions_capacity_patch.mixins.json'
         exclude 'com/mustangdoc/sgjpatch/network/SGJPatchNetwork.class'
         exclude 'com/mustangdoc/sgjpatch/compat/AtlantisShieldButtonHelper.class'
+        exclude 'com/mustangdoc/sgjpatch/mixin/EnergyBlockEntityAccessor.class'
+        exclude 'com/mustangdoc/sgjpatch/mixin/AtlantisDhdDialCrystalGuardMixin.class'
+        exclude 'com/mustangdoc/sgjpatch/mixin/AtlantisJumperConfigBootstrapMixin.class'
+        exclude 'com/mustangdoc/sgjpatch/mixin/AtlantisDHDSneakUsePositionMixin.class'
+        exclude 'com/mustangdoc/sgjpatch/mixin/ServerboundToggleIrisLanteaMixin.class'
+        exclude 'com/mustangdoc/sgjpatch/mixin/client/AtlantisKeypadSurfaceMixin.class'
+        exclude 'com/mustangdoc/sgjpatch/mixin/client/AtlantisDHDConnectedSymbolLockMixin.class'
+        exclude 'com/mustangdoc/sgjpatch/mixin/AtlantisDHDEntityEnergyCapabilityMixin.class'
+        exclude 'com/mustangdoc/sgjpatch/mixin/AtlantisDHDEntityCrystalValidationMixin.class'
+        exclude 'com/mustangdoc/sgjpatch/mixin/AtlantisDHDEntityDhdApiMixin.class'
+        exclude 'com/mustangdoc/sgjpatch/mixin/AtlantisDHDEntityCapacityMixin.class'
+        exclude 'com/mustangdoc/sgjpatch/mixin/AtlantisDHDConcealedCableBootstrapMixin.class'
         exclude 'com/mustangdoc/sgjpatch/mixin/LargeNaquadahCableDHDPowerBridgeMixin.class'
         exclude 'com/mustangdoc/sgjpatch/compat/moregates/**'
         exclude 'data/moregates/**'
@@ -132,6 +144,8 @@ tasks.register('compileAtlantisDialProgressTest', JavaCompile) {
             'tools/tests/CityDhdLinkPolicyTest.java',
             'tools/tests/NativeDhdCenterActionTest.java',
             'tools/tests/PegasusShieldTransitionTest.java',
+            'tools/tests/TransporterLevelsTest.java',
+            'src/main/java/com/mustangdoc/sgjpatch/transporter/TransporterLevels.java',
             'src/main/java/com/mustangdoc/sgjpatch/client/render/PegasusShieldTransitionHelper.java',
             'src/main/java/com/mustangdoc/sgjpatch/compat/NativeDhdCenterAction.java',
             'src/main/java/com/mustangdoc/sgjpatch/client/util/AtlantisClipboardAddress.java',
@@ -181,9 +195,17 @@ tasks.register('verifyPegasusShieldTransition', JavaExec) {
 
 tasks.named('check').configure { dependsOn 'verifyPegasusShieldTransition' }
 
+tasks.register('verifyTransporterLevels', JavaExec) {
+    dependsOn 'compileAtlantisDialProgressTest'
+    classpath = files(layout.buildDirectory.dir('atlantis-dial-tests'))
+    mainClass = 'com.mustangdoc.sgjpatch.transporter.TransporterLevelsTest'
+}
+
+tasks.named('check').configure { dependsOn 'verifyTransporterLevels' }
+
 tasks.register('verifyReleaseJar') {
     dependsOn 'releaseJar', 'verifyAtlantisDialProgress', 'verifyAtlantisClipboardAddress', 'verifyCityDhdLinkPolicy', 'verifyNativeDhdCenterAction'
-    dependsOn 'verifyPegasusShieldTransition'
+    dependsOn 'verifyPegasusShieldTransition', 'verifyTransporterLevels'
     doLast {
         def releaseFile = tasks.named('releaseJar', Jar).get().archiveFile.get().asFile
         def required = [
@@ -195,7 +217,6 @@ tasks.register('verifyReleaseJar') {
                 'com/mustangdoc/sgjpatch/standalone/AtlantisDialProgress.class',
                 'com/mustangdoc/sgjpatch/standalone/AtlantisDHDApi.class',
                 'com/mustangdoc/sgjpatch/standalone/AtlantisDHDEntity.class',
-                'com/mustangdoc/sgjpatch/mixin/AtlantisDHDEntityDhdApiMixin.class',
                 'com/mustangdoc/sgjpatch/client/util/LinkedMiniGate.class',
                 'com/mustangdoc/sgjpatch/client/util/AtlantisClipboardAddress.class',
                 'com/mustangdoc/sgjpatch/client/screens/AtlantisDHDScreenFixed.class'
@@ -204,6 +225,42 @@ tasks.register('verifyReleaseJar') {
             def missing = required.findAll { zip.getEntry(it) == null }
             if (!missing.isEmpty()) {
                 throw new GradleException("Incomplete Forge release JAR: missing ${missing}")
+            }
+            def removedDhdMixins = [
+                    'EnergyBlockEntityAccessor',
+                    'AtlantisDhdDialCrystalGuardMixin',
+                    'AtlantisDHDEntityEnergyCapabilityMixin',
+                    'AtlantisDHDEntityCrystalValidationMixin',
+                    'AtlantisDHDEntityDhdApiMixin',
+                    'AtlantisDHDEntityCapacityMixin',
+                    'AtlantisDHDConcealedCableBootstrapMixin'
+            ]
+            def mixinConfig = zip.getInputStream(zip.getEntry('sgjadditions_capacity_patch.mixins.json')).getText('UTF-8')
+            def staleDhdMixins = removedDhdMixins.findAll { name ->
+                mixinConfig.contains("\"${name}\"") ||
+                        zip.getEntry("com/mustangdoc/sgjpatch/mixin/${name}.class") != null
+            }
+            if (!staleDhdMixins.isEmpty()) {
+                throw new GradleException("Obsolete DHD mixins in release JAR: ${staleDhdMixins}")
+            }
+            def removedSelfMixins = [
+                    'AtlantisJumperConfigBootstrapMixin',
+                    'AtlantisDHDSneakUsePositionMixin',
+                    'ServerboundToggleIrisLanteaMixin',
+                    'client.AtlantisKeypadSurfaceMixin',
+                    'client.AtlantisDHDConnectedSymbolLockMixin'
+            ].findAll { name ->
+                mixinConfig.contains("\"${name}\"") ||
+                        zip.getEntry("com/mustangdoc/sgjpatch/mixin/${name.replace('.', '/')}.class") != null
+            }
+            if (!removedSelfMixins.isEmpty()) {
+                throw new GradleException("Obsolete self-mixins in release JAR: ${removedSelfMixins}")
+            }
+            def dhdClass = zip.getInputStream(zip.getEntry('com/mustangdoc/sgjpatch/standalone/AtlantisDHDEntity.class')).bytes
+            def dhdReferences = new String(dhdClass, 'ISO-8859-1')
+            if (!dhdReferences.contains('AtlantisDHDConcealedCableBootstrapEvents') ||
+                    !dhdReferences.contains('AtlantisBlockEntityDHD')) {
+                throw new GradleException('Release does not contain the source-built Atlantis DHD')
             }
             def screenPrefix = 'com/mustangdoc/sgjpatch/client/screens/AtlantisDHDScreenFixed'
             def obsoleteScreenTypes = [

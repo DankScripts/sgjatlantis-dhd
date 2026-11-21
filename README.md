@@ -3,13 +3,23 @@
 Source overlay for Atlantis DHD Upgrade on Minecraft 1.20.1 and Forge 47.4.16.
 This branch contains only the Forge edition of Atlantis DHD.
 
+The DHD entity and iris packet were reconstructed from the accepted binary
+and compatibility mixins; they are not recovered original source. DHD guards
+and self-targeting behavior have been moved into their corresponding classes
+or event subscribers. Third-party mixins and a compatibility coremod remain.
+The frozen binary input is still required for classes without recovered source.
+
 ## Bundled Atlantis city
 
-The release includes all 2,009 city chunks from the final Farlands layout,
-including the moved jumper bay table and shield controller and the separate
-decorative console. Use the matching Forge City Shield release for the city
-preset at the new controller position. Replacing the JAR does not rebuild an
-already installed city.
+The 2,009 city chunks use the server backup for the main city and lower rooms,
+with the later Farlands control-room layout, database console, moved tables,
+and decorative console. Genetics Lab, Lower Spire, and the underwater bay
+appear on the transporter LOWER page; outer towers remain on CITY. The client
+and server both need the updated JAR for the screen change.
+
+Use the matching Forge City Shield release for the city preset at the new
+controller position. Replacing the JAR does not rebuild an installed city.
+Back up the Lantea dimension before using `/sgjatlantis city install`.
 
 The jumper bay table refreshes its large naquadah cable feeds when it loads
 or is opened with less than 50 FE, including feeds connected through its

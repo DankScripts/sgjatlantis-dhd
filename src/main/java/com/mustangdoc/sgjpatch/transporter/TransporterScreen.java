@@ -17,14 +17,13 @@ public final class TransporterScreen extends AbstractContainerScreen<Transporter
         super(menu,inv,title);imageWidth=350;imageHeight=240;inventoryLabelY=10000;
         floor=0;
     }
-    private boolean underwater(TransporterNetwork.Station station){
-        String name=station.name().toLowerCase(java.util.Locale.ROOT);
-        return station.pos().equals(new net.minecraft.core.BlockPos(-3897,256,5876))
-            ||(name.contains("underwater")&&name.contains("bay"));
+    private boolean lowerCity(TransporterNetwork.Station station){
+        var pos=station.pos();
+        return TransporterLevels.isLower(pos.getX(),pos.getY(),pos.getZ(),station.name());
     }
     private List<Integer> visible(){
         List<Integer> indices=new ArrayList<>();
-        for(int i=0;i<menu.destinations.size();i++)if(underwater(menu.destinations.get(i))==(floor==1))indices.add(i);
+        for(int i=0;i<menu.destinations.size();i++)if(lowerCity(menu.destinations.get(i))==(floor==1))indices.add(i);
         return indices;
     }
     public void refreshDirectory(){page=0;clearWidgets();init();}
@@ -61,7 +60,7 @@ public final class TransporterScreen extends AbstractContainerScreen<Transporter
         g.blit(MAP,leftPos+42,topPos+32,0,0,190,190,190,190);
         g.drawString(font,title,leftPos+12,topPos+13,0xffe6e5d2,false);
         g.drawString(font,"LEVEL",leftPos+7,topPos+45,0xffc5d5d7,false);
-        g.drawString(font,floor==0?"CITY":"BAY",leftPos+7,topPos+95,0xffefc967,false);
+        g.drawString(font,floor==0?"CITY":"LOWER",leftPos+7,topPos+95,0xffefc967,false);
         for(int index:visible()){
             var s=menu.destinations.get(index);int x=mapX(s.pos().getX()),y=mapY(s.pos().getZ());
             if(x<leftPos+42||x>leftPos+232||y<topPos+32||y>topPos+222)continue;

@@ -14,6 +14,7 @@ import com.mustangdoc.sgjpatch.client.util.AtlantisEditorHelper;
 import com.mustangdoc.sgjpatch.client.util.AtlantisHoverNumberOverlay;
 import com.mustangdoc.sgjpatch.client.util.LinkedMiniGate;
 import com.mustangdoc.sgjpatch.client.util.AtlantisHoverPriorityHelper;
+import com.mustangdoc.sgjpatch.client.util.AtlantisKeypadSurface;
 import com.mustangdoc.sgjpatch.client.util.AtlantisLayoutDefaults;
 import com.mustangdoc.sgjpatch.client.util.AtlantisTableControlEditor;
 import com.mustangdoc.sgjpatch.client.util.AtlantisVisualHelper;
@@ -671,6 +672,10 @@ public class AtlantisDHDScreenFixed extends AbstractDHDScreen<AbstractDHDMenu<?>
       }
 
       public void sgjpatch$pressNormal() {
+         if (this.actionSymbol >= 0 && this.actionSymbol <= 38
+               && this.menu != null && this.menu.isCenterButtonEngaged()) {
+            return;
+         }
          if (this.screen.editMode) {
             this.screen.selectedIndex = this.index;
          } else {
@@ -773,12 +778,17 @@ public class AtlantisDHDScreenFixed extends AbstractDHDScreen<AbstractDHDMenu<?>
 
             String var6 = NativePegasusTextureHelper.texturePath(this.displaySymbol, var5);
             if (var6 != null) {
-               int var7 = var5 ? 28 : 14;
-               int var8 = this.getX() + (this.size - var7) / 2 + AtlantisEditorHelper.constellationDx(this.index);
-               int var9 = this.getY() + (this.size - var7) / 2 + AtlantisEditorHelper.constellationDy(this.index);
-               ResourceLocation var10 = ResourceLocation.fromNamespaceAndPath("sgjpatch", var6);
                NativePegasusTextureHelper.applyTint();
-               var1.blit(var10, var8, var9, 0.0F, 0.0F, var7, var7, var7, var7);
+               ResourceLocation gateTexture = com.mustangdoc.sgjpatch.client.render.AtlantisDHDButtonStateRenderer
+                     .symbolTexture(this.menu.getDHD(), this.actionSymbol);
+               if (gateTexture != null) {
+                  int glyphSize = (int)Math.floor(this.size * .50);
+                  int glyphX = this.getX() + (this.size - glyphSize) / 2;
+                  int glyphY = this.getY() + (int)Math.round(this.size * (this.up ? 2d / 3 : 1d / 3) - glyphSize / 2d);
+                  RenderSystem.setShaderColor(0.42F, 1.0F, 0.76F, 1.0F);
+                  var1.blit(gateTexture, glyphX, glyphY, glyphSize, glyphSize, 0, 0, 1, 1, 1, 1);
+                  RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+               }
                NativePegasusTextureHelper.resetTint();
             }
 
@@ -787,18 +797,7 @@ public class AtlantisDHDScreenFixed extends AbstractDHDScreen<AbstractDHDMenu<?>
       }
 
       private void sgjpatch$renderTriangleBackground(GuiGraphics var1, ResourceLocation var2, int var3) {
-         if (this.size >= 30) {
-            var1.blit(var2, this.getX(), this.getY(), 0.0F, (float)(var3 * 42), 42, 42, 42, 126);
-         } else if (this.size == 20) {
-            var1.blit(var2, this.getX(), this.getY(), 0.0F, (float)(var3 * 20), 20, 20, 20, 60);
-         } else {
-            float var4 = (float)this.size / 20.0F;
-            var1.pose().pushPose();
-            var1.pose().translate((float)this.getX(), (float)this.getY(), 0.0F);
-            var1.pose().scale(var4, var4, 1.0F);
-            var1.blit(var2, 0, 0, 0.0F, (float)(var3 * 20), 20, 20, 20, 60);
-            var1.pose().popPose();
-         }
+         AtlantisKeypadSurface.crystal(var1, this.getX(), this.getY(), this.size, this.up, var3);
       }
 
       protected void updateWidgetNarration(NarrationElementOutput output) {

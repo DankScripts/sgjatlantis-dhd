@@ -1,3 +1,13 @@
+## Unreleased
+
+- Reconstruct the DHD entity and iris packet from the accepted binary and
+  integrate the obsolete self-targeting mixins into their source classes or
+  event subscribers. Keep the binary overlay for unrecovered classes.
+- Bundle the server-backup city and lower rooms with the later Farlands
+  control-room layout.
+- Show Genetics Lab and Lower Spire on the transporter LOWER page while
+  leaving outer towers on CITY.
+
 ## 2.0.5 - SGJourney 0.6.55-alpha
 
 - Bundle the final Farlands city layout, including the updated control room,
