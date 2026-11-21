@@ -1,5 +1,12 @@
 ## Unreleased
 
+- Repair two maintenance-area floor conduits and their adjacent cable
+  connection in the bundled city.
+- Recheck loaded floor-conduit neighbors and safely rebuild missing SGJourney
+  cable networks, saving changed IDs without forcing chunks to load.
+- Keep mixed-network simulation results specific to the active route, discard
+  them after committed transfers, and preserve energy type during output probes.
+- Start client door animations when updates arrive, including while offscreen.
 - Reconstruct the DHD entity and iris packet from the accepted binary and
   integrate the obsolete self-targeting mixins into their source classes or
   event subscribers. Keep the binary overlay for unrecovered classes.

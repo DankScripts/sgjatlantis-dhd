@@ -28,6 +28,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(targets = "net.povstalec.sgjourney.common.block_entities.tech.CableBlockEntity", remap = false)
 public abstract class LargeNaquadahCableDHDPowerBridgeMixin {
+    @Inject(method="setNetworkID", at=@At("HEAD"), remap=false)
+    private void sgjpatch$saveChangedNetworkId(int id, CallbackInfo callback) {
+        var cable=(net.povstalec.sgjourney.common.block_entities.tech.CableBlockEntity)(Object)this;
+        if(cable.getLevel()!=null && !cable.getLevel().isClientSide() && cable.networkID()!=id)cable.setChanged();
+    }
+    @Redirect(method="validOutputs", at=@At(value="INVOKE",
+            target="Lnet/minecraftforge/energy/IEnergyStorage;receiveEnergy(IZ)I", remap=false), remap=false)
+    private int sgjpatch$probeMatchingEnergy(net.minecraftforge.energy.IEnergyStorage output,int amount,boolean simulate) {
+        return com.mustangdoc.sgjpatch.power.MixedPowerTransfer.probeCableOutput(output,amount,simulate);
+    }
     @Redirect(method="transferEnergy", at=@At(value="INVOKE",
             target="Lnet/povstalec/sgjourney/common/data/ConduitNetworks$ConduitNetwork;transferEnergy(Lnet/minecraft/world/level/Level;JZZ)J",
             remap=false),remap=false)
@@ -80,6 +90,7 @@ public abstract class LargeNaquadahCableDHDPowerBridgeMixin {
                     remap = false),
             remap = false)
     private BlockEntity sgjpatch$routeVirtualOutput(Level level, BlockPos outputPos) {
+        if (!level.hasChunkAt(outputPos)) return null;
         BlockEntity directReceiver = level.getBlockEntity(outputPos);
         if (!sgjpatch$isLargeCable(this) || directReceiver != null) {
             return directReceiver;
@@ -93,6 +104,7 @@ public abstract class LargeNaquadahCableDHDPowerBridgeMixin {
             BlockEntity receiver = route.getValue();
             if (cablePos.relative(route.getKey()).equals(outputPos)
                     && !receiver.isRemoved()
+                    && level.hasChunkAt(receiver.getBlockPos())
                     && level.getBlockEntity(receiver.getBlockPos()) == receiver) return receiver;
         }
         return null;
@@ -124,7 +136,9 @@ public abstract class LargeNaquadahCableDHDPowerBridgeMixin {
         receivers.sort(Comparator.comparingInt(receiver -> sgjpatch$isAtlantisDhd(receiver) ? 0 : 1));
         List<Direction> freeSides = new ArrayList<>(6);
         for (Direction side : Direction.values()) {
-            BlockEntity direct = level.getBlockEntity(cablePos.relative(side));
+            BlockPos neighbor = cablePos.relative(side);
+            if (!level.hasChunkAt(neighbor)) continue;
+            BlockEntity direct = level.getBlockEntity(neighbor);
             if (direct == null) freeSides.add(side);
             else receivers.remove(direct);
         }
@@ -140,7 +154,9 @@ public abstract class LargeNaquadahCableDHDPowerBridgeMixin {
             BlockPos above = cablePos.above(depth);
             for (int dx = -1; dx <= 1; dx++) {
                 for (int dz = -1; dz <= 1; dz++) {
-                    BlockEntity receiver = level.getBlockEntity(above.offset(dx, 0, dz));
+                    BlockPos receiverPos = above.offset(dx, 0, dz);
+                    if (!level.hasChunkAt(receiverPos)) continue;
+                    BlockEntity receiver = level.getBlockEntity(receiverPos);
                     if (receiver instanceof AtlantisHatchTableBlockEntity table
                             && AtlantisHatchCableBootstrapEvents.isBelowFootprint(table, cablePos))
                         tables.add(table);
@@ -153,11 +169,13 @@ public abstract class LargeNaquadahCableDHDPowerBridgeMixin {
     private static BlockEntity sgjpatch$findAtlantisDhdAboveCable(
             Level level, BlockPos cablePos) {
         BlockPos footprintPos = cablePos.above(CONCEALED_CABLE_DEPTH);
-        BlockEntity receiver = level.getBlockEntity(footprintPos);
+        BlockEntity receiver = level.hasChunkAt(footprintPos) ? level.getBlockEntity(footprintPos) : null;
         if (sgjpatch$isAtlantisDhd(receiver)) return receiver;
 
         for (Direction direction : Direction.Plane.HORIZONTAL) {
-            receiver = level.getBlockEntity(footprintPos.relative(direction));
+            BlockPos neighbor = footprintPos.relative(direction);
+            if (!level.hasChunkAt(neighbor)) continue;
+            receiver = level.getBlockEntity(neighbor);
             if (!sgjpatch$isAtlantisDhd(receiver)) continue;
 
             Direction facing = receiver.getBlockState().getValue(

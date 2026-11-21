@@ -49,9 +49,11 @@ dependencies {
     compileOnly files(System.getenv('LANTEA_JAR') ?: new File(System.getProperty('user.home'), 'curseforge/minecraft/Instances/All the Mods 9 - Stargates/mods/lantea-0.7.4.2+mc1.20.1.jar'))
 
     def configuredSgJourneyJar = System.getenv('SGJOURNEY_JAR')
-    compileOnly files(configuredSgJourneyJar != null && !configuredSgJourneyJar.isBlank()
+    def sgJourneyJar = configuredSgJourneyJar != null && !configuredSgJourneyJar.isBlank()
             ? configuredSgJourneyJar
-            : 'libs/Stargate.Journey-1.20.1-0.6.55-alpha.jar')
+            : 'libs/Stargate.Journey-1.20.1-0.6.55-alpha.jar'
+    compileOnly files(sgJourneyJar)
+    testImplementation files(sgJourneyJar)
 }
 
 tasks.named('processResources', ProcessResources).configure {
@@ -203,9 +205,25 @@ tasks.register('verifyTransporterLevels', JavaExec) {
 
 tasks.named('check').configure { dependsOn 'verifyTransporterLevels' }
 
+tasks.register('verifyClientDoorAnimation', JavaExec) {
+    dependsOn 'testClasses'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.mustangdoc.sgjpatch.doors.ClientDoorAnimationCheck'
+}
+
+tasks.named('check').configure { dependsOn 'verifyClientDoorAnimation' }
+
+tasks.register('verifyPowerRefresh', JavaExec) {
+    dependsOn 'testClasses'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.mustangdoc.sgjpatch.power.PowerRefreshCheck'
+}
+
+tasks.named('check').configure { dependsOn 'verifyPowerRefresh' }
+
 tasks.register('verifyReleaseJar') {
     dependsOn 'releaseJar', 'verifyAtlantisDialProgress', 'verifyAtlantisClipboardAddress', 'verifyCityDhdLinkPolicy', 'verifyNativeDhdCenterAction'
-    dependsOn 'verifyPegasusShieldTransition', 'verifyTransporterLevels'
+    dependsOn 'verifyPegasusShieldTransition', 'verifyTransporterLevels', 'verifyClientDoorAnimation', 'verifyPowerRefresh'
     doLast {
         def releaseFile = tasks.named('releaseJar', Jar).get().archiveFile.get().asFile
         def required = [
