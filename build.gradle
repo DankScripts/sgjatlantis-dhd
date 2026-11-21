@@ -7,9 +7,7 @@ version = mod_version
 group = mod_group_id
 
 base {
-    // The ordinary jar contains only this source set. The public mod also needs
-    // the frozen 2.0.5 baseline classes, which releaseJar merges in below.
-    archivesName = 'sgjatlantis-dhd-1.20.1-classes-only'
+    archivesName = 'sgjatlantis-dhd-1.20.1'
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
@@ -41,6 +39,11 @@ minecraft {
 
 repositories {
     maven { url = 'https://www.cursemaven.com' }
+    maven {
+        name = "Jared's Maven"
+        url = 'https://maven.blamejared.com'
+        content { includeGroup 'mezz.jei' }
+    }
 }
 
 def namespaceResources = layout.buildDirectory.dir('generated/atlantisNamespaceResources')
@@ -52,16 +55,6 @@ tasks.register('generateAtlantisNamespaceResources', Sync) {
     from("src/main/resources/assets/${legacy}/blockstates") { into 'assets/stargate_atlantis/blockstates' }
     from("src/main/resources/assets/${legacy}/models/item") { into 'assets/stargate_atlantis/models/item' }
     from("src/main/resources/data/${legacy}/loot_tables") { into 'data/stargate_atlantis/loot_tables' }
-    def baseline = zipTree('baseline/2.0.5-after-moregates-removal/sgjatlantis-dhd-1.20.1-2.0.5.jar')
-    from(baseline) {
-        include "assets/${legacy}/blockstates/**", "assets/${legacy}/models/item/**",
-                "data/${legacy}/loot_tables/**"
-        eachFile { details ->
-            details.path = details.path.replace("assets/${legacy}/", 'assets/stargate_atlantis/')
-                    .replace("data/${legacy}/", 'data/stargate_atlantis/')
-        }
-        includeEmptyDirs = false
-    }
     doLast {
         fileTree("src/main/resources/assets/${legacy}/lang").matching { include '*.json' }.files.each { languageFile ->
             def translations = [:]
@@ -82,19 +75,28 @@ sourceSets.main.resources.srcDir(namespaceResources)
 tasks.named('processResources') { dependsOn 'generateAtlantisNamespaceResources' }
 
 dependencies {
-    // Optional browser API only; JEI is not bundled or required at runtime.
-    compileOnly files(System.getenv('JEI_JAR') ?: new File(System.getProperty('user.home'), 'curseforge/minecraft/Instances/All the Mods 9 - Stargates/mods/jei-1.20.1-forge-15.20.0.116.jar'))
+    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
+    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
+    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
 
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    compileOnly files('baseline/2.0.5-after-moregates-removal/sgjatlantis-dhd-1.20.1-2.0.5.jar')
-    compileOnly files(System.getenv('LANTEA_JAR') ?: new File(System.getProperty('user.home'), 'curseforge/minecraft/Instances/All the Mods 9 - Stargates/mods/lantea-0.7.4.2+mc1.20.1.jar'))
+    def configuredLanteaJar = System.getenv('LANTEA_JAR')
+    if (configuredLanteaJar != null && !configuredLanteaJar.isBlank()) {
+        compileOnly files(configuredLanteaJar)
+    } else {
+        compileOnly fg.deobf("curse.maven:lantea-stargates-1703388:${lantea_file_id}")
+    }
+    runtimeOnly fg.deobf("curse.maven:lantea-stargates-1703388:${lantea_file_id}")
 
     def configuredSgJourneyJar = System.getenv('SGJOURNEY_JAR')
     def sgJourneyJar = configuredSgJourneyJar != null && !configuredSgJourneyJar.isBlank()
             ? configuredSgJourneyJar
             : 'libs/Stargate.Journey-1.20.1-0.6.55-alpha.jar'
-    compileOnly files(sgJourneyJar)
-    testImplementation files(sgJourneyJar)
+    def suppliedSgJourney = file(sgJourneyJar)
+    if (!suppliedSgJourney.isFile()) {
+        throw new GradleException('SGJourney 0.6.55-alpha is a privately supplied API build. Set SGJOURNEY_JAR to the author-provided Forge 1.20.1 JAR, or place it in libs/Stargate.Journey-1.20.1-0.6.55-alpha.jar.')
+    }
+    implementation files(suppliedSgJourney)
 }
 
 tasks.named('processResources', ProcessResources).configure {
@@ -149,39 +151,7 @@ tasks.register('releaseJar', Jar) {
         ])
     }
 
-    // Current compiled classes must win over the accepted 2.0.5 baseline.
     from(zipTree(tasks.named('jar', Jar).flatMap { it.archiveFile }))
-    from(zipTree(layout.projectDirectory.file('baseline/2.0.5-after-moregates-removal/sgjatlantis-dhd-1.20.1-2.0.5.jar'))) {
-        exclude 'META-INF/MANIFEST.MF'
-        exclude 'META-INF/mods.toml'
-        exclude 'assets/sgjadditions_capacity_patch/lang/en_us.json'
-        exclude 'pack.mcmeta'
-        exclude 'sgjadditions_capacity_patch.mixins.json'
-        exclude 'com/mustangdoc/sgjpatch/network/SGJPatchNetwork.class'
-        exclude 'com/mustangdoc/sgjpatch/compat/AtlantisShieldButtonHelper.class'
-        exclude 'com/mustangdoc/sgjpatch/mixin/EnergyBlockEntityAccessor.class'
-        exclude 'com/mustangdoc/sgjpatch/mixin/AtlantisDhdDialCrystalGuardMixin.class'
-        exclude 'com/mustangdoc/sgjpatch/mixin/AtlantisJumperConfigBootstrapMixin.class'
-        exclude 'com/mustangdoc/sgjpatch/mixin/AtlantisDHDSneakUsePositionMixin.class'
-        exclude 'com/mustangdoc/sgjpatch/mixin/ServerboundToggleIrisLanteaMixin.class'
-        exclude 'com/mustangdoc/sgjpatch/mixin/client/AtlantisKeypadSurfaceMixin.class'
-        exclude 'com/mustangdoc/sgjpatch/mixin/client/AtlantisDHDConnectedSymbolLockMixin.class'
-        exclude 'com/mustangdoc/sgjpatch/mixin/AtlantisDHDEntityEnergyCapabilityMixin.class'
-        exclude 'com/mustangdoc/sgjpatch/mixin/AtlantisDHDEntityCrystalValidationMixin.class'
-        exclude 'com/mustangdoc/sgjpatch/mixin/AtlantisDHDEntityDhdApiMixin.class'
-        exclude 'com/mustangdoc/sgjpatch/mixin/AtlantisDHDEntityCapacityMixin.class'
-        exclude 'com/mustangdoc/sgjpatch/mixin/AtlantisDHDConcealedCableBootstrapMixin.class'
-        exclude 'com/mustangdoc/sgjpatch/mixin/LargeNaquadahCableDHDPowerBridgeMixin.class'
-        exclude 'com/mustangdoc/sgjpatch/compat/moregates/**'
-        exclude 'data/moregates/**'
-        exclude 'assets/sgjadditions/models/custom/atlantisdhd.json'
-        exclude 'assets/sgjadditions/models/block/atlantisdhd.json'
-        exclude 'assets/sgjadditions/models/block/atlantisdhd.json.textures'
-        exclude 'assets/sgjadditions_capacity_patch/models/custom/atlantisdhd.json'
-        exclude 'assets/sgjadditions_capacity_patch/models/block/atlantisdhd.json'
-        exclude 'assets/sgjadditions_capacity_patch/models/block/atlantisdhd.json.textures'
-        exclude 'resourcepacks/sgjatlantis_sgjadditions_override/assets/sgjadditions/models/custom/atlantisdhd.json'
-    }
 }
 
 tasks.register('compileAtlantisDialProgressTest', JavaCompile) {
@@ -292,6 +262,14 @@ tasks.register('verifyReleaseJar') {
                 'com/mustangdoc/sgjpatch/client/screens/AtlantisDHDScreenFixed.class'
         ]
         new java.util.zip.ZipFile(releaseFile).withCloseable { zip ->
+            def missingSource = zip.entries().findAll { entry ->
+                entry.name.startsWith('com/mustangdoc/sgjpatch/') && entry.name.endsWith('.class')
+            }.collect { entry ->
+                entry.name.replaceFirst(/\$.*/, '').replaceFirst(/\.class$/, '') + '.java'
+            }.unique().findAll { path -> !file("src/main/java/${path}").isFile() }
+            if (!missingSource.isEmpty()) {
+                throw new GradleException("Release classes without published source: ${missingSource}")
+            }
             def missing = required.findAll { zip.getEntry(it) == null }
             if (!missing.isEmpty()) {
                 throw new GradleException("Incomplete Forge release JAR: missing ${missing}")
@@ -391,7 +369,6 @@ tasks.register('sourceArchive', Zip) {
     destinationDirectory = layout.projectDirectory.dir('dist')
     from(layout.projectDirectory) {
         include 'src/**'
-        include 'com/**'
         include 'blockbench/**'
         include 'tools/**'
         include 'gradle/**'
@@ -413,8 +390,6 @@ tasks.register('sourceArchive', Zip) {
         include 'LICENSE.txt'
         include '*-validation.json'
         include 'shield-frame-transfer-report.json'
-        include 'baseline/README.txt'
-        include 'baseline/2.0.5-after-moregates-removal/**'
         exclude 'tools/crossgate-audit/**'
         exclude '.gradle/**'
         exclude 'build/**'

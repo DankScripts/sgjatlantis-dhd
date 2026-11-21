@@ -27,6 +27,8 @@ public final class FloorConduitBlockEntity extends BlockEntity {
  private static void topologyChanged(net.minecraft.world.level.Level level){if(level!=null && !level.isClientSide)TOPOLOGY_VERSIONS.put(level,topologyVersion(level)+1);}
  static void refreshTopology(net.minecraft.world.level.Level level){topologyChanged(level);}
  private Network network;
+ // Loaded-block routing cache, rebuilt after chunk/world load.
+ // Connected hubs and native SGJourney cable networks own persistent energy and IDs.
  private static final class Network {
   final Set<FloorConduitBlockEntity> members=Collections.newSetFromMap(new IdentityHashMap<>());
   final List<Endpoint> endpoints=new ArrayList<>();

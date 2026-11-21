@@ -23,9 +23,15 @@
 - Integrate screen behavior and the iris compatibility handler into their
   target classes, and register jumper configuration through a Forge event
   subscriber instead of modifying the mod's bootstrap class.
-- Keep the legacy inventory format and binary overlay for other classes.
-- The later cleanup remains unverified in-game and retains third-party mixins
-  and a compatibility coremod.
+- Keep the legacy inventory format while compiling all packaged mod classes
+  from source; remove the frozen Atlantis binary dependency and release merge.
+- Reconstruct missing bootstrap, block, menu and client-helper source and
+  restore missing release resources. These files are reconstructed source,
+  not the original author's source.
+- Replace home-directory JEI and Lantea defaults with Maven dependencies.
+  Keep the author's private SGJourney alpha as an explicitly supplied input.
+- Check that every packaged owned class has corresponding Java source.
+- Third-party mixins and a compatibility coremod remain.
 
 ## 2.0.5-dev-144-restore-original-hatch
 

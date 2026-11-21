@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "sgjadditions_capacity_patch:item/pegasus_upgraded_shield"
+  }
+}

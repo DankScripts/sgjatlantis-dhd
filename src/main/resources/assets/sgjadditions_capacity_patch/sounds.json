@@ -1,0 +1,43 @@
+{
+  "pegasus_shield_opening": {
+    "subtitle": "subtitles.sgjadditions_capacity_patch.pegasus_shield_opening",
+    "sounds": [
+      {
+        "name": "sgjadditions_capacity_patch:shield/shield_opening",
+        "volume": 8.0
+      }
+    ]
+  },
+  "pegasus_shield_closing": {
+    "subtitle": "subtitles.sgjadditions_capacity_patch.pegasus_shield_closing",
+    "sounds": [
+      {
+        "name": "sgjadditions_capacity_patch:shield/shield_closing",
+        "volume": 8.0
+      }
+    ]
+  },
+  "pegasus_shield_hit": {
+    "subtitle": "subtitles.sgjadditions_capacity_patch.pegasus_shield_hit",
+    "sounds": [
+      {
+        "name": "sgjadditions_capacity_patch:shield/shield_hit_1",
+        "volume": 8.0
+      },
+      {
+        "name": "sgjadditions_capacity_patch:shield/shield_hit_2",
+        "volume": 8.0
+      },
+      {
+        "name": "sgjadditions_capacity_patch:shield/shield_hit_3",
+        "volume": 8.0
+      }
+    ]
+  },
+  "pegasus_shield_humming": {
+    "subtitle": "subtitles.sgjadditions_capacity_patch.pegasus_shield_humming",
+    "sounds": [
+      "sgjadditions_capacity_patch:shield/shield_humming"
+    ]
+  }
+}
