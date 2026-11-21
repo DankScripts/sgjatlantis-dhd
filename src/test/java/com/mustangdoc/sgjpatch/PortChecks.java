@@ -103,7 +103,86 @@ public final class PortChecks {
         }
         System.out.println("PASS: transporter passenger space includes the exposed screen in all four orientations.");
     }
+    private static final class PowerBranch {
+        private PowerBranch first;
+        private PowerBranch second;
+
+        private long simulate() {
+            return MixedPowerTransfer.run(this, 1, true, false, () -> {
+                if (first == null) return 0;
+                long sent = first.simulate();
+                return sent != 0 ? sent : second.simulate();
+            });
+        }
+    }
+
     private static void checkMixedPower() {
+        Object sourceNetwork = new Object();
+        Object outputNetwork = new Object();
+        java.util.function.LongUnaryOperator splitBetweenTwoOutputs = offer -> (offer / 2) * 2;
+        long accepted = MixedPowerTransfer.run(sourceNetwork, 3, false, true, () -> {
+            long first = MixedPowerTransfer.run(outputNetwork, 1, false, true,
+                    () -> splitBetweenTwoOutputs.applyAsLong(1));
+            long second = MixedPowerTransfer.run(outputNetwork, 2, false, true,
+                    () -> splitBetweenTwoOutputs.applyAsLong(2));
+            return first + second;
+        });
+        if (accepted != 2)
+            throw new AssertionError("A failed small offer must not block a later larger offer to the same network");
+        Object root = new Object();
+        Object branchA = new Object();
+        Object branchB = new Object();
+        Object junction = new Object();
+        Object nestedJunction = new Object();
+        Object primer = new Object();
+        long simulated = MixedPowerTransfer.run(root, 10, true, false, () -> {
+            long first = MixedPowerTransfer.run(branchA, 10, true, false, () -> {
+                MixedPowerTransfer.run(primer, 10, true, false,
+                        () -> MixedPowerTransfer.run(nestedJunction, 10, true, false,
+                                () -> MixedPowerTransfer.run(branchA, 10, true, false, () -> 10)));
+                return MixedPowerTransfer.run(junction, 10, true, false,
+                            () -> MixedPowerTransfer.run(nestedJunction, 10, true, false,
+                                    () -> MixedPowerTransfer.run(branchA, 10, true, false, () -> 10)));
+            });
+            long second = MixedPowerTransfer.run(branchB, 10, true, false,
+                    () -> MixedPowerTransfer.run(junction, 10, true, false,
+                            () -> MixedPowerTransfer.run(nestedJunction, 10, true, false,
+                                    () -> MixedPowerTransfer.run(branchA, 10, true, false, () -> 10))));
+            return first + second;
+        });
+        if (simulated != 10)
+            throw new AssertionError("A blocked path must not suppress a valid path through the same junction");
+
+        Object output = new Object();
+        long[] remaining = {10};
+        MixedPowerTransfer.run(root, 10, false, false, () -> {
+            long firstProbe = MixedPowerTransfer.run(output, 10, true, false, () -> remaining[0]);
+            long committed = MixedPowerTransfer.run(output, 10, false, false, () -> {
+                long sent = remaining[0];
+                remaining[0] = 0;
+                return sent;
+            });
+            long secondProbe = MixedPowerTransfer.run(output, 10, true, false, () -> remaining[0]);
+            if (firstProbe != 10 || committed != 10 || secondProbe != 0)
+                throw new AssertionError("Simulation must reflect energy committed earlier in the same transfer");
+            return committed;
+        });
+        PowerBranch[][] branches = new PowerBranch[24][2];
+        for (PowerBranch[] layer : branches)
+            for (int i = 0; i < layer.length; i++) layer[i] = new PowerBranch();
+        for (int i = 0; i < branches.length - 1; i++)
+            for (PowerBranch branch : branches[i]) {
+                branch.first = branches[i + 1][0];
+                branch.second = branches[i + 1][1];
+            }
+        Object reachableOutput = new Object();
+        long reachable = MixedPowerTransfer.run(root, 1, true, false, () -> {
+            long first = branches[0][0].simulate();
+            return first != 0 ? first
+                    : MixedPowerTransfer.run(reachableOutput, 1, true, false, () -> 1);
+        });
+        if (reachable != 1)
+            throw new AssertionError("Many converging dead-end routes must not hide a reachable output");
         for(boolean firstCable:new boolean[]{false,true}) {
             long[] stored={0};
             SGJourneyEnergy target=new SGJourneyEnergy(600,600,0) {
@@ -178,6 +257,8 @@ public final class PortChecks {
         System.out.println("PASS: city transporter readiness checks all bundled stations without overrunning the facing list.");
         checkEventSubscribers();
         checkMixedPower();
+        com.mustangdoc.sgjpatch.power.CableNetworkRefreshChecks.run();
+        com.mustangdoc.sgjpatch.doors.ClientDoorAnimationChecks.run();
         var centerAction=type("com.mustangdoc.sgjpatch.compat.LanteaJumperScreen")
                 .getDeclaredMethod("nativeCenterAction",String.class,boolean.class);
         centerAction.setAccessible(true);

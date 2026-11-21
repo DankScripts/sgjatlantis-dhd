@@ -17,6 +17,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(value=CableBlockEntity.class,remap=false)
 public abstract class LargeNaquadahCableDhdPowerBridgeMixin {
+ @Inject(method="setNetworkID",at=@At("HEAD"))
+ private void sgjpatch$saveChangedNetworkId(int id,CallbackInfo ci){
+  CableBlockEntity cable=(CableBlockEntity)(Object)this;
+  if(cable.getLevel()!=null && !cable.getLevel().isClientSide() && cable.networkID()!=id)cable.setChanged();
+ }
  @Redirect(method="transferEnergy",at=@At(value="INVOKE",target="Lnet/povstalec/sgjourney/common/data/ConduitNetworks$ConduitNetwork;transferEnergy(Lnet/minecraft/world/level/Level;JZZ)J"))
  private long sgjpatch$guardMixedTransfer(ConduitNetworks.ConduitNetwork network,Level level,long amount,boolean simulate,boolean zeroPoint){
   return MixedPowerTransfer.run(network,amount,simulate,zeroPoint,()->network.transferEnergy(level,amount,simulate,zeroPoint));

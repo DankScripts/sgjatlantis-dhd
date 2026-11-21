@@ -1,8 +1,10 @@
 package com.mustangdoc.sgjpatch.power;
 
 import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.LongSupplier;
@@ -16,11 +18,22 @@ public final class MixedPowerTransfer {
     private static final int MAX_DEPTH=64;
     private static final ThreadLocal<Context> CURRENT=new ThreadLocal<>();
     private record Probe(long amount, boolean zeroPoint) {}
+    private record CachedProbe(Set<Object> active, Set<Object> visited, long accepted) {
+        boolean matches(Set<Object> current){
+            // Only visited networks can change this probe's cycle-guard decisions.
+            if(active.size()!=current.size())return false;
+            for(Object network:visited)
+                if(active.contains(network)!=current.contains(network))return false;
+            return true;
+        }
+    }
     private static final class Context {
         final Set<Object> active=Collections.newSetFromMap(new IdentityHashMap<>());
-        final Map<Object,Map<Probe,Long>> probes=new IdentityHashMap<>();
-        final Set<Object> empty=Collections.newSetFromMap(new IdentityHashMap<>());
+        final Map<Object,Map<Probe,List<CachedProbe>>> probes=new IdentityHashMap<>();
+        final List<Set<Object>> probeFrames=new ArrayList<>();
         int remaining=MAX_DISPATCHES;
+        int incomplete;
+        int mutations;
         boolean zeroPoint;
     }
     private MixedPowerTransfer() {}
@@ -39,17 +52,34 @@ public final class MixedPowerTransfer {
         Context context=CURRENT.get();boolean root=context==null;
         if(root){context=new Context();CURRENT.set(context);}
         try{
+            for(Set<Object> frame:context.probeFrames)frame.add(network);
             // A cable run can touch the same floor through many endpoints.
             // Reject the back edge before SGJ recursively enumerates outputs.
-            if(context.active.contains(network)||context.active.size()>=MAX_DEPTH)return 0;
+            if(context.active.contains(network))return 0;
+            if(context.active.size()>=MAX_DEPTH){context.incomplete++;return 0;}
             Probe probe=new Probe(amount,zeroPoint);
             if(simulate){
                 var cached=context.probes.get(network);
-                if(cached!=null && cached.containsKey(probe))return cached.get(probe);
-            }else if(context.empty.contains(network))return 0;
+                if(cached!=null){
+                    var results=cached.get(probe);
+                    if(results!=null)for(CachedProbe result:results)
+                        if(result.matches(context.active)){
+                            for(Set<Object> frame:context.probeFrames)frame.addAll(result.visited());
+                            return result.accepted();
+                        }
+                }
+            }
             // Bound work even in multiply connected graphs with many distinct
             // offers. Unaccepted energy stays at the source for the next tick.
-            if(context.remaining--<=0)return 0;
+            if(context.remaining--<=0){context.incomplete++;return 0;}
+            int incomplete=context.incomplete;
+            int mutations=context.mutations;
+            Set<Object> visited=null;
+            if(simulate){
+                visited=Collections.newSetFromMap(new IdentityHashMap<>());
+                visited.add(network);
+                context.probeFrames.add(visited);
+            }
             context.active.add(network);
             boolean previousEnergyType=context.zeroPoint;
             context.zeroPoint=zeroPoint;
@@ -58,9 +88,17 @@ public final class MixedPowerTransfer {
             finally{
                 context.zeroPoint=previousEnergyType;
                 context.active.remove(network);
+                if(simulate)context.probeFrames.remove(context.probeFrames.size()-1);
             }
-            if(simulate)context.probes.computeIfAbsent(network,k->new HashMap<>()).put(probe,accepted);
-            else if(accepted==0)context.empty.add(network);
+            if(simulate && incomplete==context.incomplete && mutations==context.mutations){
+                Set<Object> active=Collections.newSetFromMap(new IdentityHashMap<>());
+                active.addAll(context.active);
+                context.probes.computeIfAbsent(network,k->new HashMap<>())
+                        .computeIfAbsent(probe,k->new ArrayList<>()).add(new CachedProbe(active,visited,accepted));
+            }else if(!simulate){
+                context.mutations++;
+                context.probes.clear();
+            }
             return accepted;
         }finally{if(root)CURRENT.remove();}
     }

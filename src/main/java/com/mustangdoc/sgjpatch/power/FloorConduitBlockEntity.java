@@ -25,6 +25,7 @@ public final class FloorConduitBlockEntity extends BlockEntity {
  private static final Map<net.minecraft.world.level.Level,Long> TOPOLOGY_VERSIONS=new WeakHashMap<>();
  private static long topologyVersion(net.minecraft.world.level.Level level){return TOPOLOGY_VERSIONS.getOrDefault(level,0L);}
  private static void topologyChanged(net.minecraft.world.level.Level level){if(level!=null && !level.isClientSide)TOPOLOGY_VERSIONS.put(level,topologyVersion(level)+1);}
+ static void refreshTopology(net.minecraft.world.level.Level level){topologyChanged(level);}
  private Network network;
  private static final class Network {
   final Set<FloorConduitBlockEntity> members=Collections.newSetFromMap(new IdentityHashMap<>());
@@ -155,6 +156,7 @@ public final class FloorConduitBlockEntity extends BlockEntity {
  @Override public void onLoad(){
   super.onLoad();
   topologyChanged(level);
+  CableNetworkRefresh.register(this);
  }
  @Override public void setRemoved(){topologyChanged(level);super.setRemoved();}
  private long route(long amount,boolean simulate,boolean zeroPoint,int operation){

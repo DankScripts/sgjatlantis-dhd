@@ -1,5 +1,6 @@
 package com.mustangdoc.sgjpatch.transporter;
 
+import com.mustangdoc.sgjpatch.doors.ClientDoorAnimation;
 import net.minecraft.core.*;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -9,17 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public final class TransporterEntity extends BlockEntity {
     public static final int DOOR_TICKS=36;
-    private boolean clientInitialized,clientTarget;
-    private float clientFrom;
-    private long clientStarted;
-    private float clientProgress(){
-        long now=net.minecraft.Util.getMillis();
-        if(!clientInitialized){clientInitialized=true;clientTarget=doorOpen;clientFrom=doorOpen?1:0;clientStarted=now;}
-        float t=net.minecraft.util.Mth.clamp((now-clientStarted)/(DOOR_TICKS*50f),0,1);
-        float current=net.minecraft.util.Mth.lerp(t,clientFrom,clientTarget?1:0);
-        if(clientTarget!=doorOpen){clientFrom=current;clientTarget=doorOpen;clientStarted=now;}
-        return current;
-    }
+    private final ClientDoorAnimation clientAnimation=new ClientDoorAnimation(DOOR_TICKS*50L);
     private String name="Transporter";
     // 0 closed, 1 boarding until a destination is selected, 2 unloading until empty.
     private int doorMode;
@@ -30,7 +21,7 @@ public final class TransporterEntity extends BlockEntity {
     private int layoutRevision;
     public float progress(float partial){
         if(level==null)return 0;
-        if(level.isClientSide)return clientProgress();
+        if(level.isClientSide)return clientAnimation.progress(doorOpen,net.minecraft.Util.getMillis());
         float t=net.minecraft.util.Mth.clamp((level.getGameTime()+partial-animationStart)/DOOR_TICKS,0,1);
         return net.minecraft.util.Mth.lerp(t,animationFrom,doorOpen?1:0);
     }
@@ -88,6 +79,6 @@ public final class TransporterEntity extends BlockEntity {
     }
     public void currentLayout(){layoutRevision=6;setChanged();}
     @Override protected void saveAdditional(CompoundTag t,HolderLookup.Provider registries){super.saveAdditional(t,registries);t.putString("StationName",name);t.putInt("LayoutRevision",layoutRevision);t.putBoolean("DoorOpen",doorOpen);t.putInt("DoorMode",doorMode);t.putFloat("AnimationFrom",animationFrom);t.putLong("AnimationStart",animationStart);}
-    @Override protected void loadAdditional(CompoundTag t,HolderLookup.Provider registries){if(level!=null&&level.isClientSide)clientProgress();super.loadAdditional(t,registries);name=t.contains("StationName")?t.getString("StationName"):"Transporter";reserved=false;layoutRevision=t.getInt("LayoutRevision");doorOpen=t.getBoolean("DoorOpen");doorMode=t.contains("DoorMode")?t.getInt("DoorMode"):(doorOpen?1:0);animationFrom=t.getFloat("AnimationFrom");animationStart=t.getLong("AnimationStart");}
+    @Override protected void loadAdditional(CompoundTag t,HolderLookup.Provider registries){super.loadAdditional(t,registries);name=t.contains("StationName")?t.getString("StationName"):"Transporter";reserved=false;layoutRevision=t.getInt("LayoutRevision");doorOpen=t.getBoolean("DoorOpen");doorMode=t.contains("DoorMode")?t.getInt("DoorMode"):(doorOpen?1:0);animationFrom=t.getFloat("AnimationFrom");animationStart=t.getLong("AnimationStart");if(level!=null&&level.isClientSide)clientAnimation.setTarget(doorOpen,net.minecraft.Util.getMillis());}
 }
 

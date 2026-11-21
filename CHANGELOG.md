@@ -1,5 +1,12 @@
 ## Unreleased
 
+- Repair two maintenance-area floor conduits and their adjacent cable
+  connection in the bundled city.
+- Recheck loaded floor-conduit neighbors and safely rebuild missing SGJourney
+  cable networks, saving changed IDs without forcing chunks to load.
+- Keep mixed-network simulation results specific to the active route and
+  discard them after committed transfers.
+- Start client door animations when updates arrive, including while offscreen.
 - Bundle the server-backup city and lower rooms with the later Farlands
   control-room layout.
 - Show Genetics Lab and Lower Spire on the transporter LOWER page while
