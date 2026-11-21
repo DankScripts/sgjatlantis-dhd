@@ -15,7 +15,7 @@ The six decorative DHD control crystals stay visible, dimmed when unpowered.
 
 Atlantis DHD is a standalone Atlantis/Pegasus-style Dial Home Device for
 Stargate Journey. This branch contains the NeoForge port for Minecraft 1.21.1.
-The current NeoForge build baseline is stored in `baseline/2.0.5-current/`.
+This branch builds entirely from source; no preserved Atlantis binary is needed.
 
 ## Source and compatibility hooks
 
@@ -32,7 +32,7 @@ SGJourney, Lantea, or SG Mobs, not this mod's own classes.
 - NeoForge 21.1.252
 - Java 21
 - Stargate Journey 0.6.55-alpha (build and compatibility target)
-- Optional: Lantea 0.7.4.2 for Minecraft 1.21.1
+- Optional: Lantea 0.7.7.12 for Minecraft 1.21.1
 - Optional: SGJourney Mobs (triple ZPM hub API target: 1.0.10)
 
 The Atlantis energy iris uses a continuous shield mesh on all SGJourney gate
@@ -105,13 +105,20 @@ remain optional.
 
 ## Building
 
-Run:
+Use Java 21. JEI 19.27.0.336 and Lantea 0.7.7.12 are downloaded from Maven.
+The SGJourney 0.6.55-alpha was privately supplied by its author; obtain the
+NeoForge 1.21.1 JAR and set `SGJOURNEY_JAR` to its path, or place it in
+`libs/Stargate.Journey-1.21.1-0.6.55-alpha.jar`. Do not substitute public 0.6.54.
+When the public beta is released, update and recheck the matching dependency.
 
-```bash
-./gradlew release
+Run in PowerShell:
+
+```powershell
+.\gradlew.bat clean release
 ```
 
-The release JAR and source ZIP are written to `dist/`.
+The release JAR and source ZIP are written to `dist\`. Release validation
+rejects packaged mod classes without corresponding Java source.
 
 See `PORT_STATUS.md` and `CHANGELOG.md` for release-specific details.
 

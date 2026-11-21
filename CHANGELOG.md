@@ -1,5 +1,10 @@
 ## Unreleased
 
+- Download JEI and Lantea build dependencies from Maven instead of a local
+  Minecraft installation. Keep the privately supplied SGJourney alpha explicit.
+- Exclude the historical Atlantis binary from the source archive and reject
+  packaged mod classes without corresponding Java source.
+
 - Keep all six decorative DHD control crystals visible when unpowered, with
   dimmed green lighting, and draw them above the table background.
 

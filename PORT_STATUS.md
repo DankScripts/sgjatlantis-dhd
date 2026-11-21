@@ -4,7 +4,7 @@
 - Shared production geometry: forty equilateral keys, no overlapping interiors,
   four correctly subdivided centre buttons, and bounds fitting the panel.
 - Rendered and inspected the layout preview with the real plate coordinates and assets.
-- Lantea 0.7.3.0 native services, jumper entry points, address parser, DHD buffer,
+- Lantea 0.7.7.12 native services, jumper entry points, address parser, DHD buffer,
   SymbolEncoded and Engaged event constructors checked against the installed JAR.
 - Real NeoForge command, guide, and table-light packet codec round trips.
 - Existing 2.0.4-hotfix1 shield and cable behavior recovered/preserved.

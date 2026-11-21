@@ -30,6 +30,11 @@ repositories {
         url = 'https://cursemaven.com'
         content { includeGroup 'curse.maven' }
     }
+    maven {
+        name = "Jared's Maven"
+        url = 'https://maven.blamejared.com'
+        content { includeGroup 'mezz.jei' }
+    }
 }
 
 neoForge {
@@ -94,18 +99,29 @@ sourceSets.main.resources.srcDir(namespaceResources)
 tasks.named('processResources') { dependsOn 'generateAtlantisNamespaceResources' }
 
 dependencies {
-    // Optional browser API only; JEI is not bundled or required at runtime.
-    compileOnly files(System.getenv('JEI_JAR') ?: new File(System.getProperty('user.home'), 'curseforge/minecraft/Instances/NeoForge/mods/jei-1.21.1-neoforge-19.27.0.336.jar'))
+    compileOnly "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+    compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
+    runtimeOnly "mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}"
 
     // Compile against the release API. Third-party JARs are not redistributed.
     def configuredSgJourneyJar = System.getenv('SGJOURNEY_JAR')
-    implementation files(configuredSgJourneyJar != null && !configuredSgJourneyJar.isBlank()
+    def sgJourneyJar = file(configuredSgJourneyJar != null && !configuredSgJourneyJar.isBlank()
             ? configuredSgJourneyJar
             : 'libs/Stargate.Journey-1.21.1-0.6.55-alpha.jar')
-    def lanteaJar = file(System.getenv('LANTEA_JAR') ?: 'libs/lantea-0.7.3.0+mc1.21.1.jar')
-    if (!lanteaJar.isFile()) throw new GradleException("Set LANTEA_JAR to an existing NeoForge Lantea JAR: ${lanteaJar}")
-    compileOnly files(lanteaJar)
-    testRuntimeOnly files(lanteaJar)
+    if (!sgJourneyJar.isFile()) {
+        throw new GradleException('SGJourney 0.6.55-alpha is a privately supplied API build. Set SGJOURNEY_JAR to the author-provided NeoForge 1.21.1 JAR, or place it in libs/Stargate.Journey-1.21.1-0.6.55-alpha.jar.')
+    }
+    implementation files(sgJourneyJar)
+    def configuredLanteaJar = System.getenv('LANTEA_JAR')
+    if (configuredLanteaJar != null && !configuredLanteaJar.isBlank()) {
+        def lanteaJar = file(configuredLanteaJar)
+        if (!lanteaJar.isFile()) throw new GradleException("LANTEA_JAR does not exist: ${lanteaJar}")
+        compileOnly files(lanteaJar)
+        runtimeOnly files(lanteaJar)
+    } else {
+        compileOnly "curse.maven:lantea-stargates-1703388:${lantea_file_id}"
+        runtimeOnly "curse.maven:lantea-stargates-1703388:${lantea_file_id}"
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -119,7 +135,7 @@ tasks.register('sourceArchive', Zip) {
         include 'src/**', 'gradle/**', 'gradlew', 'gradlew.bat', 'build.gradle',
                 'settings.gradle', 'gradle.properties', 'README.md', 'CHANGELOG.md',
                 'BUILDING.md', 'PORT_STATUS.md', 'LICENSE.txt', 'BASELINE.md',
-                'baseline/2.0.5-current/**', 'tools/**'
+                'tools/**'
     }
 }
 
@@ -129,7 +145,26 @@ tasks.register('releaseJar', Copy) {
     into(layout.projectDirectory.dir('dist'))
 }
 
-tasks.register('release') { dependsOn 'releaseJar', 'sourceArchive', 'verifyPort' }
+tasks.register('verifyReleaseJar') {
+    dependsOn 'releaseJar'
+    inputs.file(tasks.named('jar', Jar).flatMap { it.archiveFile })
+    inputs.dir('src/main/java')
+    doLast {
+        def jarFile = tasks.named('jar', Jar).get().archiveFile.get().asFile
+        new java.util.zip.ZipFile(jarFile).withCloseable { zip ->
+            def missingSource = zip.entries().findAll { entry ->
+                entry.name.startsWith('com/mustangdoc/sgjpatch/') && entry.name.endsWith('.class')
+            }.collect { entry ->
+                entry.name.replaceAll('\\$[^/]*\\.class$', '.class').replaceAll('\\.class$', '.java')
+            }.unique().findAll { name -> !file("src/main/java/${name}").isFile() }
+            if (!missingSource.isEmpty()) {
+                throw new GradleException("Release classes without published source: ${missingSource}")
+            }
+        }
+    }
+}
+
+tasks.register('release') { dependsOn 'verifyReleaseJar', 'sourceArchive', 'verifyPort' }
 
 // Runs without starting Minecraft or touching a player's saves.
 tasks.register('verifyPort', JavaExec) {
