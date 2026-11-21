@@ -1,0 +1,36 @@
+{
+  "variants": {
+    "facing=north,lit=false": {
+      "model": "sgjatlantis_dhd:block/powered_off_advancedclamptop",
+      "y": 0
+    },
+    "facing=north,lit=true": {
+      "model": "sgjatlantis_dhd:block/advancedclamptop",
+      "y": 0
+    },
+    "facing=east,lit=false": {
+      "model": "sgjatlantis_dhd:block/powered_off_advancedclamptop",
+      "y": 90
+    },
+    "facing=east,lit=true": {
+      "model": "sgjatlantis_dhd:block/advancedclamptop",
+      "y": 90
+    },
+    "facing=south,lit=false": {
+      "model": "sgjatlantis_dhd:block/powered_off_advancedclamptop",
+      "y": 180
+    },
+    "facing=south,lit=true": {
+      "model": "sgjatlantis_dhd:block/advancedclamptop",
+      "y": 180
+    },
+    "facing=west,lit=false": {
+      "model": "sgjatlantis_dhd:block/powered_off_advancedclamptop",
+      "y": 270
+    },
+    "facing=west,lit=true": {
+      "model": "sgjatlantis_dhd:block/advancedclamptop",
+      "y": 270
+    }
+  }
+}

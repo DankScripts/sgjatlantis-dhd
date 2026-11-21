@@ -1,0 +1,12 @@
+newmtl plate
+Kd 1 1 1
+Ka 0 0 0
+map_Kd sgjadditions_capacity_patch:block/brown_plate
+newmtl rim
+Kd 0.72 0.72 0.72
+Ka 0 0 0
+map_Kd sgjadditions_capacity_patch:block/brown_plate
+newmtl crystal
+Kd 1 1 1
+Ka 0 0 0
+map_Kd sgjadditions_capacity_patch:block/atlantis_triangle

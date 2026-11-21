@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "sgjatlantis_dhd:block/powered_off_ancientpillar"
+    },
+    "lit=true": {
+      "model": "sgjatlantis_dhd:block/ancientpillar"
+    }
+  }
+}

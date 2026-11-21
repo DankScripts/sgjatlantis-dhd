@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "sgjatlantis_dhd:block/lightblueancientwall",
+      "y": 0
+    },
+    "facing=east": {
+      "model": "sgjatlantis_dhd:block/lightblueancientwall",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "sgjatlantis_dhd:block/lightblueancientwall",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "sgjatlantis_dhd:block/lightblueancientwall",
+      "y": 270
+    }
+  }
+}

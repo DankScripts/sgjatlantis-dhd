@@ -1,0 +1,12 @@
+{
+  "loader": "neoforge:obj",
+  "model": "sgjadditions_capacity_patch:models/entity/puddle_jumper/dhd_key_lit_31.obj",
+  "automatic_culling": false,
+  "shade_quads": false,
+  "flip_v": true,
+  "emissive_ambient": true,
+  "textures": {
+    "texture": "sgjadditions_capacity_patch:entity/puddle_jumper/dhd_glyphs_lit",
+    "particle": "sgjadditions_capacity_patch:entity/puddle_jumper/dhd_glyphs_lit"
+  }
+}

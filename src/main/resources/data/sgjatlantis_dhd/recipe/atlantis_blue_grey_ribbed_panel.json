@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "sgjatlantis_dhd:atlantis_blue_grey_seamless_alloy"
+  },
+  "result": {
+    "id": "sgjatlantis_dhd:atlantis_blue_grey_ribbed_panel",
+    "count": 1
+  }
+}

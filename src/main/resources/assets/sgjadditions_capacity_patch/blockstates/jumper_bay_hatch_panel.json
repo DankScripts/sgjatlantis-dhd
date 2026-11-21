@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "upper=false,iris=false,sealed=false": {
+      "model": "sgjadditions_capacity_patch:block/jumper_bay_hatch_panel_gate"
+    },
+    "upper=false,iris=false,sealed=true": {
+      "model": "sgjadditions_capacity_patch:block/jumper_bay_hatch_panel_gate"
+    },
+    "upper=false,iris=true,sealed=false": {
+      "model": "sgjadditions_capacity_patch:block/jumper_bay_hatch_panel_gate"
+    },
+    "upper=false,iris=true,sealed=true": {
+      "model": "sgjadditions_capacity_patch:block/jumper_bay_hatch_panel_gate"
+    },
+    "upper=true,iris=false,sealed=false": {
+      "model": "sgjadditions_capacity_patch:block/jumper_bay_hatch_panel_upper"
+    },
+    "upper=true,iris=false,sealed=true": {
+      "model": "sgjadditions_capacity_patch:block/jumper_bay_hatch_panel_upper"
+    },
+    "upper=true,iris=true,sealed=false": {
+      "model": "sgjadditions_capacity_patch:block/jumper_bay_hatch_panel_upper"
+    },
+    "upper=true,iris=true,sealed=true": {
+      "model": "sgjadditions_capacity_patch:block/jumper_bay_hatch_panel_upper"
+    }
+  }
+}

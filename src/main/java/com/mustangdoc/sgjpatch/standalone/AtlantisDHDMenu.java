@@ -11,6 +11,7 @@ import net.povstalec.sgjourney.common.menu.dhd.AbstractDHDMenu;
 
 public class AtlantisDHDMenu extends AbstractDHDMenu<AtlantisDHDEntity> {
     public static final int BUTTON_TOGGLE_SHIELD = 1000;
+    public static final int BUTTON_ENGAGE = 1001;
     private final AtlantisDHDEntity atlantisDHD;
     private final Level atlantisLevel;
 
@@ -39,9 +40,13 @@ public class AtlantisDHDMenu extends AbstractDHDMenu<AtlantisDHDEntity> {
 
     @Override
     public boolean clickMenuButton(Player player, int id) {
+        if (id == BUTTON_ENGAGE) {
+            if (!player.level().isClientSide()) atlantisDHD.engageStargate(player);
+            return true;
+        }
         if (id == BUTTON_TOGGLE_SHIELD) {
             if (!player.level().isClientSide())
-                atlantisDHD.toggleConnectedShield();
+                atlantisDHD.toggleConnectedShield(player);
             return true;
         }
         return super.clickMenuButton(player, id);

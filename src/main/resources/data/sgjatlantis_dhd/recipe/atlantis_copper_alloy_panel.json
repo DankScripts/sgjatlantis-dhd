@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "sgjatlantis_dhd:atlantis_copper_seamless_alloy"
+  },
+  "result": {
+    "id": "sgjatlantis_dhd:atlantis_copper_alloy_panel",
+    "count": 1
+  }
+}

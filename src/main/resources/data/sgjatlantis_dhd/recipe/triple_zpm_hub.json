@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "ingredients": [
+    {
+      "item": "sgjourney:zpm_hub"
+    },
+    {
+      "item": "sgjourney:zpm_hub"
+    },
+    {
+      "item": "sgjourney:zpm_hub"
+    }
+  ],
+  "result": {
+    "id": "sgjatlantis_dhd:triple_zpm_hub",
+    "count": 1
+  }
+}

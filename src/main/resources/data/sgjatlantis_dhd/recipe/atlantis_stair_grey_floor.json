@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "minecraft:iron_block"
+  },
+  "result": {
+    "id": "sgjatlantis_dhd:atlantis_stair_grey_floor",
+    "count": 8
+  }
+}

@@ -1,0 +1,12 @@
+# Individual Lantea puddle-jumper DHD key overlay generated from the original model.
+mtllib dhd_key_lit.mtl
+o dhd_key_lit_26
+usemtl keys
+v -0.021500 1.188266 -2.781473
+v -0.078500 1.188266 -2.781473
+v -0.050000 1.156266 -2.743873
+vt 0.366630 0.593750
+vt 0.258370 0.593750
+vt 0.312500 0.500000
+vn 0.000000 0.760800 0.648900
+f 1/1/1 2/2/1 3/3/1

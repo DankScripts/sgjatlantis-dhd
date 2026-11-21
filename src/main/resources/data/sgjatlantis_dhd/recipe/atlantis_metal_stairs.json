@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "M  ",
+    "MM ",
+    "MMM"
+  ],
+  "key": {
+    "M": {
+      "item": "sgjatlantis_dhd:blueancientblock"
+    }
+  },
+  "result": {
+    "id": "sgjatlantis_dhd:atlantis_metal_stairs",
+    "count": 4
+  }
+}

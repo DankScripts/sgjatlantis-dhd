@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "all": "sgjatlantis_dhd:block/atlantis_bronze_seamless_alloy"
+  },
+  "parent": "minecraft:block/cube_all"
+}

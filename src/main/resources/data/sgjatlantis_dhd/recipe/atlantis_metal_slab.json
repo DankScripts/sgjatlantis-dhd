@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "MMM"
+  ],
+  "key": {
+    "M": {
+      "item": "sgjatlantis_dhd:blueancientblock"
+    }
+  },
+  "result": {
+    "id": "sgjatlantis_dhd:atlantis_metal_slab",
+    "count": 6
+  }
+}

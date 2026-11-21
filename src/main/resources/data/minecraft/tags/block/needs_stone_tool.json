@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "sgjatlantis_dhd:atlantis_inscribed_stairs",
+    "sgjatlantis_dhd:atlantis_inscribed_slab",
+    "sgjatlantis_dhd:atlantis_metal_stairs",
+    "sgjatlantis_dhd:atlantis_stone_stairs",
+    "sgjatlantis_dhd:atlantis_metal_slab",
+    "sgjatlantis_dhd:atlantis_metal_block",
+    "sgjatlantis_dhd:atlantis_stone_slab",
+    "sgjatlantis_dhd:atlantis_stone_block"
+  ]
+}

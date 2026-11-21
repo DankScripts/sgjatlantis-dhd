@@ -1,0 +1,7 @@
+{
+  "textures": {
+    "end": "sgjatlantis_dhd:block/atlantis_teal_seamless_alloy",
+    "side": "sgjatlantis_dhd:block/atlantis_teal_recessed_panel"
+  },
+  "parent": "minecraft:block/cube_column"
+}

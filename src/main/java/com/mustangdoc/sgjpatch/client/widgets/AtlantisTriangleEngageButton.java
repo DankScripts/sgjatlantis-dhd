@@ -58,13 +58,13 @@ public final class AtlantisTriangleEngageButton extends AbstractButton {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        graphics.blit(
-                texture,
-                getX(), getY(), width, height,
-                0F, (float) (frame * sourceSize),
-                sourceSize, sourceSize,
-                sourceSize, sourceSize * 3
-        );
+        graphics.pose().pushPose();
+        graphics.pose().translate(getX(),getY(),0);
+        graphics.pose().scale(1F,height/(float)width,1F);
+        com.mustangdoc.sgjpatch.client.util.AtlantisKeypadSurface.crystal(graphics,0,0,width,up,frame);
+        graphics.pose().popPose();
+        graphics.drawCenteredString(net.minecraft.client.Minecraft.getInstance().font, "\u25c6",
+                getX()+width/2, getY()+(int)(height*(up?2F/3:1F/3))-4, 0xFFFFD578);
         RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
     }
 

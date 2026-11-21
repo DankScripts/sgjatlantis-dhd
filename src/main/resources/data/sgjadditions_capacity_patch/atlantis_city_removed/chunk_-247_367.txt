@@ -1,0 +1,5 @@
+3 315 15 minecraft:stone_bricks -
+3 318 15 minecraft:stone_bricks -
+3 319 15 minecraft:stone_bricks -
+11 320 15 minecraft:stone_bricks -
+11 323 15 minecraft:stone_bricks -

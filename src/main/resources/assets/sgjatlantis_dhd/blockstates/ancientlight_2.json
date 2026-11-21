@@ -1,0 +1,20 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "sgjatlantis_dhd:block/ancientlight_2",
+      "y": 0
+    },
+    "facing=east": {
+      "model": "sgjatlantis_dhd:block/ancientlight_2",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "sgjatlantis_dhd:block/ancientlight_2",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "sgjatlantis_dhd:block/ancientlight_2",
+      "y": 270
+    }
+  }
+}

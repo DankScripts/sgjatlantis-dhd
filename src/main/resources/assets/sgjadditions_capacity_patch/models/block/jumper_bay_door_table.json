@@ -1,0 +1,145 @@
+{
+  "loader": "neoforge:composite",
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "sgjadditions_capacity_patch:block/atlantis_prop_shell",
+    "shell": "sgjadditions_capacity_patch:block/atlantis_prop_shell",
+    "fascia": "sgjadditions_capacity_patch:block/atlantis_prop_fascia",
+    "deck": "sgjadditions_capacity_patch:block/atlantis_prop_deck",
+    "inlay": "sgjadditions_capacity_patch:block/atlantis_prop_inlay",
+    "lightbar": "sgjadditions_capacity_patch:block/atlantis_prop_lightbar",
+    "crystal": "sgjadditions_capacity_patch:block/atlantis_prop_crystal",
+    "projector": "sgjadditions_capacity_patch:block/atlantis_shield_projector",
+    "amber": "sgjadditions_capacity_patch:block/atlantis_prop_amber_glyph",
+    "lit_crystal": "sgjadditions_capacity_patch:block/atlantis_prop_lit_crystal"
+  },
+  "children": {
+    "table": {
+      "parent": "sgjadditions_capacity_patch:block/jumper_bay_door_table_body"
+    },
+    "solid_legs": {
+      "loader": "neoforge:obj",
+      "model": "sgjadditions_capacity_patch:models/block/jumper_bay_door_table_solid_legs.obj",
+      "flip_v": true,
+      "automatic_culling": false,
+      "shade_quads": true,
+      "render_type": "solid"
+    }
+  },
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        68,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        68,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.28,
+        0.28,
+        0.28
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        12,
+        45,
+        0
+      ],
+      "translation": [
+        0,
+        1,
+        0
+      ],
+      "scale": [
+        0.25,
+        0.25,
+        0.25
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        12,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        1,
+        0
+      ],
+      "scale": [
+        0.25,
+        0.25,
+        0.25
+      ]
+    },
+    "ground": {
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.34,
+        0.34,
+        0.34
+      ]
+    },
+    "gui": {
+      "rotation": [
+        32,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        -1,
+        0
+      ],
+      "scale": [
+        0.42,
+        0.42,
+        0.42
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        180,
+        0
+      ],
+      "translation": [
+        0,
+        -1,
+        0
+      ],
+      "scale": [
+        0.45,
+        0.45,
+        0.45
+      ]
+    }
+  }
+}

@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "sgjatlantis_dhd:item/pegasus_upgraded_shield"
+    "layer0": "sgjatlantis_dhd:item/atlantis_energy_iris"
   }
 }

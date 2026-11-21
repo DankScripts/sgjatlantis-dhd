@@ -4,10 +4,28 @@
   "package": "com.mustangdoc.sgjpatch.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "LargeNaquadahCableDhdPowerBridgeMixin"
+    "CityStargateCacheAccessor",
+    "AtlantisMapColorMixin",
+    "LargeNaquadahCableDhdPowerBridgeMixin",
+    "LanteaJumperDialMixin",
+    "LanteaGateIrisStateMixin",
+    "LanteaKawooshHazardIrisMixin",
+    "LanteaTransitCrossingAccessor",
+    "LanteaTransitIrisMixin",
+    "PegasusStargateShieldPowerMixin",
+    "PegasusEnergyIrisMixin",
+    "SgmobsShieldSoundMixin",
+    "SgmobsTripleZpmHubPowerMixin"
   ],
   "client": [
-    "client.AtlantisDHDModelAngleMixin"
+    "client.StargateRendererModelAccessor",
+    "client.AtlantisDHDModelAngleMixin",
+    "client.IrisModelPegasusShieldMixin",
+    "client.LanteaJumperGlyphRendererMixin",
+    "client.LanteaEnergyIrisRendererMixin",
+    "client.LanteaKawooshIrisMixin",
+    "client.SgmobsGateShieldMixin",
+    "client.SgmobsShieldHumMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -1,0 +1,30 @@
+{
+  "replace": false,
+  "values": [
+    "sgjatlantis_dhd:atlantis_floor",
+    "sgjatlantis_dhd:atlantis_silver_floor",
+    "sgjatlantis_dhd:atlantis_bronze_floor",
+    "sgjatlantis_dhd:atlantis_copper_floor",
+    "sgjatlantis_dhd:atlantis_blue_grey_floor",
+    "sgjatlantis_dhd:atlantis_teal_floor",
+    "sgjatlantis_dhd:atlantis_charcoal_floor",
+    "sgjatlantis_dhd:atlantis_stair_grey_floor",
+    "sgjatlantis_dhd:powered_ancientpillar",
+    "sgjatlantis_dhd:powered_ancientstairs",
+    "sgjatlantis_dhd:powered_atlantis_inscribed_stairs",
+    "sgjatlantis_dhd:powered_atlantis_inscribed_slab",
+    "sgjatlantis_dhd:powered_ancientlight",
+    "sgjatlantis_dhd:powered_ancientlight_2",
+    "sgjatlantis_dhd:powered_wallpanel",
+    "sgjatlantis_dhd:powered_advancedclamptop",
+    "sgjatlantis_dhd:powered_advancedclampbottom",
+    "sgjatlantis_dhd:powered_basicclamp",
+    "sgjatlantis_dhd:powered_advancedpost",
+    "sgjatlantis_dhd:powered_atlantis_silver_illuminated_panel",
+    "sgjatlantis_dhd:powered_atlantis_bronze_illuminated_panel",
+    "sgjatlantis_dhd:powered_atlantis_copper_illuminated_panel",
+    "sgjatlantis_dhd:powered_atlantis_blue_grey_illuminated_panel",
+    "sgjatlantis_dhd:powered_atlantis_teal_illuminated_panel",
+    "sgjatlantis_dhd:powered_atlantis_charcoal_illuminated_panel"
+  ]
+}

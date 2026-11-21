@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "sgjatlantis_dhd:ancientpillar"
+    },
+    {
+      "item": "minecraft:redstone"
+    }
+  ],
+  "result": {
+    "id": "sgjatlantis_dhd:powered_ancientpillar",
+    "count": 1
+  }
+}

@@ -13,6 +13,16 @@ base {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
+tasks.named('jar', Jar).configure {
+    manifest {
+        attributes(
+                'Implementation-Title': mod_name,
+                'Implementation-Version': mod_version,
+                'Implementation-Vendor': mod_authors
+        )
+    }
+}
+
 repositories {
     mavenCentral()
     maven {
@@ -43,7 +53,18 @@ neoForge {
 }
 
 dependencies {
-    implementation 'curse.maven:sgjourney-689083:9050700'
+    // Optional browser API only; JEI is not bundled or required at runtime.
+    compileOnly files(System.getenv('JEI_JAR') ?: new File(System.getProperty('user.home'), 'curseforge/minecraft/Instances/NeoForge/mods/jei-1.21.1-neoforge-19.27.0.336.jar'))
+
+    // Compile against the release API. Third-party JARs are not redistributed.
+    def configuredSgJourneyJar = System.getenv('SGJOURNEY_JAR')
+    implementation files(configuredSgJourneyJar != null && !configuredSgJourneyJar.isBlank()
+            ? configuredSgJourneyJar
+            : 'libs/Stargate.Journey-1.21.1-0.6.55-alpha.jar')
+    def lanteaJar = file(System.getenv('LANTEA_JAR') ?: 'libs/lantea-0.7.3.0+mc1.21.1.jar')
+    if (!lanteaJar.isFile()) throw new GradleException("Set LANTEA_JAR to an existing NeoForge Lantea JAR: ${lanteaJar}")
+    compileOnly files(lanteaJar)
+    testRuntimeOnly files(lanteaJar)
 }
 
 tasks.withType(JavaCompile).configureEach {
@@ -56,7 +77,8 @@ tasks.register('sourceArchive', Zip) {
     from(projectDir) {
         include 'src/**', 'gradle/**', 'gradlew', 'gradlew.bat', 'build.gradle',
                 'settings.gradle', 'gradle.properties', 'README.md', 'CHANGELOG.md',
-                'BUILDING.md', 'PORT_STATUS.md', 'LICENSE.txt'
+                'BUILDING.md', 'PORT_STATUS.md', 'LICENSE.txt', 'BASELINE.md',
+                'baseline/2.0.5-current/**', 'tools/**'
     }
 }
 
@@ -66,4 +88,16 @@ tasks.register('releaseJar', Copy) {
     into(layout.projectDirectory.dir('dist'))
 }
 
-tasks.register('release') { dependsOn 'releaseJar', 'sourceArchive' }
+tasks.register('release') { dependsOn 'releaseJar', 'sourceArchive', 'verifyPort' }
+
+// Runs without starting Minecraft or touching a player's saves.
+tasks.register('verifyPort', JavaExec) {
+    javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(21) }
+    dependsOn 'testClasses'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.mustangdoc.sgjpatch.PortChecks'
+}
+sourceSets.test.compileClasspath += sourceSets.main.compileClasspath
+sourceSets.test.runtimeClasspath += sourceSets.main.runtimeClasspath
+
+

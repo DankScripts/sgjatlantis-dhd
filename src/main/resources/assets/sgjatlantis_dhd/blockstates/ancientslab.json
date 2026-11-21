@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "type=bottom,waterlogged=false": {
+      "model": "sgjatlantis_dhd:block/ancientslab"
+    },
+    "type=bottom,waterlogged=true": {
+      "model": "sgjatlantis_dhd:block/ancientslab"
+    },
+    "type=top,waterlogged=false": {
+      "model": "sgjatlantis_dhd:block/ancientslab_top"
+    },
+    "type=top,waterlogged=true": {
+      "model": "sgjatlantis_dhd:block/ancientslab_top"
+    },
+    "type=double,waterlogged=false": {
+      "model": "sgjatlantis_dhd:block/ancientslab_double"
+    },
+    "type=double,waterlogged=true": {
+      "model": "sgjatlantis_dhd:block/ancientslab_double"
+    }
+  }
+}

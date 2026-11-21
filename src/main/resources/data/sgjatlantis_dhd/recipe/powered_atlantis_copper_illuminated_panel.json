@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "sgjatlantis_dhd:atlantis_copper_illuminated_panel"
+    },
+    {
+      "item": "minecraft:redstone"
+    }
+  ],
+  "result": {
+    "id": "sgjatlantis_dhd:powered_atlantis_copper_illuminated_panel",
+    "count": 1
+  }
+}

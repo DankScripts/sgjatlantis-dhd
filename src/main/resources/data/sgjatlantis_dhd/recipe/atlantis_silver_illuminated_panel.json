@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "result": {
+    "count": 1,
+    "id": "sgjatlantis_dhd:atlantis_silver_illuminated_panel"
+  },
+  "ingredients": [
+    {
+      "item": "sgjatlantis_dhd:atlantis_silver_seamless_alloy"
+    },
+    {
+      "item": "minecraft:glowstone_dust"
+    }
+  ]
+}

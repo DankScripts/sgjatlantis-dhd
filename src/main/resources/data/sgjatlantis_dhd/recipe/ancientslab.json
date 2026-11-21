@@ -1,0 +1,7 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": ["PPP"],
+  "key": {"P": {"item": "sgjatlantis_dhd:ancientpillar"}},
+  "result": {"id": "sgjatlantis_dhd:ancientslab", "count": 6}
+}

@@ -1,0 +1,5 @@
+-3909 339 5887 west true
+-3907 339 5884 east true
+-3894 409 5889 north true
+-3891 339 5892 north true
+-3888 339 5894 south true

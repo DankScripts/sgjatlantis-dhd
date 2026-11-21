@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "sgjatlantis_dhd:block/red_stone"
+  }
+}

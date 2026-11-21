@@ -1,166 +1,72 @@
 package com.mustangdoc.sgjpatch.power;
-
+import com.mustangdoc.sgjpatch.compat.ConcealedCableRouting;
+import com.mustangdoc.sgjpatch.hatch.AtlantisHatchCableBootstrapEvents;
+import com.mustangdoc.sgjpatch.hatch.AtlantisHatchTableBlockEntity;
 import com.mustangdoc.sgjpatch.standalone.AtlantisDHDEntity;
-import java.util.ArrayDeque;
-import java.util.HashSet;
-import java.util.Queue;
-import java.util.Set;
+import java.lang.ref.WeakReference;
+import java.util.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.neoforge.energy.IEnergyStorage;
 import net.povstalec.sgjourney.common.block_entities.tech.CableBlockEntity;
 import net.povstalec.sgjourney.common.blocks.tech.CableBlock;
 
-/**
- * Exposes the Atlantis DHD through the decorative floor block above a buried
- * Large Naquadah Cable. SGJourney can then use its normal cable output path,
- * including its native zero-point-energy transfer method.
- */
+/** Separate cached virtual outputs; real block capabilities always take priority. */
 public final class ConcealedFloorDhdPowerBridge {
-    private static final int SEARCH_RADIUS = 4;
-    private static final int MAX_DHD_HEIGHT_ABOVE_FLOOR = 2;
-    private static final int MAX_CONNECTED_CABLE_BLOCKS = 1024;
-
-    private ConcealedFloorDhdPowerBridge() {}
-
-    public static IEnergyStorage getFloorEnergyCapability(
-            Level level, BlockPos queriedPos, BlockEntity blockEntity, Direction side) {
-        if (blockEntity != null || side == null)
-            return null;
-
-        if (side == Direction.DOWN
-                && isLargeCable(level, queriedPos.below())) {
-            AtlantisDHDEntity dhd = findNearbyDhd(level, queriedPos);
-            if (dhd != null)
-                return dhd.getEnergyHandler(Direction.DOWN);
-        }
-
-        BlockPos cablePos = queriedPos.relative(side);
-        BlockEntity cable = level.getBlockEntity(cablePos);
-        if (!(cable instanceof CableBlockEntity.LargeNaquadahCable))
-            return null;
-
-        Direction virtualSide = findVirtualSide(level, cablePos);
-        if (virtualSide == null || !cablePos.relative(virtualSide).equals(queriedPos))
-            return null;
-
-        AtlantisDHDEntity dhd = findDhdOnConnectedCablePath(level, cablePos);
-        return dhd == null || !isDesignatedOutputCable(level, cablePos, dhd)
-            ? null
-            : dhd.getEnergyHandler(Direction.DOWN);
-    }
-
-    public static Direction findVirtualSide(Level level, BlockPos cablePos) {
-        for (Direction direction : Direction.values()) {
-            BlockPos adjacentPos = cablePos.relative(direction);
-            if (level.getBlockEntity(adjacentPos) == null
-                    && !isLargeCable(level, adjacentPos))
-                return direction;
-        }
-        return null;
-    }
-
-    public static AtlantisDHDEntity findDhdOnConnectedCablePath(
-            Level level, BlockPos cablePos) {
-        if (!isLargeCable(level, cablePos))
-            return null;
-
-        Queue<BlockPos> pending = new ArrayDeque<>();
-        Set<BlockPos> visited = new HashSet<>();
-        pending.add(cablePos);
-
-        while (!pending.isEmpty() && visited.size() < MAX_CONNECTED_CABLE_BLOCKS) {
-            BlockPos currentPos = pending.remove();
-            if (!visited.add(currentPos) || !isLargeCable(level, currentPos))
-                continue;
-
-            BlockPos floorPos = currentPos.above();
-            if (!level.getBlockState(floorPos).isAir()
-                    && level.getBlockEntity(floorPos) == null) {
-                AtlantisDHDEntity dhd = findNearbyDhd(level, floorPos);
-                if (dhd != null)
-                    return dhd;
-            }
-
-            for (Direction direction : Direction.values()) {
-                BlockPos connectedPos = currentPos.relative(direction);
-                if (!visited.contains(connectedPos))
-                    pending.add(connectedPos);
-            }
-        }
-        return null;
-    }
-
-    public static boolean isDesignatedOutputCable(
-            Level level, BlockPos cablePos, AtlantisDHDEntity dhd) {
-        BlockPos floorPos = findFloorAboveNearbyCable(level, dhd.getBlockPos());
-        if (floorPos == null)
-            return false;
-
-        Queue<BlockPos> pending = new ArrayDeque<>();
-        Set<BlockPos> visited = new HashSet<>();
-        pending.add(floorPos.below());
-
-        while (!pending.isEmpty() && visited.size() < MAX_CONNECTED_CABLE_BLOCKS) {
-            BlockPos currentPos = pending.remove();
-            if (!visited.add(currentPos) || !isLargeCable(level, currentPos))
-                continue;
-
-            if (level.getBlockEntity(currentPos)
-                    instanceof CableBlockEntity.LargeNaquadahCable)
-                return currentPos.equals(cablePos);
-
-            for (Direction direction : Direction.values()) {
-                BlockPos connectedPos = currentPos.relative(direction);
-                if (!visited.contains(connectedPos))
-                    pending.add(connectedPos);
-            }
-        }
-        return false;
-    }
-
-    public static BlockPos findFloorAboveNearbyCable(Level level, BlockPos dhdPos) {
-        for (int distance = 0; distance <= SEARCH_RADIUS; ++distance) {
-            for (int dy = 1; dy <= 8; ++dy) {
-                for (int dx = -distance; dx <= distance; ++dx) {
-                    for (int dz = -distance; dz <= distance; ++dz) {
-                        if (Math.max(Math.abs(dx), Math.abs(dz)) != distance)
-                            continue;
-
-                        BlockPos cablePos = dhdPos.offset(dx, -dy, dz);
-                        if (level.getBlockState(cablePos).getBlock()
-                            instanceof CableBlock.LargeNaquadahCable)
-                            return cablePos.above();
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    private static AtlantisDHDEntity findNearbyDhd(Level level, BlockPos floorPos) {
-        for (int distance = 0; distance <= SEARCH_RADIUS; ++distance) {
-            for (int dy = 0; dy <= MAX_DHD_HEIGHT_ABOVE_FLOOR; ++dy) {
-                for (int dx = -distance; dx <= distance; ++dx) {
-                    for (int dz = -distance; dz <= distance; ++dz) {
-                        if (Math.max(Math.abs(dx), Math.abs(dz)) != distance)
-                            continue;
-
-                        BlockEntity candidate = level.getBlockEntity(
-                                floorPos.offset(dx, dy, dz));
-                        if (candidate instanceof AtlantisDHDEntity dhd)
-                            return dhd;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    private static boolean isLargeCable(Level level, BlockPos pos) {
-        return level.getBlockState(pos).getBlock()
-                instanceof CableBlock.LargeNaquadahCable;
-    }
+ private record Routes(long tick,Map<Direction,WeakReference<BlockEntity>> receivers) {}
+ private static final Map<BlockEntity,Routes> CACHE=new WeakHashMap<>();
+ private ConcealedFloorDhdPowerBridge() {}
+ public static void invalidate(BlockEntity cable){CACHE.remove(cable);}
+ public static IEnergyStorage getFloorEnergyCapability(Level level,BlockPos queriedPos,BlockEntity blockEntity,Direction side){
+  if(blockEntity!=null||side==null)return null;
+  BlockPos source=queriedPos.relative(side);
+  if(!level.hasChunkAt(source)||!(level.getBlockEntity(source) instanceof CableBlockEntity.LargeNaquadahCable))return null;
+  BlockEntity receiver=outputRoutes(level,source).get(side.getOpposite());
+  if(receiver instanceof AtlantisDHDEntity dhd)return dhd.getEnergyHandler(Direction.DOWN);
+  if(receiver instanceof AtlantisHatchTableBlockEntity table)return table.getEnergyHandler(Direction.DOWN);
+  return null;
+ }
+ public static Map<Direction,BlockEntity> outputRoutes(Level level,BlockPos cablePos){
+  if(!level.hasChunkAt(cablePos))return Map.of();
+  BlockEntity cable=level.getBlockEntity(cablePos);
+  if(!(cable instanceof CableBlockEntity.LargeNaquadahCable))return Map.of();
+  long now=level.getGameTime();Routes cached=CACHE.get(cable);
+  if(cached==null||now<cached.tick()||now-cached.tick()>=20){
+   List<BlockEntity> receivers=ConcealedCableRouting.findReceivers(cablePos,1024,p->isLargeCable(level,p),p->{
+    List<BlockPos> adjacent=new ArrayList<>(6);for(Direction d:Direction.values())adjacent.add(p.relative(d));return adjacent;
+   },p->receiversAbove(level,p));
+   receivers.sort(Comparator.comparingInt(r->r instanceof AtlantisDHDEntity?0:1));
+   List<Direction> free=new ArrayList<>(6);
+   for(Direction d:Direction.values()){
+    BlockPos next=cablePos.relative(d);if(!level.hasChunkAt(next))continue;
+    BlockEntity direct=level.getBlockEntity(next);
+    if(direct==null&&!isLargeCable(level,next))free.add(d);else receivers.remove(direct);
+   }
+   Map<Direction,WeakReference<BlockEntity>> refs=new EnumMap<>(Direction.class);
+   ConcealedCableRouting.assign(free,receivers).forEach((d,r)->refs.put(d,new WeakReference<>(r)));
+   cached=new Routes(now,refs);CACHE.put(cable,cached);
+  }
+  Map<Direction,BlockEntity> result=new EnumMap<>(Direction.class);
+  cached.receivers().forEach((d,ref)->{BlockEntity r=ref.get();if(r!=null&&!r.isRemoved()&&level.hasChunkAt(r.getBlockPos())&&level.getBlockEntity(r.getBlockPos())==r)result.put(d,r);});
+  return result;
+ }
+ private static List<BlockEntity> receiversAbove(Level level,BlockPos cablePos){
+  List<BlockEntity> found=new ArrayList<>();
+  for(int depth=AtlantisHatchCableBootstrapEvents.MIN_CABLE_DEPTH;depth<=AtlantisHatchCableBootstrapEvents.MAX_CABLE_DEPTH;depth++){
+   for(int dx=-1;dx<=1;dx++)for(int dz=-1;dz<=1;dz++){
+    BlockPos p=cablePos.offset(dx,depth,dz);if(!level.hasChunkAt(p))continue;
+    if(level.getBlockEntity(p) instanceof AtlantisHatchTableBlockEntity table&&AtlantisHatchCableBootstrapEvents.isBelowFootprint(table,cablePos))found.add(table);
+   }
+  }
+  BlockPos footprint=cablePos.above(2);
+  if(level.hasChunkAt(footprint)&&level.getBlockEntity(footprint) instanceof AtlantisDHDEntity dhd)found.add(dhd);
+  for(Direction d:Direction.Plane.HORIZONTAL){BlockPos p=footprint.relative(d);if(!level.hasChunkAt(p))continue;
+   if(level.getBlockEntity(p) instanceof AtlantisDHDEntity dhd){Direction facing=dhd.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);if(dhd.getBlockPos().relative(facing.getClockWise()).equals(footprint))found.add(dhd);}
+  }
+  return found;
+ }
+ private static boolean isLargeCable(Level level,BlockPos p){return level.hasChunkAt(p)&&level.getBlockState(p).getBlock() instanceof CableBlock.LargeNaquadahCable;}
 }

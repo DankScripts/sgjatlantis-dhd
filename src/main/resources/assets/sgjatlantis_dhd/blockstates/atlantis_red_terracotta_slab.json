@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "sgjatlantis_dhd:block/atlantis_red_terracotta_slab"
+    },
+    "type=top": {
+      "model": "sgjatlantis_dhd:block/atlantis_red_terracotta_slab_top"
+    },
+    "type=double": {
+      "model": "minecraft:block/red_terracotta"
+    }
+  }
+}

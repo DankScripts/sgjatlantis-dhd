@@ -1,0 +1,17 @@
+{
+  "textures": {
+    "metal": "minecraft:block/gray_terracotta",
+    "bronze": "minecraft:block/brown_terracotta",
+    "trim": "minecraft:block/sandstone_top",
+    "dark": "minecraft:block/black_terracotta",
+    "light": "minecraft:block/white_concrete",
+    "glass": "minecraft:block/yellow_terracotta",
+    "map": "sgjadditions_capacity_patch:block/transporter_map",
+    "case": "minecraft:block/gray_concrete",
+    "edge": "minecraft:block/polished_andesite",
+    "blue": "minecraft:block/blue_concrete",
+    "glow": "minecraft:block/light_blue_concrete",
+    "particle": "minecraft:block/gray_terracotta"
+  },
+  "elements": []
+}

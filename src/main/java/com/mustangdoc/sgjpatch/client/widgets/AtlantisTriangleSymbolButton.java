@@ -73,35 +73,15 @@ public final class AtlantisTriangleSymbolButton extends DHDSymbolButton<Atlantis
 
     @Override
     public void renderSymbol(GuiGraphics graphics) {
-        if (getSymbol() == 0) {
-            ClientPointOfOrigin pointOfOrigin = ClientPointOfOrigin.getPointOfOrigin(
-                    atlantisMenu.getDHD().symbolInfo().pointOfOrigin()
-            );
-            if (pointOfOrigin != null) {
-                renderPointOfOrigin(
-                        graphics.pose().last().pose(),
-                        getX() + width / 2F,
-                        getY() + height / 2F,
-                        symbolSize,
-                        symbolSize,
-                        pointOfOrigin,
-                        DISENGAGED
-                );
-            }
-        } else {
-            ClientSymbols symbols = ClientSymbols.getSymbols(atlantisMenu.getDHD().symbolInfo().symbols());
-            if (symbols != null) {
-                renderSymbol(
-                        graphics.pose().last().pose(),
-                        getX() + width / 2F,
-                        getY() + height / 2F,
-                        symbolSize,
-                        symbolSize,
-                        symbols,
-                        getSymbol(),
-                        DISENGAGED
-                );
-            }
+        ResourceLocation texture = com.mustangdoc.sgjpatch.client.render.AtlantisDHDButtonStateRenderer
+                .symbolTexture(atlantisMenu.getDHD(), getSymbol());
+        if (texture != null) {
+            RenderSystem.setShaderColor(0.42F, 1.0F, 0.76F, 1F);
+            int size = Math.round(symbolSize);
+            graphics.blit(texture, Math.round(getX() + width / 2F - size / 2F),
+                    Math.round(getY() + height * (up ? 2F/3 : 1F/3) - size / 2F),
+                    size, size, 0, 0, 1, 1, 1, 1);
+            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
         }
     }
 
@@ -111,24 +91,27 @@ public final class AtlantisTriangleSymbolButton extends DHDSymbolButton<Atlantis
         this.isHovered = isMouseOver(mouseX, mouseY);
 
         boolean engaged = isEngaged();
-        int frame = isHoveredOrFocused() ? 1 : 0;
+        boolean guided = com.mustangdoc.sgjpatch.client.util.AtlantisAddressGuide
+                .highlights(atlantisMenu.getDHD(), getSymbol());
+        int frame = isHoveredOrFocused() || guided ? 1 : 0;
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1F, 1F, 1F, this.alpha);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
 
-        graphics.blit(
-                widgets,
-                getX(), getY(), width, height,
-                0F, (float) (frame * sourceSize),
-                sourceSize, sourceSize,
-                sourceSize, sourceSize * 3
-        );
+        graphics.pose().pushPose();
+        graphics.pose().translate(getX(),getY(),0);
+        graphics.pose().scale(1F,height/(float)width,1F);
+        com.mustangdoc.sgjpatch.client.util.AtlantisKeypadSurface.crystal(graphics,0,0,width,up,frame);
+        graphics.pose().popPose();
 
         if (engaged) {
             graphics.flush();
-            renderGoldOverlay(graphics);
+            renderGoldOverlay(graphics, false);
+        } else if (guided) {
+            graphics.flush();
+            renderGoldOverlay(graphics, true);
         }
 
         Minecraft minecraft = Minecraft.getInstance();
@@ -140,7 +123,7 @@ public final class AtlantisTriangleSymbolButton extends DHDSymbolButton<Atlantis
         RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
     }
 
-    private void renderGoldOverlay(GuiGraphics graphics) {
+    private void renderGoldOverlay(GuiGraphics graphics, boolean guide) {
         float inset = 1F;
         float x0 = getX() + inset;
         float y0 = getY() + inset;
@@ -159,13 +142,13 @@ public final class AtlantisTriangleSymbolButton extends DHDSymbolButton<Atlantis
                 DefaultVertexFormat.POSITION_COLOR
         );
         if (up) {
-            buffer.addVertex(matrix, centerX, y0, 0F).setColor(255, 170, 0, 140);
-            buffer.addVertex(matrix, x0, y1, 0F).setColor(255, 170, 0, 140);
-            buffer.addVertex(matrix, x1, y1, 0F).setColor(255, 170, 0, 140);
+            buffer.addVertex(matrix, centerX, y0, 0F).setColor(255, guide ? 235 : 170, guide ? 70 : 0, guide ? 185 : 140);
+            buffer.addVertex(matrix, x0, y1, 0F).setColor(255, guide ? 235 : 170, guide ? 70 : 0, guide ? 185 : 140);
+            buffer.addVertex(matrix, x1, y1, 0F).setColor(255, guide ? 235 : 170, guide ? 70 : 0, guide ? 185 : 140);
         } else {
-            buffer.addVertex(matrix, x0, y0, 0F).setColor(255, 170, 0, 140);
-            buffer.addVertex(matrix, x1, y0, 0F).setColor(255, 170, 0, 140);
-            buffer.addVertex(matrix, centerX, y1, 0F).setColor(255, 170, 0, 140);
+            buffer.addVertex(matrix, x0, y0, 0F).setColor(255, guide ? 235 : 170, guide ? 70 : 0, guide ? 185 : 140);
+            buffer.addVertex(matrix, x1, y0, 0F).setColor(255, guide ? 235 : 170, guide ? 70 : 0, guide ? 185 : 140);
+            buffer.addVertex(matrix, centerX, y1, 0F).setColor(255, guide ? 235 : 170, guide ? 70 : 0, guide ? 185 : 140);
         }
         BufferUploader.drawWithShader(buffer.buildOrThrow());
         RenderSystem.enableCull();

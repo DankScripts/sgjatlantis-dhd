@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "seam_flipped=false": {
+      "model": "sgjatlantis_dhd:block/atlantis_bronze_illuminated_panel"
+    },
+    "seam_flipped=true": {
+      "model": "sgjatlantis_dhd:block/atlantis_bronze_illuminated_panel_flipped"
+    }
+  }
+}

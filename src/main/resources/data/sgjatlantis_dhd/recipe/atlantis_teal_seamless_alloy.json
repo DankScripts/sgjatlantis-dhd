@@ -1,0 +1,19 @@
+{
+  "pattern": [
+    "II",
+    "ID"
+  ],
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "D": {
+      "item": "minecraft:cyan_dye"
+    }
+  },
+  "result": {
+    "id": "sgjatlantis_dhd:atlantis_teal_seamless_alloy",
+    "count": 4
+  }
+}

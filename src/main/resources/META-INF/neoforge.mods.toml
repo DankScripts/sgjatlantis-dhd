@@ -4,13 +4,12 @@ license="All Rights Reserved"
 
 [[mods]]
 modId="sgjatlantis_dhd"
-version="2.0.4"
+version="${file.jarVersion}"
 displayName="sgjatlantis-dhd"
 authors="MustangDoc"
 description='''
-Standalone Atlantis/Pegasus-style DHD for Stargate Journey.
-Minecraft 1.21.1 NeoForge build with the current Atlantis table, crystal operating set,
-sneak-access Crystal Controls, and concealed Large Naquadah Cable power bridge.
+Atlantis/Pegasus-style DHD and bundled Atlantis city for Stargate Journey and optional native Lantea gates.
+Includes the city Stargate, transporter rooms, jumper bay hatches, and Atlantis door controls.
 '''
 
 [[mixins]]
@@ -33,6 +32,21 @@ side="BOTH"
 [[dependencies.sgjatlantis_dhd]]
 modId="sgjourney"
 type="required"
-versionRange="[0.6.50,)"
+versionRange="[0.6.55-alpha,)"
 ordering="AFTER"
 side="BOTH"
+
+[[dependencies.sgjatlantis_dhd]]
+modId="lantea"
+type="optional"
+versionRange="[0.7.3.0,)"
+ordering="AFTER"
+side="BOTH"
+
+[[dependencies.sgjatlantis_dhd]]
+modId="sgjourney_mobs"
+type="optional"
+versionRange="[0,)"
+ordering="AFTER"
+side="BOTH"
+

@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "sgjatlantis_dhd:atlantis_charcoal_seamless_alloy"
+  },
+  "result": {
+    "id": "sgjatlantis_dhd:atlantis_charcoal_service_panel",
+    "count": 1
+  }
+}

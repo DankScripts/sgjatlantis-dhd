@@ -1,0 +1,4 @@
+0 270 12 minecraft:stone_bricks -
+15 326 15 minecraft:bedrock -
+15 327 15 minecraft:bedrock -
+15 328 15 minecraft:bedrock -

@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "MM",
+    "MM"
+  ],
+  "key": {
+    "M": {
+      "item": "sgjatlantis_dhd:brownancioentblock"
+    }
+  },
+  "result": {
+    "id": "sgjatlantis_dhd:atlantis_stone_block",
+    "count": 4
+  }
+}

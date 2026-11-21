@@ -20,6 +20,7 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.povstalec.sgjourney.api.dhd.DHD;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
@@ -29,14 +30,22 @@ public final class SGJAdditionsCapacityPatch {
 
     public SGJAdditionsCapacityPatch(IEventBus eventBus, ModContainer modContainer) {
         SGJPatchBlocks.register(eventBus);
+        com.mustangdoc.sgjpatch.compat.LanteaJumperConfig.register(modContainer);
+        com.mustangdoc.sgjpatch.city.AtlantisLightingConfig.register(modContainer);
         SGJPatchItems.register(eventBus);
         SGJPatchBlockEntities.register(eventBus);
         SGJPatchMenus.register(eventBus);
+        com.mustangdoc.sgjpatch.init.SGJPatchSounds.register(eventBus);
         eventBus.addListener(SGJAdditionsCapacityPatch::registerCapabilities);
         modContainer.registerConfig(ModConfig.Type.CLIENT, SGJPatchClientConfig.SPEC);
     }
 
     private static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(
+                Capabilities.EnergyStorage.BLOCK,
+                com.mustangdoc.sgjpatch.hatch.AtlantisHatchRegistry.TABLE_ENTITY,
+                (blockEntity, direction) -> blockEntity.getEnergyHandler(direction)
+        );
         event.registerBlockEntity(
                 Capabilities.EnergyStorage.BLOCK,
                 SGJPatchBlockEntities.ATLANTIS_DHD.get(),
@@ -46,6 +55,11 @@ public final class SGJAdditionsCapacityPatch {
                 Capabilities.ItemHandler.BLOCK,
                 SGJPatchBlockEntities.ATLANTIS_DHD.get(),
                 (blockEntity, direction) -> blockEntity.getItemHandler(direction)
+        );
+        event.registerBlockEntity(
+                DHD.DHD_CAPABILITY_BLOCK,
+                SGJPatchBlockEntities.ATLANTIS_DHD.get(),
+                (blockEntity, direction) -> blockEntity.getDHD()
         );
 
         // Any ordinary floor material can conceal the installation. The

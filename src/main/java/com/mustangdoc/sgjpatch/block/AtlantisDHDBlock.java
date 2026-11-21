@@ -94,6 +94,12 @@ public class AtlantisDHDBlock extends CrystalDHDBlock implements SimpleWaterlogg
             };
             NetworkUtils.openMenu((ServerPlayer) player, provider, dhd.getBlockPos());
         } else {
+            var table = dhd.getDHD();
+            if (!table.receiverCache().isCached()) {
+                table.receiverCache().markDirty();
+                table.getStargate();
+            }
+            if (com.mustangdoc.sgjpatch.compat.AtlantisNativeDhd.open((ServerPlayer) player, pos)) return true;
             MenuProvider provider = new MenuProvider() {
                 @Override
                 public Component getDisplayName() {

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "M  ",
+    "MM ",
+    "MGM"
+  ],
+  "key": {
+    "M": {
+      "item": "sgjatlantis_dhd:blueancientblock"
+    },
+    "G": {
+      "item": "minecraft:glowstone_dust"
+    }
+  },
+  "result": {
+    "id": "sgjatlantis_dhd:atlantis_inscribed_stairs",
+    "count": 4
+  }
+}

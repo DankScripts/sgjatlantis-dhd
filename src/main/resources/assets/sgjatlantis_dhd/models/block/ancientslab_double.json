@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "particle": "sgjatlantis_dhd:block/stair_riser",
+    "bottom": "sgjatlantis_dhd:block/ivory_stone",
+    "top": "sgjatlantis_dhd:block/ivory_stone",
+    "side": "sgjatlantis_dhd:block/stair_riser"
+  }
+}

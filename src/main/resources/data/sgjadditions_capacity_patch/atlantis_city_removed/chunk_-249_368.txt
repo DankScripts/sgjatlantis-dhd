@@ -1,0 +1,8 @@
+2 321 0 minecraft:bedrock -
+3 321 0 minecraft:bedrock -
+4 321 0 minecraft:bedrock -
+5 321 0 minecraft:bedrock -
+6 321 0 minecraft:bedrock -
+7 321 0 minecraft:bedrock -
+8 321 0 minecraft:bedrock -
+9 321 0 minecraft:bedrock -

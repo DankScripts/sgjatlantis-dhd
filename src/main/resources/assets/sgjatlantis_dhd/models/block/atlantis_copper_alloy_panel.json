@@ -1,0 +1,7 @@
+{
+  "textures": {
+    "end": "sgjatlantis_dhd:block/atlantis_copper_seamless_alloy",
+    "side": "sgjatlantis_dhd:block/atlantis_copper_alloy_panel"
+  },
+  "parent": "minecraft:block/cube_column"
+}

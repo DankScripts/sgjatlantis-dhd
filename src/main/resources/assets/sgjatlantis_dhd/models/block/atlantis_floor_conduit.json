@@ -1,0 +1,6 @@
+{
+  "textures": {
+    "all": "sgjatlantis_dhd:block/atlantis_floor_conduit"
+  },
+  "parent": "minecraft:block/cube_all"
+}
