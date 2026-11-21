@@ -1,5 +1,8 @@
 ## 2.0.5-dev-138-gate-parity
 
+- Refresh the bundled upper spire and include lower dry-room cells omitted by
+  the solid-first city export. The same 76 chunks are corrected on both loaders.
+
 - Synchronize the Atlantis table's glyphs and point of origin with its linked
   Stargate Journey gate, including Milky Way and Universe.
 - Draw the linked model and its current variant, including variants supplied
