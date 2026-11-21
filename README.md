@@ -68,8 +68,11 @@ console. Use the matching `farlands-final` City Shield build for the shield
 preset at the new location. Replacing the JAR does not rebuild an already
 installed city.
 
-This city bundle also restores the lower dry rooms below the first solid block
-in 76 chunks. For an existing city, back up the Lantea dimension before running
+The city uses the server backup for its main city and lower rooms, with the
+later Farlands control-room layout. Genetics Lab, Lower Spire, and the
+underwater bay appear on the transporter LOWER page; outer towers remain on
+CITY. Both client and server need the updated JAR for the screen change.
+For an existing city, back up the Lantea dimension before running
 `/sgjatlantis city install`; the command rebuilds the bundled city in place.
 
 ## Features

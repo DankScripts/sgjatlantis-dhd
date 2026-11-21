@@ -930,8 +930,8 @@
 -244 363 2074 -3904,247,5808,sgjatlantis_dhd:atlantis_teal_floor_conduit -3904,247,5809,sgjatlantis_dhd:atlantis_teal_floor_conduit -3904,247,5810,sgjatlantis_dhd:atlantis_teal_floor_conduit
 -244 364 1397 -3904,247,5824,sgjatlantis_dhd:atlantis_teal_floor_conduit -3904,247,5825,sgjatlantis_dhd:atlantis_teal_floor_conduit -3904,247,5826,sgjatlantis_dhd:atlantis_teal_floor_conduit
 -244 365 1670 -3904,247,5840,sgjatlantis_dhd:atlantis_teal_floor_conduit -3904,247,5841,sgjatlantis_dhd:atlantis_teal_floor_conduit -3904,247,5842,sgjatlantis_dhd:atlantis_teal_floor_conduit
--244 366 6315 -3898,443,5864,sgjatlantis_dhd:atlantis_charcoal_seamless_alloy -3897,443,5863,sgjatlantis_dhd:atlantis_charcoal_seamless_alloy -3897,443,5864,sgjatlantis_dhd:atlantis_charcoal_seamless_alloy
--244 367 16590 -3898,444,5882,sgjadditions_capacity_patch:jumper_bay_hatch_weather_seal -3898,444,5883,sgjadditions_capacity_patch:jumper_bay_hatch_weather_seal -3898,444,5884,sgjadditions_capacity_patch:jumper_bay_hatch_weather_seal
+-244 366 6371 -3898,443,5864,sgjatlantis_dhd:atlantis_charcoal_seamless_alloy -3897,443,5863,sgjatlantis_dhd:atlantis_charcoal_seamless_alloy -3897,443,5864,sgjatlantis_dhd:atlantis_charcoal_seamless_alloy
+-244 367 16591 -3898,444,5882,sgjadditions_capacity_patch:jumper_bay_hatch_weather_seal -3898,444,5883,sgjadditions_capacity_patch:jumper_bay_hatch_weather_seal -3898,444,5884,sgjadditions_capacity_patch:jumper_bay_hatch_weather_seal
 -244 368 13451 -3898,444,5888,sgjadditions_capacity_patch:jumper_bay_hatch_weather_seal -3897,444,5888,sgjadditions_capacity_patch:jumper_bay_hatch_weather_seal -3897,444,5889,sgjadditions_capacity_patch:jumper_bay_hatch_weather_seal
 -244 369 5659 -3899,443,5906,sgjatlantis_dhd:atlantis_stair_grey_floor -3898,443,5906,sgjatlantis_dhd:atlantis_stair_grey_floor -3898,443,5907,sgjatlantis_dhd:atlantis_stair_grey_floor
 -244 370 2156 -3904,249,5920,sgjatlantis_dhd:atlantis_charcoal_floor -3904,249,5921,sgjatlantis_dhd:atlantis_charcoal_floor -3904,249,5922,sgjatlantis_dhd:atlantis_charcoal_floor

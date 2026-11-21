@@ -1,3 +1,10 @@
+## Unreleased
+
+- Bundle the server-backup city and lower rooms with the later Farlands
+  control-room layout.
+- Show Genetics Lab and Lower Spire on the transporter LOWER page while
+  leaving outer towers on CITY.
+
 ## 2.0.5-dev-138-gate-parity
 
 - Refresh the bundled upper spire and include lower dry-room cells omitted by

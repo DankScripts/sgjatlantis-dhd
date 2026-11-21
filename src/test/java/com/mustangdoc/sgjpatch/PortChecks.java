@@ -156,6 +156,16 @@ public final class PortChecks {
                 "net.minecraft.world.phys.BlockHitResult");
         System.out.println("PASS: NeoForge door control handles item and empty-hand interactions.");
         checkTransporterInterior();
+        if (!com.mustangdoc.sgjpatch.transporter.TransporterLevels.isLower(-3885,255,5885,"Renamed")
+                || !com.mustangdoc.sgjpatch.transporter.TransporterLevels.isLower(-3937,263,5973,"Renamed")
+                || !com.mustangdoc.sgjpatch.transporter.TransporterLevels.isLower(0,0,0,"GENETICS LAB")
+                || !com.mustangdoc.sgjpatch.transporter.TransporterLevels.isLower(0,0,0,"Lower Spire")
+                || !com.mustangdoc.sgjpatch.transporter.TransporterLevels.isLower(-3897,256,5876,"Renamed")
+                || !com.mustangdoc.sgjpatch.transporter.TransporterLevels.isLower(0,0,0,"Underwater Jumper Bay")
+                || com.mustangdoc.sgjpatch.transporter.TransporterLevels.isLower(-4268,326,5886,"West City")
+                || com.mustangdoc.sgjpatch.transporter.TransporterLevels.isLower(1,200,1,"Custom Station"))
+            throw new AssertionError("Transporter lower-city classification");
+        System.out.println("PASS: lower-city transporter destinations and existing station behavior.");
         var bundledChunksReady=type("com.mustangdoc.sgjpatch.transporter.TransporterCityUpgrade")
                 .getDeclaredMethod("bundledChunksReady",java.util.function.Predicate.class);
         bundledChunksReady.setAccessible(true);
