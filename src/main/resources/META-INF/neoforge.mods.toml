@@ -3,9 +3,15 @@ loaderVersion="[4,)"
 license="All Rights Reserved"
 
 [[mods]]
+modId="stargate_atlantis"
+version="${file.jarVersion}"
+displayName="Stargate Atlantis"
+description="Atlantis blocks and devices."
+
+[[mods]]
 modId="sgjatlantis_dhd"
 version="${file.jarVersion}"
-displayName="sgjatlantis-dhd"
+displayName="Stargate Atlantis Compatibility"
 authors="MustangDoc"
 description='''
 Atlantis/Pegasus-style DHD and bundled Atlantis city for Stargate Journey and optional native Lantea gates.

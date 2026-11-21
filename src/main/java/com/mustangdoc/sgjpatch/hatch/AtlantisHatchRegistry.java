@@ -25,7 +25,7 @@ public final class AtlantisHatchRegistry {
     public static BlockEntityType<AtlantisHatchTableBlockEntity> TABLE_ENTITY;
     public static BlockEntityType<AtlantisHatchIrisBlockEntity> IRIS_ENTITY;
     public static MenuType<AtlantisHatchMenu> MENU;
-    private static final String NS = "sgjadditions_capacity_patch";
+    private static final String NS = "stargate_atlantis";
 
     private AtlantisHatchRegistry() {}
 

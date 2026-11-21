@@ -11,7 +11,7 @@ import net.neoforged.neoforge.registries.DeferredRegister.Items;
 import net.povstalec.sgjourney.common.items.StargateIrisItem;
 
 public final class SGJPatchItems {
-   public static final Items ITEMS = DeferredRegister.createItems("sgjatlantis_dhd");
+   public static final Items ITEMS = DeferredRegister.createItems("stargate_atlantis");
    public static final DeferredItem<BlockItem> ATLANTIS_DHD = ITEMS.register(
       "atlantis_dhd", () -> new BlockItem((Block)SGJPatchBlocks.ATLANTIS_DHD.get(), new Properties())
    );

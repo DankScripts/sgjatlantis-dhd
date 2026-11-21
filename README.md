@@ -1,5 +1,13 @@
 # Atlantis DHD 2.0.5
 
+## Stargate Atlantis registry migration
+
+Atlantis blocks, items and block entities now use `stargate_atlantis`. Aliases
+preserve lookups under `sgjatlantis_dhd` and `sgjadditions_capacity_patch`.
+The legacy mod container and saved-data keys remain compatible. Use the matching
+City Shield 1.0.4 release and back up existing worlds before upgrading.
+The six decorative DHD control crystals stay visible, dimmed when unpowered.
+
 ## Source Branches
 
 - [Forge 1.20.1](https://github.com/DankScripts/sgjatlantis-dhd/tree/1.20.1-forge)

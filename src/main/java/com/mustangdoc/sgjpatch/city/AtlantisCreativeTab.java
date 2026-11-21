@@ -26,11 +26,11 @@ public final class AtlantisCreativeTab {
                         .displayItems((parameters, output) -> BuiltInRegistries.ITEM.entrySet().stream()
                                 .filter(entry -> {
                                     String namespace = entry.getKey().location().getNamespace();
-                                    if (namespace.equals("sgjatlantis_dhd")
+                                    if (namespace.equals("stargate_atlantis")
                                             && entry.getKey().location().getPath().equals("triple_zpm_hub")
                                             && net.neoforged.fml.ModList.get().isLoaded("sgjourney_mobs"))
                                         return false;
-                                    return namespace.equals("sgjatlantis_dhd")
+                                    return namespace.equals("stargate_atlantis") || namespace.equals("sgjatlantis_dhd")
                                             || namespace.equals("sgjadditions_capacity_patch");
                                 })
                                 .map(java.util.Map.Entry::getValue)

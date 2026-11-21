@@ -24,7 +24,7 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 )
 /** Ported from SG Mobs with permission from Mike; retains SGJourney ZPM behavior. */
 public final class TripleZpmHubRegistration {
-   public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("sgjatlantis_dhd", "triple_zpm_hub");
+   public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("stargate_atlantis", "triple_zpm_hub");
    public static TripleZpmHubBlock BLOCK;
    public static BlockEntityType<TripleZpmHubBlockEntity> BLOCK_ENTITY;
    public static MenuType<TripleZpmHubMenu> MENU;

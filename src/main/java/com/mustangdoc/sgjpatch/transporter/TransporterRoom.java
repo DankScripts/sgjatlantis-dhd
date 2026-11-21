@@ -116,7 +116,7 @@ public final class TransporterRoom {
             BlockState s=l.getBlockState(p);
             String id=String.valueOf(net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(s.getBlock()));
             boolean oldPanel=p.equals(at(be.anchor(),be.facing(),-2,1,5))&&
-                    (id.equals("sgjadditions:wallpanel")||id.equals("sgjatlantis_dhd:wallpanel"));
+                    (id.equals("sgjadditions:wallpanel")||id.equals("sgjatlantis_dhd:wallpanel")||id.equals("stargate_atlantis:wallpanel"));
             if(!s.isAir()&&!s.is(TransporterRegistry.BLOCK)&&!s.is(TransporterRegistry.PANEL)&&!oldPanel)return false;
         }
         var manager=l.getStructureManager();

@@ -10,7 +10,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 public final class SGJPatchBlockEntities {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES =
-            DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, SGJAdditionsCapacityPatch.MOD_ID);
+            DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, "stargate_atlantis");
 
     public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<AtlantisDHDEntity>> ATLANTIS_DHD =
             BLOCK_ENTITIES.register(

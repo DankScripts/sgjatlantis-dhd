@@ -14,6 +14,36 @@ import net.povstalec.sgjourney.common.capabilities.SGJourneyEnergy;
 
 /** Release checks using real NeoForge/Minecraft classes, not mocked networking. */
 public final class PortChecks {
+    private static void checkNamespaceMigration() throws ReflectiveOperationException {
+        var registryKey = net.minecraft.resources.ResourceKey.<String>createRegistryKey(
+                ResourceLocation.fromNamespaceAndPath("test", "migration"));
+        var registry = new net.minecraft.core.MappedRegistry<String>(
+                registryKey, com.mojang.serialization.Lifecycle.stable());
+        var target = ResourceLocation.fromNamespaceAndPath("stargate_atlantis", "wallpanel");
+        var existing = ResourceLocation.fromNamespaceAndPath("sgjatlantis_dhd", "existing");
+        net.minecraft.core.Registry.register(registry, existing, "existing");
+        net.minecraft.core.Registry.register(registry,
+                ResourceLocation.fromNamespaceAndPath("stargate_atlantis", "existing"), "replacement");
+        var bus = net.neoforged.bus.api.BusBuilder.builder().build();
+        bus.register(AtlantisNamespace.LegacyAliases.class);
+        bus.addListener(net.neoforged.bus.api.EventPriority.NORMAL,
+                net.neoforged.neoforge.registries.RegisterEvent.class,
+                event -> net.minecraft.core.Registry.register(registry, target, "new block"));
+        var constructor = net.neoforged.neoforge.registries.RegisterEvent.class.getDeclaredConstructor(
+                net.minecraft.resources.ResourceKey.class, net.minecraft.core.Registry.class);
+        constructor.setAccessible(true);
+        bus.post(constructor.newInstance(net.minecraft.core.registries.Registries.BLOCK, registry));
+        for (String legacy : List.of("sgjadditions_capacity_patch", "sgjatlantis_dhd")) {
+            var old = ResourceLocation.fromNamespaceAndPath(legacy, "wallpanel");
+            if (!"new block".equals(registry.get(old)) || !"new block".equals(registry.getHolder(
+                    net.minecraft.resources.ResourceKey.create(registryKey, old)).orElseThrow().value()))
+                throw new AssertionError("Legacy registry lookup failed: " + old);
+        }
+        if (!"existing".equals(registry.get(existing)))
+            throw new AssertionError("Migration overwrote an existing registry entry");
+        System.out.println("PASS: registry event installs legacy aliases after normal registration.");
+    }
+
     private static Class<?> type(String name) throws Exception {
         return Class.forName(name, false, PortChecks.class.getClassLoader());
     }
@@ -224,6 +254,7 @@ public final class PortChecks {
     }
 
     public static void main(String[] args) throws Exception {
+        checkNamespaceMigration();
         method("com.mustangdoc.sgjpatch.doors.DoorControlBlock", "useItemOn",
                 "net.minecraft.world.item.ItemStack", "net.minecraft.world.level.block.state.BlockState",
                 "net.minecraft.world.level.Level", "net.minecraft.core.BlockPos",

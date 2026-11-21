@@ -24,7 +24,7 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 /** Atlantis building pieces, including locally ported SGJ Additions model shapes. */
 @EventBusSubscriber(modid = "sgjatlantis_dhd", bus = EventBusSubscriber.Bus.MOD)
 public final class AtlantisBuildingBlocks {
-    public static final String NS = "sgjatlantis_dhd";
+    public static final String NS = "stargate_atlantis";
     private static final Map<String, Block> BLOCKS = new LinkedHashMap<>();
     private static final Map<String, Item> ITEMS = new LinkedHashMap<>();
 

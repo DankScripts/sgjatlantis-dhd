@@ -10,7 +10,7 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public final class SGJPatchBlocks {
-    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(SGJAdditionsCapacityPatch.MOD_ID);
+    public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks("stargate_atlantis");
 
     public static final DeferredBlock<AtlantisDHDBlock> ATLANTIS_DHD = BLOCKS.register(
             "atlantis_dhd",

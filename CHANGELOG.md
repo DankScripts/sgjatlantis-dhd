@@ -1,21 +1,29 @@
 ## Unreleased
 
-- Repair two maintenance-area floor conduits and their adjacent cable
-  connection in the bundled city.
+- Keep all six decorative DHD control crystals visible when unpowered, with
+  dimmed green lighting, and draw them above the table background.
+
+- Register Atlantis blocks, items and block entities under `stargate_atlantis`,
+  retaining aliases for both previous Atlantis namespaces.
+
+- Repair two maintenance-area floor conduits and their adjacent cable connection
+  in the bundled city.
+- Start client door animations when the update arrives, even if the door is
+  offscreen, rather than delaying the animation until it is next rendered.
 - Recheck loaded floor-conduit neighbors and safely rebuild missing SGJourney
-  cable networks, saving changed IDs without forcing chunks to load.
+  cable networks. Save changed cable network IDs and defer incomplete or unsafe
+  native traversals instead of forcing chunks to load.
+- Allow a mixed power network to accept a later, larger offer after a smaller
+  offer failed within the same transfer.
 - Keep mixed-network simulation results specific to the active route and
-  discard them after committed transfers.
-- Start client door animations when updates arrive, including while offscreen.
+  discard them after committed transfers change available capacity. Reuse
+  compatible results across converging routes to avoid repeated traversal.
+- Show the Genetics Lab and Lower Spire under the transporter's LOWER level,
+  alongside the underwater bay, without changing unrelated destinations.
 - Bundle the server-backup city and lower rooms with the later Farlands
-  control-room layout.
-- Show Genetics Lab and Lower Spire on the transporter LOWER page while
-  leaving outer towers on CITY.
+  control-room layout, without copying its temporary open hatch and flooding.
 
 ## 2.0.5-dev-138-gate-parity
-
-- Refresh the bundled upper spire and include lower dry-room cells omitted by
-  the solid-first city export. The same 76 chunks are corrected on both loaders.
 
 - Synchronize the Atlantis table's glyphs and point of origin with its linked
   Stargate Journey gate, including Milky Way and Universe.

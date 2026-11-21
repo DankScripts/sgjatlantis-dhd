@@ -17,7 +17,7 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 
 @EventBusSubscriber(modid = "sgjatlantis_dhd")
 public final class LanteaEnergyIrisControls {
-    private static final String IRIS_ITEM = "sgjatlantis_dhd:pegasus_upgraded_shield";
+    private static final String IRIS_ITEM = "stargate_atlantis:pegasus_upgraded_shield";
 
     private LanteaEnergyIrisControls() { }
 

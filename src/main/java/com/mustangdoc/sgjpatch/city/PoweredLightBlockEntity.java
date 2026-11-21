@@ -115,7 +115,7 @@ public final class PoweredLightBlockEntity extends BlockEntity {
   java.util.List<Block> blocks=new ArrayList<>();
   for(Block block:net.minecraft.core.registries.BuiltInRegistries.BLOCK)if(block instanceof PoweredLightBlocks.Powered)blocks.add(block);
   TYPE=BlockEntityType.Builder.of(PoweredLightBlockEntity::new,blocks.toArray(Block[]::new)).build(null);
-  h.register(ResourceLocation.fromNamespaceAndPath("sgjatlantis_dhd","powered_light"),TYPE);
+  h.register(ResourceLocation.fromNamespaceAndPath("stargate_atlantis","powered_light"),TYPE);
  });}
  @SubscribeEvent public static void capabilities(net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent event){event.registerBlockEntity(net.neoforged.neoforge.capabilities.Capabilities.EnergyStorage.BLOCK,TYPE,(be,side)->be.energy);}
 }

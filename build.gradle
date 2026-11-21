@@ -49,8 +49,49 @@ neoForge {
         "${mod_id}" {
             sourceSet(sourceSets.main)
         }
+        stargate_atlantis {
+            sourceSet(sourceSets.main)
+        }
     }
 }
+
+def namespaceResources = layout.buildDirectory.dir('generated/atlantisNamespaceResources')
+tasks.register('generateAtlantisNamespaceResources', Sync) {
+    into namespaceResources
+    duplicatesStrategy = DuplicatesStrategy.FAIL
+    ['sgjadditions_capacity_patch', 'sgjatlantis_dhd'].each { legacy ->
+        inputs.files(fileTree("src/main/resources/assets/${legacy}/lang").matching { include '*.json' })
+        from("src/main/resources/assets/${legacy}/blockstates") { into 'assets/stargate_atlantis/blockstates' }
+        from("src/main/resources/assets/${legacy}/models/item") { into 'assets/stargate_atlantis/models/item' }
+        from("src/main/resources/data/${legacy}/loot_table") { into 'data/stargate_atlantis/loot_table' }
+    }
+    doLast {
+        def translations = [:]
+        ['sgjadditions_capacity_patch', 'sgjatlantis_dhd'].each { legacy ->
+            fileTree("src/main/resources/assets/${legacy}/lang").matching { include '*.json' }.files.each { languageFile ->
+                def target = translations.computeIfAbsent(languageFile.name) { [:] }
+                new groovy.json.JsonSlurper().parse(languageFile, 'UTF-8').each { key, value ->
+                    ['block', 'item'].each { kind ->
+                        def prefix = "${kind}.${legacy}."
+                        if (key.startsWith(prefix)) {
+                            def newKey = "${kind}.stargate_atlantis.${key.substring(prefix.length())}"
+                            if (target.containsKey(newKey) && target[newKey] != value)
+                                throw new GradleException("Conflicting translation ${newKey} in ${languageFile.name}")
+                            target[newKey] = value
+                        }
+                    }
+                }
+            }
+        }
+        translations.each { name, values ->
+            def out = namespaceResources.get().file("assets/stargate_atlantis/lang/${name}").asFile
+            out.parentFile.mkdirs()
+            out.setText(groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(values)), 'UTF-8')
+        }
+    }
+}
+sourceSets.main.resources.srcDir(namespaceResources)
+tasks.named('processResources') { dependsOn 'generateAtlantisNamespaceResources' }
 
 dependencies {
     // Optional browser API only; JEI is not bundled or required at runtime.
