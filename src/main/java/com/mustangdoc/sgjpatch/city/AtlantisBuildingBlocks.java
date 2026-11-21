@@ -21,9 +21,9 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegisterEvent;
 
 /** Atlantis building pieces, including locally ported SGJ Additions model shapes. */
-@Mod.EventBusSubscriber(modid = AtlantisBuildingBlocks.NS, bus = Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid = "sgjadditions_capacity_patch", bus = Mod.EventBusSubscriber.Bus.MOD)
 public final class AtlantisBuildingBlocks {
-    public static final String NS = "sgjadditions_capacity_patch";
+    public static final String NS = "stargate_atlantis";
     private static final Map<String, Block> BLOCKS = new LinkedHashMap<>();
     private static final Map<String, Item> ITEMS = new LinkedHashMap<>();
 

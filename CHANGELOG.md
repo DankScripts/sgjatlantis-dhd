@@ -1,27 +1,143 @@
-## Unreleased
+## Unreleased - Forge source recovery
 
-- Repair two maintenance-area floor conduits and their adjacent cable
-  connection in the bundled city.
+- Register Atlantis blocks, items and block entities under `stargate_atlantis`,
+  retaining legacy saved-ID remapping and bundled structure compatibility.
+- Fix a structure-migration mixin visibility error that crashed the world list.
+- Repair two maintenance-area floor conduits and their adjacent cable connection
+  in the bundled city.
 - Recheck loaded floor-conduit neighbors and safely rebuild missing SGJourney
   cable networks, saving changed IDs without forcing chunks to load.
-- Keep mixed-network simulation results specific to the active route, discard
-  them after committed transfers, and preserve energy type during output probes.
-- Start client door animations when updates arrive, including while offscreen.
-- Reconstruct the DHD entity and iris packet from the accepted binary and
-  integrate the obsolete self-targeting mixins into their source classes or
-  event subscribers. Keep the binary overlay for unrecovered classes.
+- Keep mixed-network simulation results specific to the active route and
+  discard them after committed transfers. Preserve the energy type when
+  probing SGJourney cable outputs.
+- Start client door animations when the update arrives, even if the door is
+  offscreen, rather than delaying the animation until it is next rendered.
+- Show the Genetics Lab and Lower Spire under the transporter's LOWER level,
+  alongside the underwater bay, without changing unrelated destinations.
 - Bundle the server-backup city and lower rooms with the later Farlands
-  control-room layout.
-- Show Genetics Lab and Lower Spire on the transporter LOWER page while
-  leaving outer towers on CITY.
+  control-room layout, without copying its temporary open hatch and flooding.
+- Reconstruct the Atlantis DHD entity from the accepted binary and integrate
+  its DHD-specific compatibility mixins into the readable entity source.
+- Move the DHD crystal guard into entity overrides. Recover the sneak-use event
+  source and move its position fix into that event.
+- Integrate screen behavior and the iris compatibility handler into their
+  target classes, and register jumper configuration through a Forge event
+  subscriber instead of modifying the mod's bootstrap class.
+- Keep the legacy inventory format and binary overlay for other classes.
+- The later cleanup remains unverified in-game and retains third-party mixins
+  and a compatibility coremod.
+
+## 2.0.5-dev-144-restore-original-hatch
+
+- Restore the original powered hatch table and installer location, remove the
+  redundant working table, and keep the decorative table separate.
+
+## 2.0.5-dev-143-hatch-power-feed
+
+- Reconnect the relocated hatch console's floor conduits to the bundled ZPM
+  network without changing the table's power cost or the decorative console.
+
+## 2.0.5-dev-142-console-legs-hatch-charge
+
+- Render the decorative console's legs and restore the active bundled hatch
+  table's starter charge at its new control-room location.
+
+## 2.0.5-dev-141-decorative-console
+
+- Replace the extra spire roof table with a placeable decorative console.
+  Leave the working control-room hatch table in place.
+
+## 2.0.5-dev-140-farlands-spire
+
+- Refresh the bundled gate and control rooms from Farlands, including the
+  recessed database console and the relocated DHD, shield and hatch controls.
+
+## 2.0.5-dev-139-recessed-database-console
+
+- Angle the front of the Database Console base inward to clear a player's
+  approach to both stations. Keep the rear contour and aligned tabletop controls.
+
+## 2.0.5-dev-138-aligned-database-stations
+
+- Rotate each Database Console station as a unit so its tabletop, keypads,
+  and display panels stay square. Keep the approved base and worktop height.
+
+## 2.0.5-dev-137-contoured-database-console
+
+- Reshape the Database Console around a clipped front and pointed rear, with
+  matching base collision and mirrored stations at the existing worktop height.
+
+## 2.0.5-dev-136-database-console
+
+- Add a decorative Atlantis Database Console with a 5 x 3 footprint, a
+  one-block plinth, and a translucent placeholder display. Place it by
+  right-clicking the floor with the console item from the Atlantis creative tab.
+
+## 2.0.5-dev-134-native-iris-transition
+
+- Animate the native Lantea energy iris in the world and on the Atlantis
+  dialer. Both use the same opening and closing timing without changing
+  when the iris blocks transit.
+
+## 2.0.5-dev-133-native-preview-lighting
+
+- Restore the GUI cutout pass for native mini-gate lights so the brightness
+  change does not replace the visible animation with an invisible shader pass.
+- Use flat GUI lighting for the miniature ring to reduce directional shading.
+
+## 2.0.5-dev-132-native-preview-glow
+
+- Brighten the native Lantea mini-gate's glyphs and chevrons. The travelling
+  glyph and leading edge of the incoming sweep glow white against cyan lock lights.
+
+## 2.0.5-dev-131-native-ring-animation
+
+- Animate the Forge native Lantea preview with Pegasus travelling glyphs and
+  lock lights, and Milky Way rotor and latch motion.
+- Size the iris control and its circular click area to the native ring opening.
+
+## 2.0.5-dev-130-native-preview-alphabet
+
+- Disable physical keypad positions outside the selected native gate's alphabet.
+- Draw the complete native gate models and live chevron lights in the preview
+  instead of using the chunk-dependent world renderer.
+
+## 2.0.5-dev-129-native-mini-gate
+
+- Render the native Lantea gate selected by the Forge Atlantis table instead
+  of a fixed gate image. The iris button refers to the same controller.
+- The preview protocol changed; use matching client and server builds.
+
+## 2.0.5-dev-128-native-dhd-clear
+
+- On the native Lantea Atlantis table, press the centre diamond to clear a
+  partial address without closing the dialer. A complete address still dials.
+
+## 2.0.5-dev-127-native-table-glyphs
+
+- Sync the table's crystal-adjusted range to the client and use it to find
+  assembled native Lantea gates for physical DHD glyphs, even while idle.
+- Restore the origin symbol for native Lantea tables.
+
+## 2.0.5-dev-126-native-dhd-routing
+
+- Keep the Stargate Journey dialer for a table actually linked to a live
+  Stargate Journey gate, not merely one with a nearby gate or stale controller.
+  Log why a table without a valid link falls back instead of opening the
+  native Lantea dialer.
+
+## 2.0.5-dev-125-city-cover-cleanup
+
+- Remove invisible air cover entries from the bundled Pegasus gate so newly
+  installed gates do not require breaking nonexistent covers before removal.
 
 ## 2.0.5 - SGJourney 0.6.55-alpha
 
-- Bundle the final Farlands city layout, including the updated control room,
-  large database console, decorative console, and moved jumper bay and shield controls.
-- Refresh large naquadah cable feeds for the jumper bay table through floor
-  conduits on load and when the table is opened without enough FE.
-
+- Revalidate the replacement Pegasus gate in SGJourney's registries after a city rebuild instead of trusting the old gate's registration flag. Retain the pre-rebuild address when available and refuse to claim an address owned by another gate.
+- Report gate registration and the two-way city table link separately at the end of the rebuild.
+- Remove the pre-saved Destiny address from the bundled city table's recent history without changing the other entries or Destiny dialing.
+- Retry a failed live gate lookup once the bundled Pegasus gate has a matching
+  registry entry. The existing city DHD recovery can then restore a one-sided link.
 - Initialize the bundled Pegasus gate's DHD callbacks after loading its saved
   registry entry. Repair missing or one-sided links when the pair is within
   range and neither side belongs to another device; synchronize symbols after linking.

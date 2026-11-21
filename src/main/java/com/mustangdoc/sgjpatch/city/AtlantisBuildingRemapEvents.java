@@ -10,7 +10,7 @@ import net.minecraftforge.registries.ForgeRegistry;
 import net.minecraftforge.registries.MissingMappingsEvent;
 
 /** Resolves retired add-on names without assigning their old numeric IDs to existing blocks. */
-@Mod.EventBusSubscriber(modid = AtlantisBuildingBlocks.NS, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = "sgjadditions_capacity_patch", bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class AtlantisBuildingRemapEvents {
     private AtlantisBuildingRemapEvents() {}
 

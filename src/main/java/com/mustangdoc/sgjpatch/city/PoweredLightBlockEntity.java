@@ -115,7 +115,7 @@ public final class PoweredLightBlockEntity extends BlockEntity {
   java.util.List<Block> blocks=new ArrayList<>();
   for(Block block:net.minecraft.core.registries.BuiltInRegistries.BLOCK)if(block instanceof PoweredLightBlocks.Powered)blocks.add(block);
   TYPE=BlockEntityType.Builder.of(PoweredLightBlockEntity::new,blocks.toArray(Block[]::new)).build(null);
-  h.register(new ResourceLocation("sgjadditions_capacity_patch","powered_light"),TYPE);
+  h.register(new ResourceLocation("stargate_atlantis","powered_light"),TYPE);
  });}
  private net.minecraftforge.common.util.LazyOptional<net.minecraftforge.energy.IEnergyStorage> cap=net.minecraftforge.common.util.LazyOptional.of(()->energy);
  @Override public <T> net.minecraftforge.common.util.LazyOptional<T> getCapability(net.minecraftforge.common.capabilities.Capability<T> capability,Direction side){if(capability==net.minecraftforge.common.capabilities.ForgeCapabilities.ENERGY)return cap.cast();return super.getCapability(capability,side);}

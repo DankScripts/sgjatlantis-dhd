@@ -17,7 +17,7 @@ import net.minecraftforge.registries.RegisterEvent;
 /** Forge registration for Mike's three-socket ZPM hub port. */
 @Mod.EventBusSubscriber(modid = "sgjadditions_capacity_patch", bus = Mod.EventBusSubscriber.Bus.MOD)
 public final class TripleZpmHubRegistration {
-    public static final ResourceLocation ID = new ResourceLocation("sgjadditions_capacity_patch", "triple_zpm_hub");
+    public static final ResourceLocation ID = new ResourceLocation("stargate_atlantis", "triple_zpm_hub");
     public static TripleZpmHubBlock BLOCK;
     public static BlockEntityType<TripleZpmHubBlockEntity> BLOCK_ENTITY;
     public static MenuType<TripleZpmHubMenu> MENU;

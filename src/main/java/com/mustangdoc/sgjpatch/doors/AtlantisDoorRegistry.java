@@ -6,9 +6,9 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.*;
-@Mod.EventBusSubscriber(modid=AtlantisDoorRegistry.NS,bus=Mod.EventBusSubscriber.Bus.MOD)
+@Mod.EventBusSubscriber(modid="sgjadditions_capacity_patch",bus=Mod.EventBusSubscriber.Bus.MOD)
 public final class AtlantisDoorRegistry {
- public static final String NS="sgjadditions_capacity_patch";
+ public static final String NS="stargate_atlantis";
  public static AtlantisDoorBlock BLOCK;
  public static final java.util.Map<AtlantisFinish,Item[]> FINISH_KITS=new java.util.EnumMap<>(AtlantisFinish.class);
  public static Item kit(boolean solid,int style,AtlantisFinish finish){if(finish==AtlantisFinish.LEGACY)return style==2?WIDE:style==1?ANGULAR:solid?QUARTERS:HALL;return FINISH_KITS.get(finish)[style==2?3:style==1?2:solid?1:0];}

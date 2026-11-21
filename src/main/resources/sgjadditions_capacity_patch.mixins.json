@@ -12,6 +12,7 @@
     "AbstractDHDEntityResetOnLoadMixin",
     "AbstractDHDMenuAccessor",
     "AtlantisMapColorMixin",
+    "AtlantisStructureBlockMigrationMixin",
     "AbstractStargateEntityNetworkFixMixin",
     "CityStargateCacheAccessor",
     "AbstractStargateEntityDialFailResetMixin",

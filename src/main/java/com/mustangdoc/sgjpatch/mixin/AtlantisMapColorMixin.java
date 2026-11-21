@@ -25,6 +25,7 @@ public abstract class AtlantisMapColorMixin {
         ResourceLocation id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
         String namespace = id.getNamespace();
         if (!namespace.equals("sgjadditions_capacity_patch")
+                && !namespace.equals("stargate_atlantis")
                 && !namespace.equals("sgjatlantis_dhd")
                 && !namespace.equals("sgjatlantis_cityshield")) return;
         callback.setReturnValue(colorFor(propertyValue(state, "finish") + "_" + id.getPath()));

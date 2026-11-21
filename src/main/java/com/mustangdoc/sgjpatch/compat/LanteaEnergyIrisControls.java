@@ -18,7 +18,7 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = "sgjadditions_capacity_patch", bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class LanteaEnergyIrisControls {
-    private static final String IRIS_ITEM = "sgjadditions_capacity_patch:pegasus_upgraded_shield";
+    private static final String IRIS_ITEM = "stargate_atlantis:pegasus_upgraded_shield";
 
     private LanteaEnergyIrisControls() { }
 

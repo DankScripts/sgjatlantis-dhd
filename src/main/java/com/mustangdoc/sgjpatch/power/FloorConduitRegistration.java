@@ -16,7 +16,7 @@ public final class FloorConduitRegistration {
  public static final java.util.Map<String,FloorBlock> VARIANTS=new java.util.LinkedHashMap<>();
  public static BlockEntityType<FloorConduitBlockEntity> TYPE;
  @SubscribeEvent public static void register(RegisterEvent event) {
-  ResourceLocation id=new ResourceLocation("sgjadditions_capacity_patch","atlantis_floor_conduit");
+  ResourceLocation id=new ResourceLocation("stargate_atlantis","atlantis_floor_conduit");
   event.register(Registries.BLOCK,h->{BLOCK=new FloorBlock(BlockBehaviour.Properties.of().strength(4.0F).sound(SoundType.METAL));h.register(id,BLOCK); for(String finish:new String[]{"silver","bronze","copper","blue_grey","teal","charcoal","stair_grey"}) {FloorBlock block=new FloorBlock(BlockBehaviour.Properties.of().strength(4.0F).sound(SoundType.METAL)); VARIANTS.put(finish,block);h.register(id.withPath("atlantis_"+finish+"_floor_conduit"),block);} });
   event.register(Registries.ITEM,h->{h.register(id,new BlockItem(BLOCK,new Item.Properties()));VARIANTS.forEach((finish,block)->h.register(id.withPath("atlantis_"+finish+"_floor_conduit"),new BlockItem(block,new Item.Properties())));});
   event.register(Registries.BLOCK,h->{for(String finish:new String[]{"","silver","bronze","copper","blue_grey","teal","charcoal","stair_grey"}) {String name="atlantis_"+(finish.isEmpty()?"":finish+"_")+"floor";Block block=new Block(BlockBehaviour.Properties.of().strength(4.0F).sound(SoundType.METAL));DECORATIVE_FLOORS.put(name,block);h.register(id.withPath(name),block);}});

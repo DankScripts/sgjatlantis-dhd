@@ -14,7 +14,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 /** Player-proximity control for the original inscribed stair and slab lights. */
-@Mod.EventBusSubscriber(modid = AtlantisBuildingBlocks.NS, bus = Mod.EventBusSubscriber.Bus.FORGE)
+@Mod.EventBusSubscriber(modid = "sgjadditions_capacity_patch", bus = Mod.EventBusSubscriber.Bus.FORGE)
 public final class AtlantisStairGlowEvents {
     private static final int HORIZONTAL_RANGE = 8;
     private static final int VERTICAL_RANGE = 4;

@@ -25,7 +25,7 @@ public final class AtlantisHatchRegistry {
     public static BlockEntityType<AtlantisHatchTableBlockEntity> TABLE_ENTITY;
     public static BlockEntityType<AtlantisHatchIrisBlockEntity> IRIS_ENTITY;
     public static MenuType<AtlantisHatchMenu> MENU;
-    private static final String NS = "sgjadditions_capacity_patch";
+    private static final String NS = "stargate_atlantis";
 
     private AtlantisHatchRegistry() {}
 
@@ -61,7 +61,7 @@ public final class AtlantisHatchRegistry {
         });
     }
 
-    @Mod.EventBusSubscriber(modid = NS, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    @Mod.EventBusSubscriber(modid = "sgjadditions_capacity_patch", bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static final class Client {
         @SubscribeEvent
         public static void onScreens(FMLClientSetupEvent event) {

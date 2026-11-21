@@ -1,5 +1,13 @@
 # Atlantis DHD Upgrade 2.0.5
 
+## Stargate Atlantis registry migration
+
+Atlantis blocks, items and block entities now use `stargate_atlantis`, owned by
+the Stargate Atlantis mod container. The legacy container remains for existing
+integration. Saved-ID remapping and structure-NBT conversion preserve the old
+Atlantis IDs. Use the matching City Shield 1.0.4 release. Back up existing worlds
+before upgrading; third-party datapacks with direct old tag entries may need updates.
+
 Source overlay for Atlantis DHD Upgrade on Minecraft 1.20.1 and Forge 47.4.16.
 This branch contains only the Forge edition of Atlantis DHD.
 

@@ -25,6 +25,9 @@ minecraft {
                 sgjadditions_capacity_patch {
                     source sourceSets.main
                 }
+                stargate_atlantis {
+                    source sourceSets.main
+                }
             }
         }
 
@@ -39,6 +42,44 @@ minecraft {
 repositories {
     maven { url = 'https://www.cursemaven.com' }
 }
+
+def namespaceResources = layout.buildDirectory.dir('generated/atlantisNamespaceResources')
+tasks.register('generateAtlantisNamespaceResources', Sync) {
+    into namespaceResources
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    def legacy = 'sgjadditions_capacity_patch'
+    inputs.files(fileTree("src/main/resources/assets/${legacy}/lang").matching { include '*.json' })
+    from("src/main/resources/assets/${legacy}/blockstates") { into 'assets/stargate_atlantis/blockstates' }
+    from("src/main/resources/assets/${legacy}/models/item") { into 'assets/stargate_atlantis/models/item' }
+    from("src/main/resources/data/${legacy}/loot_tables") { into 'data/stargate_atlantis/loot_tables' }
+    def baseline = zipTree('baseline/2.0.5-after-moregates-removal/sgjatlantis-dhd-1.20.1-2.0.5.jar')
+    from(baseline) {
+        include "assets/${legacy}/blockstates/**", "assets/${legacy}/models/item/**",
+                "data/${legacy}/loot_tables/**"
+        eachFile { details ->
+            details.path = details.path.replace("assets/${legacy}/", 'assets/stargate_atlantis/')
+                    .replace("data/${legacy}/", 'data/stargate_atlantis/')
+        }
+        includeEmptyDirs = false
+    }
+    doLast {
+        fileTree("src/main/resources/assets/${legacy}/lang").matching { include '*.json' }.files.each { languageFile ->
+            def translations = [:]
+            new groovy.json.JsonSlurper().parse(languageFile, 'UTF-8').each { key, value ->
+                ['block', 'item'].each { kind ->
+                    def prefix = "${kind}.${legacy}."
+                    if (key.startsWith(prefix))
+                        translations["${kind}.stargate_atlantis.${key.substring(prefix.length())}"] = value
+                }
+            }
+            def out = namespaceResources.get().file("assets/stargate_atlantis/lang/${languageFile.name}").asFile
+            out.parentFile.mkdirs()
+            out.setText(groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(translations)), 'UTF-8')
+        }
+    }
+}
+sourceSets.main.resources.srcDir(namespaceResources)
+tasks.named('processResources') { dependsOn 'generateAtlantisNamespaceResources' }
 
 dependencies {
     // Optional browser API only; JEI is not bundled or required at runtime.
@@ -64,6 +105,9 @@ tasks.named('processResources', ProcessResources).configure {
                 mod_version: mod_version,
                 file: [jarVersion: mod_version]
         ])
+    }
+    filesMatching('data/**/tags/**/*.json') {
+        filter { line -> line.replace('"sgjadditions_capacity_patch:', '"stargate_atlantis:') }
     }
 }
 
@@ -221,9 +265,17 @@ tasks.register('verifyPowerRefresh', JavaExec) {
 
 tasks.named('check').configure { dependsOn 'verifyPowerRefresh' }
 
+tasks.register('verifyAtlantisStructureMigration', JavaExec) {
+    dependsOn 'testClasses'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.mustangdoc.sgjpatch.mixin.AtlantisStructureMigrationCheck'
+}
+
+tasks.named('check').configure { dependsOn 'verifyAtlantisStructureMigration' }
+
 tasks.register('verifyReleaseJar') {
     dependsOn 'releaseJar', 'verifyAtlantisDialProgress', 'verifyAtlantisClipboardAddress', 'verifyCityDhdLinkPolicy', 'verifyNativeDhdCenterAction'
-    dependsOn 'verifyPegasusShieldTransition', 'verifyTransporterLevels', 'verifyClientDoorAnimation', 'verifyPowerRefresh'
+    dependsOn 'verifyPegasusShieldTransition', 'verifyTransporterLevels', 'verifyClientDoorAnimation', 'verifyPowerRefresh', 'verifyAtlantisStructureMigration'
     doLast {
         def releaseFile = tasks.named('releaseJar', Jar).get().archiveFile.get().asFile
         def required = [

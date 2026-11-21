@@ -12,8 +12,8 @@ import net.minecraftforge.registries.RegisterEvent;
 @Mod.EventBusSubscriber(modid = DatabaseConsoleRegistry.NS, bus = Mod.EventBusSubscriber.Bus.MOD)
 public final class DatabaseConsoleRegistry {
     static final String NS = "sgjadditions_capacity_patch";
-    static final ResourceLocation ID = new ResourceLocation(NS, "atlantis_database_console");
-    private static final ResourceLocation DECORATIVE_ID = new ResourceLocation(NS, "atlantis_decorative_console");
+    static final ResourceLocation ID = new ResourceLocation("stargate_atlantis", "atlantis_database_console");
+    private static final ResourceLocation DECORATIVE_ID = new ResourceLocation("stargate_atlantis", "atlantis_decorative_console");
     private static DecorativeConsoleBlock decorative;
     static DatabaseConsoleBlock BLOCK;
     static Item ITEM;

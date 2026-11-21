@@ -12,7 +12,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 /** Moving leaves are rendered once per cabin, independently of chunk rebuilds. */
-@Mod.EventBusSubscriber(modid=AtlantisDoorRegistry.NS,bus=Mod.EventBusSubscriber.Bus.MOD,value=Dist.CLIENT)
+@Mod.EventBusSubscriber(modid="sgjadditions_capacity_patch",bus=Mod.EventBusSubscriber.Bus.MOD,value=Dist.CLIENT)
 public final class AtlantisDoorRenderer implements BlockEntityRenderer<AtlantisDoorEntity> {
     private static final java.util.Map<String,RenderType> MATERIALS=new java.util.HashMap<>();
     private static RenderType material(String name){return MATERIALS.computeIfAbsent(name,n->RenderType.entityCutoutNoCull(new ResourceLocation(n.startsWith("atlantis_")?"sgjadditions_capacity_patch":"minecraft","textures/block/"+n+".png")));}
