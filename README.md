@@ -8,6 +8,13 @@ integration. Saved-ID remapping and structure-NBT conversion preserve the old
 Atlantis IDs. Use the matching City Shield 1.0.4 release. Back up existing worlds
 before upgrading; third-party datapacks with direct old tag entries may need updates.
 
+`sgjadditions_capacity_patch` is the historical container ID of the standalone
+Atlantis DHD, not a separately required capacity patch. It is displayed as
+Stargate Atlantis DHD and remains loaded without SGJ:Additions so the Atlantis
+devices work. Additions-only transformers target Additions classes exclusively
+and are never applied when those classes are absent. Lantea-targeting mixins
+are gated by Forge's loaded mod list.
+
 Source project for Atlantis DHD Upgrade on Minecraft 1.20.1 and Forge 47.4.16.
 This branch contains only the Forge edition of Atlantis DHD.
 
@@ -48,9 +55,29 @@ Maven release. Obtain the Forge 1.20.1 alpha from the author, then set
 0.6.54 release. Update the dependency and verify the API when the public beta
 becomes available; the alpha and beta are not assumed interchangeable.
 
+ForgeGradle remaps the supplied SGJourney and `LANTEA_JAR` release JARs into
+official development names through local artifact repositories. They are not
+bundled into the release. MixinGradle generates the refmap from source; do not
+restore an old hand-maintained refmap or load a production SGJourney JAR
+directly with `implementation files(...)`.
+
+VS Code is supported. IntelliJ and Eclipse Gradle integration plugins are also
+enabled. Use `.\gradlew.bat genVSCodeRuns`, `genIntellijRuns`, or `genEclipseRuns`
+for launch configurations, and `.\gradlew.bat runClient` or `runServer` for
+development launches. Do not put another copy of SGJourney or Atlantis in
+`run\mods`; Gradle already supplies them. Server EULA acceptance remains your
+decision.
+
 Run `.\gradlew.bat clean release` in PowerShell. The finished mod JAR and
 source ZIP are written to `dist\`. The release check also rejects packaged
 mod classes without corresponding Java source.
+
+The mapping repair was checked with `clean release check` and a Forge
+development client launch using the supplied SGJourney alpha and Lantea
+override, without SGJ:Additions. Both Atlantis screens registered and the
+client completed loading without `NoSuchFieldError`, `NoSuchMethodError`, or
+mixin-application failures. The development server launch stopped at the
+unaccepted EULA; this is not a completed server/world or gameplay test.
 
 The floor conduit's `Network` is a loaded-block routing cache, not saved energy
 or a persistent network identifier. Chunk/world load rebuilds it from floor

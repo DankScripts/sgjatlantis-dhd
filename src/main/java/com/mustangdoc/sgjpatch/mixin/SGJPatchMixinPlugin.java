@@ -2,6 +2,7 @@ package com.mustangdoc.sgjpatch.mixin;
 
 import java.util.List;
 import java.util.Set;
+import net.minecraftforge.fml.loading.FMLLoader;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
@@ -19,6 +20,12 @@ public final class SGJPatchMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+        if (targetClassName.startsWith("com.struxnet.sgjadditions.")) {
+            return FMLLoader.getLoadingModList().getModFileById("sgjadditions") != null;
+        }
+        if (targetClassName.startsWith("io.github.aqueoxx.lantea.")) {
+            return FMLLoader.getLoadingModList().getModFileById("lantea") != null;
+        }
         return true;
     }
 

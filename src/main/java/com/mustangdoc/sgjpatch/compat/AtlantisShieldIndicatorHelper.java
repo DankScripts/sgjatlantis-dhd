@@ -42,7 +42,7 @@ public final class AtlantisShieldIndicatorHelper {
 
    private static boolean isShieldActive(AtlantisDHDScreenFixed var0) {
       try {
-         if (var0.m_6262_() instanceof AbstractDHDMenuAccessor var2) {
+         if (var0.getMenu() instanceof AbstractDHDMenuAccessor var2) {
             if (var2.sgjpatch$getBlockEntity() instanceof AbstractDHDEntity var4) {
                if (DhdLookup.resolveStargate(var4) instanceof Interface var6) {
                   IrisInfo var7 = var6.irisInfo();

@@ -28,7 +28,7 @@ public abstract class AtlantisRecentAddressesMixin {
         data.put(KEY,entries);data.putString(KEY+"Last",address);
         dhd.setChanged();level.sendBlockUpdated(pos,state,state,3);
     }
-    @Inject(method="m_5995_",at=@At("RETURN"),remap=false)
+    @Inject(method="getUpdateTag",at=@At("RETURN"))
     private void sync(CallbackInfoReturnable<CompoundTag> ci){
         var dhd=(AbstractDHDEntity)(Object)this;
         ci.getReturnValue().put(KEY,dhd.getPersistentData().getList(KEY,Tag.TAG_STRING).copy());

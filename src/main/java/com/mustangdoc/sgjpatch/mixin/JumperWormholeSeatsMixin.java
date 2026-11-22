@@ -44,8 +44,8 @@ public abstract class JumperWormholeSeatsMixin {
     }
 
     @Redirect(method = "recursivePassengerTeleport", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/world/entity/Entity;m_7998_(Lnet/minecraft/world/entity/Entity;Z)Z",
-            remap = false), require = 1)
+            target = "Lnet/minecraft/world/entity/Entity;startRiding(Lnet/minecraft/world/entity/Entity;Z)Z",
+            remap = true), require = 1)
     @SuppressWarnings("unchecked")
     private boolean restore(Entity passenger, Entity vehicle, boolean force) {
         if (isJumper(vehicle)) {

@@ -16,8 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 /** Supplies vanilla-map/minimap colors for Atlantis blocks that otherwise report MapColor.NONE. */
 @Mixin(BlockBehaviour.BlockStateBase.class)
 public abstract class AtlantisMapColorMixin {
-    // Forge 1.20.1 runs SRG names; this mixin is compiled outside Gradle's refmap processor.
-    @Inject(method = "m_284242_", at = @At("RETURN"), cancellable = true, remap = false)
+    @Inject(method = "getMapColor", at = @At("RETURN"), cancellable = true)
     private void sgjpatch$atlantisMapColor(BlockGetter level, BlockPos pos,
             CallbackInfoReturnable<MapColor> callback) {
         if (callback.getReturnValue() != MapColor.NONE) return;

@@ -12,7 +12,7 @@ description="Atlantis blocks and devices."
 modId="sgjadditions_capacity_patch"
 version="${file.jarVersion}"
 displayTest="MATCH_VERSION"
-displayName="Stargate Atlantis Compatibility"
+displayName="Stargate Atlantis DHD"
 description='''
 Standalone Atlantis DHD upgrade for SGJourney, including the accepted triangle dialer GUI, crystal interface, Pegasus shield support, and arbitrary-angle Blockbench model rendering.
 

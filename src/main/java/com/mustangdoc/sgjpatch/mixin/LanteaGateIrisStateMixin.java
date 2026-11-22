@@ -6,14 +6,12 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Pseudo
 @Mixin(targets = "io.github.aqueoxx.lantea.blockentity.StargateControllerBlockEntity", remap = false)
 public abstract class LanteaGateIrisStateMixin implements LanteaEnergyIrisState {
     @Unique private boolean sgjpatch$irisInstalled;
@@ -37,18 +35,18 @@ public abstract class LanteaGateIrisStateMixin implements LanteaEnergyIrisState 
         }
     }
 
-    @Inject(method = "m_183515_", at = @At("TAIL"), require = 1, remap = false)
+    @Inject(method = "saveAdditional", at = @At("TAIL"), require = 1, remap = true)
     private void sgjpatch$saveIris(CompoundTag tag, CallbackInfo ci) {
         tag.putBoolean("SgjpatchEnergyIrisInstalled", sgjpatch$irisInstalled);
         tag.putBoolean("SgjpatchEnergyIrisClosed", sgjpatch$irisClosed);
     }
 
-    @Inject(method = "m_142466_", at = @At("TAIL"), require = 1, remap = false)
+    @Inject(method = "load", at = @At("TAIL"), require = 1, remap = true)
     private void sgjpatch$loadIris(CompoundTag tag, CallbackInfo ci) {
         sgjpatch$readIris(tag);
     }
 
-    @Inject(method = "m_5995_", at = @At("RETURN"), require = 1, remap = false)
+    @Inject(method = "getUpdateTag", at = @At("RETURN"), require = 1, remap = true)
     private void sgjpatch$updateTag(CallbackInfoReturnable<CompoundTag> cir) {
         CompoundTag tag = cir.getReturnValue();
         tag.putBoolean("SgjpatchEnergyIrisInstalled", sgjpatch$irisInstalled);

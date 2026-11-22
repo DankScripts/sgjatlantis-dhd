@@ -1,6 +1,9 @@
 plugins {
     id 'java'
+    id 'idea'
+    id 'eclipse'
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'org.spongepowered.mixin' version '0.7-SNAPSHOT'
 }
 
 version = mod_version
@@ -35,6 +38,11 @@ minecraft {
             args '--nogui'
         }
     }
+}
+
+mixin {
+    add sourceSets.main, 'sgjadditions_capacity_patch.refmap.json'
+    config 'sgjadditions_capacity_patch.mixins.json'
 }
 
 repositories {
@@ -75,6 +83,7 @@ sourceSets.main.resources.srcDir(namespaceResources)
 tasks.named('processResources') { dependsOn 'generateAtlantisNamespaceResources' }
 
 dependencies {
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
     runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
@@ -82,11 +91,22 @@ dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
     def configuredLanteaJar = System.getenv('LANTEA_JAR')
     if (configuredLanteaJar != null && !configuredLanteaJar.isBlank()) {
-        compileOnly files(configuredLanteaJar)
+        def suppliedLantea = file(configuredLanteaJar)
+        if (!suppliedLantea.isFile()) {
+            throw new GradleException("LANTEA_JAR does not exist: ${suppliedLantea}")
+        }
+        repositories.ivy {
+            name = 'SuppliedLantea'
+            artifactPattern suppliedLantea.absolutePath
+            metadataSources { artifact() }
+            content { includeModule 'local.supplied', 'lantea' }
+        }
+        compileOnly fg.deobf('local.supplied:lantea:0.7.7.12')
+        runtimeOnly fg.deobf('local.supplied:lantea:0.7.7.12')
     } else {
         compileOnly fg.deobf("curse.maven:lantea-stargates-1703388:${lantea_file_id}")
+        runtimeOnly fg.deobf("curse.maven:lantea-stargates-1703388:${lantea_file_id}")
     }
-    runtimeOnly fg.deobf("curse.maven:lantea-stargates-1703388:${lantea_file_id}")
 
     def configuredSgJourneyJar = System.getenv('SGJOURNEY_JAR')
     def sgJourneyJar = configuredSgJourneyJar != null && !configuredSgJourneyJar.isBlank()
@@ -96,7 +116,13 @@ dependencies {
     if (!suppliedSgJourney.isFile()) {
         throw new GradleException('SGJourney 0.6.55-alpha is a privately supplied API build. Set SGJOURNEY_JAR to the author-provided Forge 1.20.1 JAR, or place it in libs/Stargate.Journey-1.20.1-0.6.55-alpha.jar.')
     }
-    implementation files(suppliedSgJourney)
+    repositories.ivy {
+        name = 'SuppliedSGJourney'
+        artifactPattern suppliedSgJourney.absolutePath
+        metadataSources { artifact() }
+        content { includeModule 'local.supplied', 'sgjourney' }
+    }
+    implementation fg.deobf('local.supplied:sgjourney:0.6.55-alpha')
 }
 
 tasks.named('processResources', ProcessResources).configure {
@@ -243,14 +269,25 @@ tasks.register('verifyAtlantisStructureMigration', JavaExec) {
 
 tasks.named('check').configure { dependsOn 'verifyAtlantisStructureMigration' }
 
+tasks.register('verifyDevelopmentMappings', JavaExec) {
+    dependsOn 'testClasses'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.mustangdoc.sgjpatch.mixin.DevelopmentMappingsCheck'
+    args file('src/main/resources/coremods/sgjadditions_0650_compat.js').absolutePath
+}
+
+tasks.named('check').configure { dependsOn 'verifyDevelopmentMappings' }
+
 tasks.register('verifyReleaseJar') {
     dependsOn 'releaseJar', 'verifyAtlantisDialProgress', 'verifyAtlantisClipboardAddress', 'verifyCityDhdLinkPolicy', 'verifyNativeDhdCenterAction'
     dependsOn 'verifyPegasusShieldTransition', 'verifyTransporterLevels', 'verifyClientDoorAnimation', 'verifyPowerRefresh', 'verifyAtlantisStructureMigration'
+    dependsOn 'verifyDevelopmentMappings'
     doLast {
         def releaseFile = tasks.named('releaseJar', Jar).get().archiveFile.get().asFile
         def required = [
                 'META-INF/mods.toml',
                 'sgjadditions_capacity_patch.mixins.json',
+                'sgjadditions_capacity_patch.refmap.json',
                 'com/mustangdoc/sgjpatch/SGJAdditionsCapacityPatch.class',
                 'com/mustangdoc/sgjpatch/standalone/AtlantisBlockEntityDHD.class',
                 'com/mustangdoc/sgjpatch/standalone/AtlantisPendingDial.class',
@@ -273,6 +310,24 @@ tasks.register('verifyReleaseJar') {
             def missing = required.findAll { zip.getEntry(it) == null }
             if (!missing.isEmpty()) {
                 throw new GradleException("Incomplete Forge release JAR: missing ${missing}")
+            }
+            def refmap = new groovy.json.JsonSlurper().parse(
+                    zip.getInputStream(zip.getEntry('sgjadditions_capacity_patch.refmap.json')), 'UTF-8')
+            def mappedMixins = [
+                    'AtlantisRecentAddressesMixin',
+                    'AtlantisMapColorMixin',
+                    'AtlantisStructureBlockMigrationMixin',
+                    'LargeNaquadahCableDHDPowerBridgeMixin',
+                    'JumperWormholeSeatsMixin',
+                    'LanteaGateIrisStateMixin',
+                    'client/AtlantisDHDModelAngleMixin',
+                    'client/AtlantisDHDModelBoundsMixin'
+            ]
+            def missingMappings = mappedMixins.findAll { name ->
+                !refmap.mappings["com/mustangdoc/sgjpatch/mixin/${name}"]
+            }
+            if (!missingMappings.isEmpty()) {
+                throw new GradleException("Missing generated development/production mappings: ${missingMappings}")
             }
             def removedDhdMixins = [
                     'EnergyBlockEntityAccessor',

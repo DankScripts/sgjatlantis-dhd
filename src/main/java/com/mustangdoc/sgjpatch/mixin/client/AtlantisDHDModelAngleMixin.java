@@ -7,15 +7,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(
-   targets = {"net.minecraft.client.renderer.block.model.BlockElement$Deserializer"},
-   remap = false
+   targets = {"net.minecraft.client.renderer.block.model.BlockElement$Deserializer"}
 )
 public class AtlantisDHDModelAngleMixin {
    @Inject(
       method = {"getAngle"},
       at = {@At("HEAD")},
-      cancellable = true,
-      remap = false
+      cancellable = true
    )
    private void sgjpatch$allowAtlantisTriangleAngles(JsonObject var1, CallbackInfoReturnable<Float> var2) {
       if (var1 != null && var1.get("angle") != null) {

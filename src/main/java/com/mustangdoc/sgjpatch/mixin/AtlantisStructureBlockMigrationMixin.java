@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(NbtUtils.class)
 public abstract class AtlantisStructureBlockMigrationMixin {
-    @Inject(method = "m_247651_", at = @At("HEAD"), cancellable = true, remap = false)
+    @Inject(method = "readBlockState", at = @At("HEAD"), cancellable = true)
     private static void sgjpatch$resolveLegacyBlock(HolderGetter<Block> lookup, CompoundTag tag,
             CallbackInfoReturnable<BlockState> callback) {
         CompoundTag migrated = sgjpatch$migrateBlock(tag, ForgeRegistries.BLOCKS::containsKey);

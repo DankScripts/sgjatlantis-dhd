@@ -17,9 +17,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * every resource pack. This keeps the accepted physical table geometry intact
  * and avoids relying on renderer changes supplied by a particular modpack.</p>
  */
-@Mixin(targets = "net.minecraft.client.renderer.block.model.BlockElement$Deserializer", remap = false)
+@Mixin(targets = "net.minecraft.client.renderer.block.model.BlockElement$Deserializer")
 public class AtlantisDHDModelBoundsMixin {
-    @Inject(method = "m_111352_", at = @At("HEAD"), cancellable = true, remap = false)
+    @Inject(method = "getTo", at = @At("HEAD"), cancellable = true)
     private void sgjpatch$allowApprovedAtlantisDhdBounds(
             JsonObject json,
             CallbackInfoReturnable<Vector3f> cir) {

@@ -255,7 +255,7 @@ function initializeCoreMod() {
                 bridge.instructions.add(new VarInsnNode(Opcodes.FLOAD, 4));
                 bridge.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL,
                     'net/povstalec/sgjourney/client/screens/SGJourneyMenuScreen',
-                    'm_88315_', '(Lnet/minecraft/client/gui/GuiGraphics;IIF)V', false));
+                    ASMAPI.mapMethod('m_88315_'), '(Lnet/minecraft/client/gui/GuiGraphics;IIF)V', false));
                 bridge.instructions.add(new InsnNode(Opcodes.RETURN));
                 bridge.maxStack = 5;
                 bridge.maxLocals = 5;
@@ -263,11 +263,11 @@ function initializeCoreMod() {
                 var close = new MethodNode(Opcodes.ACC_PUBLIC,
                     'sgjpatch$closeMenu', '()V', null, null);
                 close.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
-                    'net/minecraft/client/Minecraft', 'm_91087_', '()Lnet/minecraft/client/Minecraft;', false));
+                    'net/minecraft/client/Minecraft', ASMAPI.mapMethod('m_91087_'), '()Lnet/minecraft/client/Minecraft;', false));
                 close.instructions.add(new FieldInsnNode(Opcodes.GETFIELD,
-                    'net/minecraft/client/Minecraft', 'f_91074_', 'Lnet/minecraft/client/player/LocalPlayer;'));
+                    'net/minecraft/client/Minecraft', ASMAPI.mapField('f_91074_'), 'Lnet/minecraft/client/player/LocalPlayer;'));
                 close.instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
-                    'net/minecraft/client/player/LocalPlayer', 'm_6915_', '()V', false));
+                    'net/minecraft/client/player/LocalPlayer', ASMAPI.mapMethod('m_6915_'), '()V', false));
                 close.instructions.add(new InsnNode(Opcodes.RETURN));
                 close.maxStack = 1;
                 close.maxLocals = 1;

@@ -86,8 +86,8 @@ public abstract class LargeNaquadahCableDHDPowerBridgeMixin {
             method = {"isOutput", "validOutputs", "outputEnergy"},
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/level/Level;m_7702_(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/block/entity/BlockEntity;",
-                    remap = false),
+                    target = "Lnet/minecraft/world/level/Level;getBlockEntity(Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/level/block/entity/BlockEntity;",
+                    remap = true),
             remap = false)
     private BlockEntity sgjpatch$routeVirtualOutput(Level level, BlockPos outputPos) {
         if (!level.hasChunkAt(outputPos)) return null;
