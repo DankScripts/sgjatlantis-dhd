@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["IGI", "RCR", "IPI"],
+  "key": {
+    "I": {"item": "minecraft:iron_ingot"},
+    "G": {"item": "minecraft:glass"},
+    "R": {"item": "minecraft:redstone"},
+    "P": {"item": "minecraft:paper"},
+    "C": {"item": "minecraft:compass"}
+  },
+  "result": {"id": "stargate_atlantis:atlantis_transporter_map"}
+}

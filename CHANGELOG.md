@@ -1,3 +1,9 @@
+## 2.0.5-hotfix1
+
+- Restore the 14 NeoForge crafting recipes missing from 2.0.5, matching the
+  corresponding Forge recipes for the Atlantis DHD, transporter components,
+  door kits and controls, and jumper-bay table, panels and redstone port.
+
 ## Unreleased
 
 - Download JEI and Lantea build dependencies from Maven instead of a local

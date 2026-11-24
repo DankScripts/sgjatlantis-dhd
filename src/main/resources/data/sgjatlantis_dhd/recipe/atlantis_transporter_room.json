@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": ["IMI", "CEC", "IRI"],
+  "key": {
+    "I": {"item": "minecraft:iron_block"},
+    "R": {"item": "minecraft:redstone_block"},
+    "E": {"item": "minecraft:ender_pearl"},
+    "C": {"item": "stargate_atlantis:atlantis_transporter_control"},
+    "M": {"item": "stargate_atlantis:atlantis_transporter_map"}
+  },
+  "result": {"id": "stargate_atlantis:atlantis_transporter_room"}
+}

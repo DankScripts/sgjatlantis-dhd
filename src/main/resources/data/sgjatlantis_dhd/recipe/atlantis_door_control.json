@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {"item": "stargate_atlantis:atlantis_door_control_damaged"},
+    {"item": "stargate_atlantis:atlantis_door_control_crystal"}
+  ],
+  "result": {"id": "stargate_atlantis:atlantis_door_control"}
+}

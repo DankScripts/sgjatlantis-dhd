@@ -14,6 +14,43 @@ import net.povstalec.sgjourney.common.capabilities.SGJourneyEnergy;
 
 /** Release checks using real NeoForge/Minecraft classes, not mocked networking. */
 public final class PortChecks {
+    private static com.google.gson.JsonObject recipe(String name) throws java.io.IOException {
+        String path = "data/sgjatlantis_dhd/recipe/" + name + ".json";
+        try (var stream = PortChecks.class.getClassLoader().getResourceAsStream(path)) {
+            if (stream == null) throw new AssertionError("Missing recipe: " + path);
+            try (var reader = new java.io.InputStreamReader(stream, java.nio.charset.StandardCharsets.UTF_8)) {
+                return com.google.gson.JsonParser.parseReader(reader).getAsJsonObject();
+            }
+        }
+    }
+
+    private static void checkRestoredRecipes() throws java.io.IOException {
+        for (String name : List.of("atlantis_dhd", "atlantis_angular_door", "atlantis_hall_door",
+                "atlantis_quarters_door", "atlantis_wide_glass_door", "atlantis_door_control",
+                "atlantis_door_control_crystal", "atlantis_door_control_damaged",
+                "atlantis_transporter_control", "atlantis_transporter_map", "atlantis_transporter_room",
+                "jumper_bay_door_table", "jumper_bay_hatch_panel", "jumper_bay_hatch_redstone_port")) {
+            var result = recipe(name).getAsJsonObject("result");
+            if (!result.has("id") || !result.get("id").getAsString().equals("stargate_atlantis:" + name))
+                throw new AssertionError("Incorrect NeoForge recipe result: " + name);
+        }
+        var dhd = recipe("atlantis_dhd");
+        if (!dhd.getAsJsonArray("pattern").toString().equals("[\"TCT\",\"EDE\",\"TXT\"]")
+                || !dhd.getAsJsonObject("key").getAsJsonObject("D").get("item").getAsString().equals("sgjourney:pegasus_dhd"))
+            throw new AssertionError("Atlantis DHD recipe does not match the Forge recipe");
+        var room = recipe("atlantis_transporter_room").getAsJsonObject("key");
+        if (!room.getAsJsonObject("C").get("item").getAsString().equals("stargate_atlantis:atlantis_transporter_control")
+                || !room.getAsJsonObject("M").get("item").getAsString().equals("stargate_atlantis:atlantis_transporter_map"))
+            throw new AssertionError("Transporter recipe must use the registered component items");
+        if (recipe("jumper_bay_hatch_panel").getAsJsonObject("result").get("count").getAsInt() != 8)
+            throw new AssertionError("Hatch panel recipe must produce eight panels");
+        var control = recipe("atlantis_door_control");
+        if (!control.get("type").getAsString().equals("minecraft:crafting_shapeless")
+                || control.getAsJsonArray("ingredients").size() != 2)
+            throw new AssertionError("Door control repair must be shapeless");
+        System.out.println("PASS: missing NeoForge recipes and key crafting details are present.");
+    }
+
     private static void checkNamespaceMigration() throws ReflectiveOperationException {
         var registryKey = net.minecraft.resources.ResourceKey.<String>createRegistryKey(
                 ResourceLocation.fromNamespaceAndPath("test", "migration"));
@@ -254,6 +291,7 @@ public final class PortChecks {
     }
 
     public static void main(String[] args) throws Exception {
+        checkRestoredRecipes();
         checkNamespaceMigration();
         method("com.mustangdoc.sgjpatch.doors.DoorControlBlock", "useItemOn",
                 "net.minecraft.world.item.ItemStack", "net.minecraft.world.level.block.state.BlockState",

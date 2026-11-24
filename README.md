@@ -1,4 +1,9 @@
-# Atlantis DHD 2.0.5
+# Atlantis DHD 2.0.5-hotfix1
+
+The NeoForge hotfix restores the 14 crafting recipes missing from 2.0.5,
+including the Atlantis DHD, transporter components, door kits and controls,
+and jumper-bay table, panels and redstone port. They match the corresponding
+Forge recipes; no changes to the Forge release are required.
 
 ## Stargate Atlantis registry migration
 
